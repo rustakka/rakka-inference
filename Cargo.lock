@@ -2691,7 +2691,6 @@ dependencies = [
  "inference-runtime",
  "rakka-config",
  "rakka-core",
- "rakka-rs",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
@@ -2765,7 +2764,6 @@ dependencies = [
  "parking_lot",
  "rakka-core",
  "rakka-distributed-data",
- "rakka-rs",
  "reqwest 0.12.28",
  "secrecy",
  "serde",
@@ -2795,7 +2793,6 @@ dependencies = [
  "rakka-config",
  "rakka-core",
  "rakka-distributed-data",
- "rakka-rs",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
@@ -4456,7 +4453,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-accel"
-version = "0.2.7"
+version = "0.2.8"
 dependencies = [
  "async-trait",
  "rakka-accel-cuda",
@@ -4468,7 +4465,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-accel-cuda"
-version = "0.2.7"
+version = "0.2.8"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -4489,7 +4486,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-accel-patterns"
-version = "0.2.7"
+version = "0.2.8"
 dependencies = [
  "async-trait",
  "parking_lot",
@@ -4607,15 +4604,6 @@ dependencies = [
  "tokio",
  "tokio-util",
  "tracing",
-]
-
-[[package]]
-name = "rakka-rs"
-version = "0.2.1"
-dependencies = [
- "rakka-config",
- "rakka-core",
- "rakka-macros",
 ]
 
 [[package]]
