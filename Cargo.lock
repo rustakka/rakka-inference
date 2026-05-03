@@ -4456,7 +4456,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-accel"
-version = "0.2.1"
+version = "0.2.7"
 dependencies = [
  "async-trait",
  "rakka-accel-cuda",
@@ -4468,7 +4468,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-accel-cuda"
-version = "0.2.1"
+version = "0.2.7"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -4481,7 +4481,6 @@ dependencies = [
  "rakka-config",
  "rakka-core",
  "rakka-macros",
- "rakka-rs",
  "thiserror 1.0.69",
  "tokio",
  "tokio-stream",
@@ -4490,7 +4489,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-accel-patterns"
-version = "0.2.1"
+version = "0.2.7"
 dependencies = [
  "async-trait",
  "parking_lot",
@@ -4498,7 +4497,6 @@ dependencies = [
  "rakka-config",
  "rakka-core",
  "rakka-macros",
- "rakka-rs",
  "thiserror 1.0.69",
  "tokio",
  "tracing",

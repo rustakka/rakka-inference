@@ -1,0 +1,60 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "rakka-inference"
+version = "0.2.1"
+description = "Multi-runtime GPU + remote inference as a supervised actor system on the rakka actor runtime."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "rakka-inference contributors" }]
+keywords = [
+  "llm",
+  "inference",
+  "rakka",
+  "actor",
+  "openai",
+  "anthropic",
+  "gemini",
+  "vllm",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Rust",
+  "License :: OSI Approved :: Apache Software License",
+  "Intended Audience :: Developers",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: System :: Distributed Computing",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+]
+
+[project.urls]
+Homepage      = "https://github.com/rustakka/rakka-inference"
+Repository    = "https://github.com/rustakka/rakka-inference"
+Issues        = "https://github.com/rustakka/rakka-inference/issues"
+Changelog     = "https://github.com/rustakka/rakka-inference/releases"
+Documentation = "https://docs.rs/inference"
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "pytest-asyncio>=0.23"]
+
+[tool.maturin]
+manifest-path = "crates/inference-py-bindings/Cargo.toml"
+module-name   = "rakka_inference._native"
+python-source = "python"
+features      = ["python-extension"]
+strip         = true
+
+[tool.pytest.ini_options]
+testpaths   = ["python/tests"]
+asyncio_mode = "auto"

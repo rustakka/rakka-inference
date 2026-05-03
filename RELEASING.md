@@ -114,9 +114,22 @@ Five jobs, in order:
    - sleeps 30 s between successful publishes to pace crates.io's
      "new crates per period" rolling-window limit.
 
-5. **publish-pypi** — scaffolded but **disabled** (`if: false`) until
-   `inference-py-bindings` ships a real surface. Re-enable by
-   removing the guard and configuring trusted publishing on PyPI.
+5. **build-wheels / build-sdist** — `PyO3/maturin-action@v1` builds
+   one wheel per platform/ABI combination (Linux glibc x86_64, Linux
+   musl x86_64, macOS universal2, Windows x64) for CPython
+   3.10–3.13, plus a single sdist. ARM-Linux is intentionally
+   skipped — the `ring` crate (transitive via `rustls`/`aws-lc-rs`)
+   does not cross-compile inside the manylinux container; ARM users
+   install from sdist.
+
+6. **publish-pypi** — uploads the flattened wheel+sdist set to PyPI
+   via `pypa/gh-action-pypi-publish@release/v1` using **OIDC
+   trusted publishing**. No long-lived token in repo secrets.
+   Configure once in pypi.org → manage project → publishing → add a
+   GitHub publisher (owner: `rustakka`, repo: `rakka-inference`,
+   workflow: `release.yml`, environment: `pypi`). The action treats
+   "already uploaded" as success, so re-tagging the same version is
+   safe.
 
 ---
 
@@ -164,9 +177,18 @@ crate so you can see what's gated and why.
 | Variable| `RAKKA_INFERENCE_WORKSPACE_VERSION`     | Optional. `cargo-semver-checks` flips from warn → hard-fail when this starts with `1.`. Default `0.`. |
 | Variable| `RAKKA_INFERENCE_PUBLISH_ALLOWLIST`     | Optional. Space-separated list of crates that may publish. Empty = publish all. |
 
-For PyPI (when `publish-pypi` re-enables), additionally configure
-trusted publishing on PyPI's project settings (preferred) or set
-`PYPI_API_TOKEN`.
+For PyPI, configure **OIDC trusted publishing** on the project's PyPI
+settings page (preferred — no token rotation, no long-lived
+credentials). The `publish-pypi` job uses `id-token: write` and the
+`pypi` GitHub Environment to mint a short-lived OIDC token at upload
+time. Fallback (only if trusted publishing is unavailable): set
+`PYPI_API_TOKEN` and add `password: ${{ secrets.PYPI_API_TOKEN }}`
+to the `pypa/gh-action-pypi-publish` step in `release.yml`.
+
+A symmetric **TestPyPI** environment is configured under the
+`testpypi` GitHub Environment, used by the `publish-pypi-dry-run`
+job when you trigger `workflow_dispatch` with `dry_run: true` and
+`skip_python: false`.
 
 ---
 
@@ -201,6 +223,12 @@ If `cargo publish` partially succeeded:
    `cargo yank --vers X.Y.Z <crate>` from a maintainer machine, then
    land a `fix:` commit and let the next auto-tag happen.
 
+For PyPI: `pypa/gh-action-pypi-publish` honours `skip-existing: true`,
+so a re-tag re-uploads only the wheels that didn't make it the first
+time. To pull a bad release: `pip install twine && twine yank --version
+X.Y.Z rakka-inference` (or use the PyPI web UI). PyPI does not allow
+overwriting an existing version — release `X.Y.Z+1` with the fix.
+
 ---
 
 ## Local sanity checks
@@ -223,6 +251,11 @@ cargo xtask release-checklist
 # Bump locally without committing (useful for testing the bump body).
 cargo xtask bump patch          # 0.1.0 -> 0.1.1
 cargo xtask bump minor          # 0.1.0 -> 0.2.0
+
+# Build + install the Python wheel locally (requires maturin).
+pip install maturin
+maturin develop                 # builds the wheel, installs into the active venv
+pytest python/tests -v          # runs the smoke tests against the installed wheel
 cargo xtask bump --set 0.5.0    # explicit
 cargo xtask bump --pre rc.1     # 0.1.0 -> 0.1.0-rc.1
 ```
@@ -268,8 +301,9 @@ cold publish of all 18 crates takes ~10 minutes.
   `git log` between tags. We don't keep a hand-curated CHANGELOG.
   If you want to summarise a release, prepend prose to `RELEASE_NOTES.md`
   in a `chore:` PR before tagging.
-- **PyPI** — gated until `inference-py-bindings` is real (see
-  `release.yml` job `publish-pypi`).
+- **PyPI surface stability** — the 0.2.x bindings (`Cluster`,
+  `Deployment`) are intentionally narrow. Expect breaking changes on
+  every minor bump until the surface stabilises (RFC v4 §11.1).
 - **`semver-checks` hard-fail** — warn-only at `0.x`. Flip
   `RAKKA_INFERENCE_WORKSPACE_VERSION` to `1.` to arm.
 - **Coordinated cross-workspace releases** with `rakka` / `rakka-accel`

@@ -27,11 +27,15 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "cargo publish --dry-run; skip GitHub Release upload"
+        description: "cargo publish + maturin upload with --dry-run; skip GitHub Release upload"
         required: false
         default: "true"
       skip_crates:
         description: "Skip the crates.io publish job"
+        required: false
+        default: "false"
+      skip_python:
+        description: "Skip the Python wheel build / PyPI publish jobs"
         required: false
         default: "false"
 
@@ -142,7 +146,7 @@ jobs:
 
   github-release:
     name: GitHub Release
-    needs: [verify, build-binaries]
+    needs: [verify, build-binaries, build-wheels, build-sdist]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     permissions:
@@ -173,6 +177,9 @@ jobs:
             echo
             echo "### Binaries"
             ls artifacts | grep "rakka-binaries-" | sed 's/^/- /' || true
+            echo
+            echo "### Python wheels"
+            ls artifacts | grep "rakka-inference-wheels-" | sed 's/^/- /' || true
           } > RELEASE_NOTES.md
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
       - name: Create GitHub Release
@@ -303,19 +310,143 @@ jobs:
             cargo publish -p "$c" --dry-run --allow-dirty || true
           done
 
-  # Python wheel + PyPI jobs are scaffolded but disabled until
-  # `inference-py-bindings` ships a real surface. To re-enable, drop
-  # the `if: false` guard below and configure trusted publishing on
-  # PyPI (or set secrets.PYPI_API_TOKEN).
-  publish-pypi:
-    name: Publish wheels + sdist to PyPI (disabled)
+  # ------------------------------------------------------------------
+  # Python wheels + sdist
+  # ------------------------------------------------------------------
+  # Build a per-platform wheel for each supported CPython interpreter,
+  # an sdist for archs we don't cross-compile, and publish to PyPI on a
+  # `v*` tag using OIDC trusted publishing. TestPyPI dry-run is
+  # available via `workflow_dispatch` for vetting an upcoming release
+  # without burning the production package version.
+  build-wheels:
+    name: Build wheels (${{ matrix.target }} / ${{ matrix.os }})
     needs: verify
-    if: false
+    if: github.event_name == 'push' || github.event.inputs.skip_python != 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux glibc (x86_64). aarch64-linux is intentionally
+          # skipped — same `ring`-via-`rustls`-via-`aws-lc-rs`
+          # cross-compile blocker rakka hits; ARM users install from
+          # sdist.
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            python-target: x86_64
+            manylinux: auto
+          # Linux musl.
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            python-target: x86_64
+            manylinux: musllinux_1_2
+          # macOS — universal2 yields a single wheel covering both
+          # x86_64 and arm64.
+          - os: macos-latest
+            target: universal2-apple-darwin
+            python-target: universal2
+            manylinux: "off"
+          # Windows.
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            python-target: x64
+            manylinux: "off"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build wheels (maturin)
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.python-target }}
+          # One wheel per supported CPython ABI on this platform.
+          # `python-extension` activates `pyo3/extension-module` per
+          # crates/inference-py-bindings/Cargo.toml.
+          args: --release --strip --out dist --interpreter "python3.10 python3.11 python3.12 python3.13"
+          manylinux: ${{ matrix.manylinux }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rakka-inference-wheels-${{ matrix.target }}
+          path: dist/*.whl
+
+  build-sdist:
+    name: Build sdist (Python)
+    needs: verify
+    if: github.event_name == 'push' || github.event.inputs.skip_python != 'true'
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build sdist
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: --out dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rakka-inference-sdist
+          path: dist/*.tar.gz
+
+  publish-pypi:
+    name: Publish wheels + sdist to PyPI
+    needs: [verify, build-wheels, build-sdist, github-release]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.event.inputs.skip_python != 'true'
+    # Trusted publishing — configure on PyPI: pypi.org → manage project →
+    # publishing → add GitHub publisher (owner: rustakka, repo:
+    # rakka-inference, workflow: release.yml, environment: pypi).
     environment:
       name: pypi
       url: https://pypi.org/p/rakka-inference
     permissions:
       id-token: write
     steps:
-      - run: echo "PyPI publish is disabled until inference-py-bindings ships a real surface."
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          # Pull only the Python artifact buckets — binary tarballs
+          # share the `.tar.gz` extension with the sdist but are not
+          # valid PyPI uploads.
+          pattern: "rakka-inference-{wheels-*,sdist}"
+      - name: Flatten wheel + sdist artifacts
+        run: |
+          mkdir -p upload
+          find dist -type f \( -name "*.whl" -o -name "*.tar.gz" \) -exec cp {} upload/ \;
+          ls -la upload/
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: upload
+          # If trusted publishing is not yet configured, set
+          # `password: ${{ secrets.PYPI_API_TOKEN }}` instead.
+          skip-existing: true
+
+  publish-pypi-dry-run:
+    name: PyPI dry-run (TestPyPI)
+    needs: [build-wheels, build-sdist]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' && github.event.inputs.skip_python != 'true'
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/rakka-inference
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: "rakka-inference-{wheels-*,sdist}"
+      - name: Flatten wheel + sdist artifacts
+        run: |
+          mkdir -p upload
+          find dist -type f \( -name "*.whl" -o -name "*.tar.gz" \) -exec cp {} upload/ \;
+          ls -la upload/
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: upload
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true

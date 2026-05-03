@@ -16,5 +16,15 @@
 .venv/
 venv/
 
+# --- Python build artifacts -------------------------------------------------
+__pycache__/
+*.pyc
+*.pyd
+*.so
+/dist/
+/build/
+*.egg-info/
+.pytest_cache/
+
 # --- Local-only release scratch ---------------------------------------------
 RELEASE_NOTES.md
