@@ -8,8 +8,8 @@ use rakka_config::Config;
 use rakka_core::actor::{ActorSystem, Props};
 
 use inference_runtime::{
-    spawn_gateway, DeploymentManagerActor, DeploymentManagerMsg, DpCoordinatorActor,
-    GatewayConfig, MetricsActor,
+    spawn_gateway, DeploymentManagerActor, DeploymentManagerMsg, DpCoordinatorActor, GatewayConfig,
+    MetricsActor,
 };
 
 use crate::config::ProjectFile;
@@ -27,7 +27,10 @@ pub async fn run_server(project: ProjectFile) -> Result<()> {
         .actor_of(Props::create(DpCoordinatorActor::new), "dp-coordinator")
         .map_err(|e| anyhow::anyhow!("spawn coordinator: {e}"))?;
     let mgr = sys
-        .actor_of(Props::create(DeploymentManagerActor::default), "deployment-manager")
+        .actor_of(
+            Props::create(DeploymentManagerActor::default),
+            "deployment-manager",
+        )
         .map_err(|e| anyhow::anyhow!("spawn manager: {e}"))?;
     let _metrics = sys
         .actor_of(Props::create(MetricsActor::default), "metrics")
@@ -37,7 +40,10 @@ pub async fn run_server(project: ProjectFile) -> Result<()> {
     for d in project.deployments {
         let name = d.name.clone();
         let (tx, rx) = tokio::sync::oneshot::channel();
-        mgr.tell(DeploymentManagerMsg::Apply { deployment: d, reply: tx });
+        mgr.tell(DeploymentManagerMsg::Apply {
+            deployment: d,
+            reply: tx,
+        });
         match rx.await {
             Ok(Ok(())) => tracing::info!(deployment = %name, "applied"),
             Ok(Err(e)) => tracing::error!(deployment = %name, ?e, "deployment validation failed"),
@@ -46,9 +52,10 @@ pub async fn run_server(project: ProjectFile) -> Result<()> {
     }
 
     // Mount the gateway.
-    let gateway_cfg = GatewayConfig { bind: project.cluster.bind };
-    let _gateway = spawn_gateway(&sys, gateway_cfg, dp)
-        .map_err(|e| anyhow::anyhow!("spawn gateway: {e}"))?;
+    let gateway_cfg = GatewayConfig {
+        bind: project.cluster.bind,
+    };
+    let _gateway = spawn_gateway(&sys, gateway_cfg, dp).map_err(|e| anyhow::anyhow!("spawn gateway: {e}"))?;
     tracing::info!(bind = %project.cluster.bind, "gateway mounted");
 
     // Block until ctrl-c.

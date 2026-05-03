@@ -46,8 +46,7 @@ impl ModelRunner for TensorRtRunner {
         #[cfg(not(feature = "tensorrt"))]
         {
             return Err(InferenceError::Internal(
-                "tensorrt feature disabled at build time — rebuild with --features tensorrt"
-                    .into(),
+                "tensorrt feature disabled at build time — rebuild with --features tensorrt".into(),
             ));
         }
         #[cfg(feature = "tensorrt")]

@@ -29,7 +29,11 @@ pub struct RemoteEngineConfig {
 
 impl Default for RemoteEngineConfig {
     fn default() -> Self {
-        Self { queue_capacity: 1024, worker_count: 8, on_capacity_exhausted: CapacityPolicy::Queue }
+        Self {
+            queue_capacity: 1024,
+            worker_count: 8,
+            on_capacity_exhausted: CapacityPolicy::Queue,
+        }
     }
 }
 
@@ -125,7 +129,9 @@ impl RemoteEngineCoreActor {
 
     fn try_dispatch(&mut self) {
         while !self.queue.is_empty() {
-            let Some(idx) = self.workers.iter().position(|w| w.idle) else { break };
+            let Some(idx) = self.workers.iter().position(|w| w.idle) else {
+                break;
+            };
             let Some(req) = self.queue.pop() else { break };
             self.workers[idx].idle = false;
             self.workers[idx].addr.tell(WorkerMsg::Dispatch(req));

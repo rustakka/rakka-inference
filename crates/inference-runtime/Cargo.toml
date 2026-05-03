@@ -16,8 +16,9 @@ local-gpu = ["dep:rakka-accel", "rakka-accel/cuda"]
 [dependencies]
 inference-core = { workspace = true }
 
-# Rakka actor primitives
-rakka                  = { workspace = true }
+# Rakka actor primitives — the umbrella `rakka` crate is intentionally
+# not depended on (we use the sub-crates directly so this crate
+# publishes to crates.io independent of the umbrella's release cadence).
 rakka-core             = { workspace = true }
 rakka-config           = { workspace = true }
 rakka-cluster-tools    = { workspace = true }

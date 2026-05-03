@@ -26,12 +26,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@nightly
       - uses: Swatinem/rust-cache@v2
+        with: { workspaces: rakka-inference }
       - name: cargo doc --workspace --no-deps
         run: cargo doc --workspace --no-deps
+        working-directory: rakka-inference
       - name: Generate index.html landing page
+        working-directory: rakka-inference
         run: |
           mkdir -p target/doc
           cat > target/doc/index.html <<'EOF'
@@ -41,7 +52,7 @@ jobs:
           EOF
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: target/doc
+          path: rakka-inference/target/doc
 
   deploy:
     needs: build

@@ -29,9 +29,7 @@ enum Cmd {
     /// Print per-deployment cost estimates. Doc §12.4.
     CostReport,
     /// Trigger a credential rebuild on a deployment. Doc §11.5.
-    RotateCredentials {
-        deployment: String,
-    },
+    RotateCredentials { deployment: String },
 }
 
 #[tokio::main]

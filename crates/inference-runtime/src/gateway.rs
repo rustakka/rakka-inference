@@ -33,7 +33,9 @@ pub struct GatewayConfig {
 
 impl Default for GatewayConfig {
     fn default() -> Self {
-        Self { bind: SocketAddr::from(([127, 0, 0, 1], 8080)) }
+        Self {
+            bind: SocketAddr::from(([127, 0, 0, 1], 8080)),
+        }
     }
 }
 
@@ -85,7 +87,11 @@ pub struct ApiGatewayActor {
 
 impl ApiGatewayActor {
     pub fn new(config: GatewayConfig, coordinator: ActorRef<DpCoordinatorMsg>) -> Self {
-        Self { config, coordinator, shutdown_tx: None }
+        Self {
+            config,
+            coordinator,
+            shutdown_tx: None,
+        }
     }
 }
 
@@ -95,7 +101,9 @@ impl Actor for ApiGatewayActor {
 
     async fn pre_start(&mut self, _ctx: &mut Context<Self>) {
         let bind = self.config.bind;
-        let state = AppState { coordinator: self.coordinator.clone() };
+        let state = AppState {
+            coordinator: self.coordinator.clone(),
+        };
         let app = Router::new()
             .route("/healthz", get(|| async { "ok" }))
             .route("/v1/chat/completions", post(chat_completions))
@@ -150,10 +158,7 @@ pub fn spawn_gateway(
     sys.actor_of(props, "gateway")
 }
 
-async fn chat_completions(
-    State(state): State<AppState>,
-    Json(req): Json<ChatRequest>,
-) -> Response {
+async fn chat_completions(State(state): State<AppState>, Json(req): Json<ChatRequest>) -> Response {
     let messages = req
         .messages
         .into_iter()
@@ -179,7 +184,10 @@ async fn chat_completions(
     let route = state
         .coordinator
         .ask_with(
-            |reply| DpCoordinatorMsg::RouteTo { deployment: req.model.clone(), reply },
+            |reply| DpCoordinatorMsg::RouteTo {
+                deployment: req.model.clone(),
+                reply,
+            },
             std::time::Duration::from_secs(2),
         )
         .await;
@@ -211,7 +219,10 @@ fn bad_request(msg: String, kind: &str) -> Response {
     (
         StatusCode::BAD_REQUEST,
         Json(ChatErrorResponse {
-            error: ChatError { message: msg, kind: kind.into() },
+            error: ChatError {
+                message: msg,
+                kind: kind.into(),
+            },
         }),
     )
         .into_response()

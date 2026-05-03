@@ -24,9 +24,17 @@ pub struct Content {
 #[derive(Debug, Serialize)]
 #[serde(untagged)]
 pub enum Part {
-    Text { text: String },
-    InlineData { #[serde(rename = "inlineData")] inline_data: InlineData },
-    FileData { #[serde(rename = "fileData")] file_data: FileData },
+    Text {
+        text: String,
+    },
+    InlineData {
+        #[serde(rename = "inlineData")]
+        inline_data: InlineData,
+    },
+    FileData {
+        #[serde(rename = "fileData")]
+        file_data: FileData,
+    },
 }
 
 #[derive(Debug, Serialize)]
@@ -59,7 +67,10 @@ pub struct GenerationConfig {
 }
 
 impl GenerateContentRequest<'_> {
-    pub fn from_batch<'b>(b: &'b ExecuteBatch, safety: Vec<crate::config::SafetySetting>) -> GenerateContentRequest<'b> {
+    pub fn from_batch<'b>(
+        b: &'b ExecuteBatch,
+        safety: Vec<crate::config::SafetySetting>,
+    ) -> GenerateContentRequest<'b> {
         let mut system: Option<String> = None;
         let mut contents = Vec::with_capacity(b.messages.len());
         for m in &b.messages {
@@ -81,7 +92,10 @@ impl GenerateContentRequest<'_> {
             };
             contents.push(Content { role, parts });
         }
-        let system_instruction = system.map(|t| Content { role: "system".into(), parts: vec![Part::Text { text: t }] });
+        let system_instruction = system.map(|t| Content {
+            role: "system".into(),
+            parts: vec![Part::Text { text: t }],
+        });
         GenerateContentRequest {
             contents,
             system_instruction,
@@ -102,10 +116,16 @@ fn serialize_part(p: &ContentPart) -> Part {
     match p {
         ContentPart::Text { text } => Part::Text { text: text.clone() },
         ContentPart::ImageBase64 { mime, data } => Part::InlineData {
-            inline_data: InlineData { mime_type: mime.clone(), data: data.clone() },
+            inline_data: InlineData {
+                mime_type: mime.clone(),
+                data: data.clone(),
+            },
         },
         ContentPart::ImageUrl { url } => Part::FileData {
-            file_data: FileData { mime_type: "image/jpeg".into(), file_uri: url.clone() },
+            file_data: FileData {
+                mime_type: "image/jpeg".into(),
+                file_uri: url.clone(),
+            },
         },
     }
 }

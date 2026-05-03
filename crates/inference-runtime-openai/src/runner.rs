@@ -41,7 +41,11 @@ impl OpenAiRunner {
             .variant
             .chat_completions_url()
             .map_err(|e| InferenceError::Internal(format!("openai endpoint url: {e}")))?;
-        Ok(Self { config, session, chat_url })
+        Ok(Self {
+            config,
+            session,
+            chat_url,
+        })
     }
 
     fn auth_headers(&self) -> InferenceResult<header::HeaderMap> {
@@ -67,7 +71,6 @@ impl OpenAiRunner {
         }
         Ok(h)
     }
-
 }
 
 /// Lift one OpenAI SSE chunk into a `TokenChunk`. Free function so the
@@ -204,7 +207,9 @@ impl ModelRunner for OpenAiRunner {
         RuntimeKind::OpenAi
     }
     fn transport_kind(&self) -> TransportKind {
-        TransportKind::RemoteNetwork { provider: ProviderKind::OpenAi }
+        TransportKind::RemoteNetwork {
+            provider: ProviderKind::OpenAi,
+        }
     }
     fn gil_pinned(&self) -> bool {
         false
@@ -220,4 +225,3 @@ impl ModelRunner for OpenAiRunner {
             .unwrap_or(0.0)
     }
 }
-

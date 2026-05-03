@@ -177,8 +177,7 @@ impl ModelRunner for GeminiRunner {
                 usage,
                 finish_reason: finish.or(Some(FinishReason::Stop)),
             };
-            let s: BoxStream<'static, InferenceResult<TokenChunk>> =
-                stream::iter(vec![Ok(chunk)]).boxed();
+            let s: BoxStream<'static, InferenceResult<TokenChunk>> = stream::iter(vec![Ok(chunk)]).boxed();
             Ok(RunHandle::streaming(s))
         }
     }
@@ -191,7 +190,9 @@ impl ModelRunner for GeminiRunner {
         RuntimeKind::Gemini
     }
     fn transport_kind(&self) -> TransportKind {
-        TransportKind::RemoteNetwork { provider: ProviderKind::Gemini }
+        TransportKind::RemoteNetwork {
+            provider: ProviderKind::Gemini,
+        }
     }
     fn rate_limits(&self) -> Option<&RateLimits> {
         Some(&self.config.rate_limits)

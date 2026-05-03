@@ -31,5 +31,9 @@ pub fn from_rates(input_per_mtok_usd: f64, output_per_mtok_usd: f64, batch: &Exe
     let out_share = in_t - in_share;
     let usd = (in_share as f64) * input_per_mtok_usd / 1_000_000.0
         + (out_share as f64) * output_per_mtok_usd / 1_000_000.0;
-    CostEstimate { usd, input_tokens: in_share, output_tokens_max: out_share }
+    CostEstimate {
+        usd,
+        input_tokens: in_share,
+        output_tokens_max: out_share,
+    }
 }

@@ -28,10 +28,40 @@ impl OpenAiPricing {
 
 static PRICING: Lazy<OpenAiPricing> = Lazy::new(|| {
     let mut t = HashMap::new();
-    t.insert("gpt-4o", ModelPrice { input_per_mtok_usd: 2.50, output_per_mtok_usd: 10.00 });
-    t.insert("gpt-4o-mini", ModelPrice { input_per_mtok_usd: 0.15, output_per_mtok_usd: 0.60 });
-    t.insert("gpt-4-turbo", ModelPrice { input_per_mtok_usd: 10.00, output_per_mtok_usd: 30.00 });
-    t.insert("o1-preview", ModelPrice { input_per_mtok_usd: 15.00, output_per_mtok_usd: 60.00 });
-    t.insert("o1-mini", ModelPrice { input_per_mtok_usd: 3.00, output_per_mtok_usd: 12.00 });
+    t.insert(
+        "gpt-4o",
+        ModelPrice {
+            input_per_mtok_usd: 2.50,
+            output_per_mtok_usd: 10.00,
+        },
+    );
+    t.insert(
+        "gpt-4o-mini",
+        ModelPrice {
+            input_per_mtok_usd: 0.15,
+            output_per_mtok_usd: 0.60,
+        },
+    );
+    t.insert(
+        "gpt-4-turbo",
+        ModelPrice {
+            input_per_mtok_usd: 10.00,
+            output_per_mtok_usd: 30.00,
+        },
+    );
+    t.insert(
+        "o1-preview",
+        ModelPrice {
+            input_per_mtok_usd: 15.00,
+            output_per_mtok_usd: 60.00,
+        },
+    );
+    t.insert(
+        "o1-mini",
+        ModelPrice {
+            input_per_mtok_usd: 3.00,
+            output_per_mtok_usd: 12.00,
+        },
+    );
     OpenAiPricing { table: t }
 });

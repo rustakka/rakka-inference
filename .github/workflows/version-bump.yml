@@ -44,14 +44,24 @@ jobs:
     # don't loop.
     if: github.event_name == 'workflow_dispatch' || !startsWith(github.event.head_commit.message, 'chore(release):')
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          path: rakka-inference
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with: { workspaces: rakka-inference }
 
       - name: Decide bump kind from Conventional Commits
         id: decide
+        working-directory: rakka-inference
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
           FORCE: ${{ github.event.inputs.force }}
@@ -96,6 +106,7 @@ jobs:
       - name: Bump version + refresh Cargo.lock
         if: steps.decide.outputs.kind != 'skip'
         id: bump
+        working-directory: rakka-inference
         run: |
           set -euo pipefail
           kind="${{ steps.decide.outputs.kind }}"
@@ -121,6 +132,7 @@ jobs:
 
       - name: Commit + tag
         if: steps.decide.outputs.kind != 'skip' && github.event.inputs.dry_run != 'true'
+        working-directory: rakka-inference
         env:
           NEW_VERSION: ${{ steps.bump.outputs.version }}
         run: |

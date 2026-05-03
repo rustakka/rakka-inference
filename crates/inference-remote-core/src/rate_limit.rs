@@ -82,7 +82,9 @@ impl RateLimiterActor {
     }
 
     pub fn handle(&self) -> RateLimiterHandle {
-        RateLimiterHandle { state: self.window.clone() }
+        RateLimiterHandle {
+            state: self.window.clone(),
+        }
     }
 
     /// Apply a CRDT delta from another node. Wired through
@@ -102,7 +104,11 @@ impl RateLimiterActor {
             None => true,
         };
         if needs_reset {
-            *w = Window { started_at: Some(Instant::now()), requests: 0, tokens: 0 };
+            *w = Window {
+                started_at: Some(Instant::now()),
+                requests: 0,
+                tokens: 0,
+            };
             // Window rotation: zero the local view of the CRDT.
             // Cluster peers will re-observe the new window via gossip
             // since their own counters reset on the same wall clock.
@@ -138,9 +144,13 @@ impl RateLimiterActor {
         w.tokens += req.tokens as u64;
         // Record into the CRDT so peers see our spend.
         drop(w);
-        self.requests_counter.increment(&self.node_id, req.requests as u64);
+        self.requests_counter
+            .increment(&self.node_id, req.requests as u64);
         self.tokens_counter.increment(&self.node_id, req.tokens as u64);
-        Ok(Permit { requests: req.requests, tokens: req.tokens })
+        Ok(Permit {
+            requests: req.requests,
+            tokens: req.tokens,
+        })
     }
 }
 
@@ -150,7 +160,10 @@ impl Actor for RateLimiterActor {
 
     async fn handle(&mut self, _ctx: &mut Context<Self>, msg: Self::Msg) {
         let reply = msg.reply;
-        let res = self.acquire(AcquirePermit { reply: dummy_reply(), ..msg });
+        let res = self.acquire(AcquirePermit {
+            reply: dummy_reply(),
+            ..msg
+        });
         let _ = reply.send(res);
     }
 }
@@ -176,7 +189,10 @@ impl Actor for StrictRateLimiterActor {
 
     async fn handle(&mut self, _ctx: &mut Context<Self>, msg: Self::Msg) {
         let reply = msg.reply;
-        let res = self.inner.acquire(AcquirePermit { reply: dummy_reply(), ..msg });
+        let res = self.inner.acquire(AcquirePermit {
+            reply: dummy_reply(),
+            ..msg
+        });
         let _ = reply.send(res);
     }
 }
@@ -207,10 +223,26 @@ mod tests {
         let (tx1, _) = oneshot::channel();
         let (tx2, _) = oneshot::channel();
         let (tx3, _) = oneshot::channel();
-        assert!(a.acquire(AcquirePermit { requests: 1, tokens: 0, reply: tx1 }).is_ok());
-        assert!(a.acquire(AcquirePermit { requests: 1, tokens: 0, reply: tx2 }).is_ok());
+        assert!(a
+            .acquire(AcquirePermit {
+                requests: 1,
+                tokens: 0,
+                reply: tx1
+            })
+            .is_ok());
+        assert!(a
+            .acquire(AcquirePermit {
+                requests: 1,
+                tokens: 0,
+                reply: tx2
+            })
+            .is_ok());
         assert!(matches!(
-            a.acquire(AcquirePermit { requests: 1, tokens: 0, reply: tx3 }),
+            a.acquire(AcquirePermit {
+                requests: 1,
+                tokens: 0,
+                reply: tx3
+            }),
             Err(InferenceError::Backpressure(_))
         ));
     }

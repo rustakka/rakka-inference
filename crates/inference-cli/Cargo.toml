@@ -19,7 +19,9 @@ inference         = { workspace = true }
 inference-core    = { workspace = true }
 inference-runtime = { workspace = true }
 
-rakka            = { workspace = true }
+# The umbrella `rakka` crate is intentionally not pulled in — the CLI
+# uses the sub-crates directly so it publishes to crates.io
+# independent of the umbrella's release cadence.
 rakka-core       = { workspace = true }
 rakka-config     = { workspace = true }
 

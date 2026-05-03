@@ -30,14 +30,15 @@ pub struct AnthropicRunner {
 }
 
 impl AnthropicRunner {
-    pub fn new(
-        config: AnthropicConfig,
-        session: Arc<ArcSwap<SessionSnapshot>>,
-    ) -> InferenceResult<Self> {
+    pub fn new(config: AnthropicConfig, session: Arc<ArcSwap<SessionSnapshot>>) -> InferenceResult<Self> {
         let messages_url = config
             .messages_url()
             .map_err(|e| InferenceError::Internal(format!("anthropic url: {e}")))?;
-        Ok(Self { config, session, messages_url })
+        Ok(Self {
+            config,
+            session,
+            messages_url,
+        })
     }
 
     fn auth_headers(&self) -> InferenceResult<header::HeaderMap> {
@@ -73,16 +74,19 @@ fn lift_event(request_id: &str, sc: SseChunk) -> Option<InferenceResult<TokenChu
         return None;
     }
     match serde_json::from_str::<SseEvent>(&sc.data) {
-        Err(e) => Some(Err(InferenceError::Internal(format!("anthropic event decode: {e}")))),
-        Ok(SseEvent::ContentBlockDelta { delta: BlockDelta::TextDelta { text }, .. }) => {
-            Some(Ok(TokenChunk {
-                request_id: request_id.into(),
-                text_delta: text,
-                tool_call_delta: None,
-                usage: None,
-                finish_reason: None,
-            }))
-        }
+        Err(e) => Some(Err(InferenceError::Internal(format!(
+            "anthropic event decode: {e}"
+        )))),
+        Ok(SseEvent::ContentBlockDelta {
+            delta: BlockDelta::TextDelta { text },
+            ..
+        }) => Some(Ok(TokenChunk {
+            request_id: request_id.into(),
+            text_delta: text,
+            tool_call_delta: None,
+            usage: None,
+            finish_reason: None,
+        })),
         Ok(SseEvent::ContentBlockDelta {
             delta: BlockDelta::InputJsonDelta { partial_json },
             ..
@@ -116,9 +120,10 @@ fn lift_event(request_id: &str, sc: SseChunk) -> Option<InferenceResult<TokenChu
             usage: None,
             finish_reason: Some(FinishReason::Stop),
         })),
-        Ok(SseEvent::Error { error }) => {
-            Some(Err(InferenceError::Internal(format!("anthropic stream error: {}: {}", error.kind, error.message))))
-        }
+        Ok(SseEvent::Error { error }) => Some(Err(InferenceError::Internal(format!(
+            "anthropic stream error: {}: {}",
+            error.kind, error.message
+        )))),
         Ok(_) => None,
     }
 }
@@ -179,7 +184,11 @@ impl ModelRunner for AnthropicRunner {
                 cached_tokens: u.cache_read_input_tokens,
                 ..Default::default()
             });
-            let finish = parsed.stop_reason.as_deref().map(map_stop_reason).or(Some(FinishReason::Stop));
+            let finish = parsed
+                .stop_reason
+                .as_deref()
+                .map(map_stop_reason)
+                .or(Some(FinishReason::Stop));
             let chunk = TokenChunk {
                 request_id,
                 text_delta: text,
@@ -187,8 +196,7 @@ impl ModelRunner for AnthropicRunner {
                 usage,
                 finish_reason: finish,
             };
-            let s: BoxStream<'static, InferenceResult<TokenChunk>> =
-                stream::iter(vec![Ok(chunk)]).boxed();
+            let s: BoxStream<'static, InferenceResult<TokenChunk>> = stream::iter(vec![Ok(chunk)]).boxed();
             Ok(RunHandle::streaming(s))
         }
     }
@@ -201,7 +209,9 @@ impl ModelRunner for AnthropicRunner {
         RuntimeKind::Anthropic
     }
     fn transport_kind(&self) -> TransportKind {
-        TransportKind::RemoteNetwork { provider: ProviderKind::Anthropic }
+        TransportKind::RemoteNetwork {
+            provider: ProviderKind::Anthropic,
+        }
     }
     fn rate_limits(&self) -> Option<&RateLimits> {
         Some(&self.config.rate_limits)

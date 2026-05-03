@@ -1,3 +1,9 @@
+# PR + push gate.
+#
+# rakka-inference path-depends on the sibling rakka and rakka-accel
+# workspaces. CI checks all three out side-by-side under the runner's
+# work directory so the path-deps in Cargo.toml resolve.
+
 name: CI
 
 on:
@@ -12,39 +18,76 @@ jobs:
   fmt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt
+        with: { components: rustfmt }
       - run: cargo fmt --all -- --check
+        working-directory: rakka-inference
 
   clippy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy
+        with: { components: clippy }
       - uses: Swatinem/rust-cache@v2
+        with: { workspaces: rakka-inference }
       - run: cargo clippy --workspace --all-targets -- -D warnings
+        working-directory: rakka-inference
 
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with: { workspaces: rakka-inference }
       - run: cargo test --workspace
+        working-directory: rakka-inference
 
   audit:
     name: audit (regression check vs baseline)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with: { workspaces: rakka-inference }
       - name: cargo xtask audit --check
         run: cargo xtask audit --check
+        working-directory: rakka-inference
 
   rustdoc:
     name: rustdoc (broken-link gate)
@@ -52,30 +95,51 @@ jobs:
     env:
       RUSTDOCFLAGS: "-D warnings -D rustdoc::broken-intra-doc-links --cfg docsrs"
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@nightly
       - uses: Swatinem/rust-cache@v2
+        with: { workspaces: rakka-inference }
       - name: cargo doc --workspace --no-deps
         # Note: --all-features here would force the GPU feature graph.
         # We document the default-feature surface; per-runtime crates
         # carry their feature-gated bodies in the rendered output via
         # the `cfg(docsrs)` flag.
         run: cargo doc --workspace --no-deps
+        working-directory: rakka-inference
 
   remote-only-invariant:
     name: remote-only invariant (no GPU deps)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with: { workspaces: rakka-inference }
       - name: Build inference --features remote-only
         run: cargo build -p inference --no-default-features --features remote-only
+        working-directory: rakka-inference
       - name: Assert zero GPU deps in dep graph
+        working-directory: rakka-inference
         run: |
           set -euo pipefail
           tree=$(cargo tree -p inference --no-default-features --features remote-only)
-          if printf '%s\n' "$tree" | grep -E 'cudarc|rakka-cuda|candle|pyo3' ; then
+          if printf '%s\n' "$tree" | grep -E 'cudarc|rakka-accel|candle|pyo3' ; then
             echo "::error::remote-only build leaked GPU dependencies (above)"
             exit 1
           fi
@@ -85,24 +149,43 @@ jobs:
     name: end-to-end demo (wiremock)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with: { workspaces: rakka-inference }
       - name: cargo run --bin remote_only_demo
         run: cargo run --bin remote_only_demo
+        working-directory: rakka-inference
 
   verify:
     name: verify (1.0-rc gate)
     runs-on: ubuntu-latest
     needs: [fmt, clippy, test, audit, remote-only-invariant]
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy
+        with: { components: clippy }
       - uses: Swatinem/rust-cache@v2
+        with: { workspaces: rakka-inference }
       - name: cargo xtask verify
         run: cargo xtask verify
+        working-directory: rakka-inference
 
   semver-checks:
     name: semver-checks (cargo-semver-checks)
@@ -113,18 +196,27 @@ jobs:
     # with `1.` and this job becomes a hard gate.
     continue-on-error: ${{ !startsWith(vars.RAKKA_INFERENCE_WORKSPACE_VERSION || '0.', '1.') }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with: { workspaces: rakka-inference }
       - name: Install cargo-semver-checks
         run: cargo install cargo-semver-checks --locked
       - name: Check public-API SemVer for every publishable crate
+        working-directory: rakka-inference
         run: |
           set -e
           fails=0
           # Only check the "publishable now" set from the release
-          # checklist. Once `rakka` and `rakka-cuda` ship to crates.io,
-          # extend this list to include every inference-* crate.
+          # checklist. Extend this list as the allowlist widens.
           for crate in inference-core \
                        inference-remote-core \
                        inference-runtime-openai \

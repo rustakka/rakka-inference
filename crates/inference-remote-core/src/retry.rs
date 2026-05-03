@@ -35,7 +35,11 @@ pub struct RetryEngine {
 impl RetryEngine {
     pub fn new(policy: RetryPolicy, idempotent: bool) -> Self {
         let backoff = BackoffPolicy::from(&policy);
-        Self { policy, backoff, idempotent }
+        Self {
+            policy,
+            backoff,
+            idempotent,
+        }
     }
 
     /// Decide whether to retry after a failed attempt. `attempt` is the
@@ -52,12 +56,18 @@ impl RetryEngine {
             return RetryDecision::GiveUp;
         }
         // 429 with server-provided `Retry-After` overrides the policy.
-        if let InferenceError::RateLimited { retry_after: Some(server_ra), .. } = err {
+        if let InferenceError::RateLimited {
+            retry_after: Some(server_ra),
+            ..
+        } = err
+        {
             if self.policy.respect_retry_after {
                 return RetryDecision::Retry { after: *server_ra };
             }
         }
-        RetryDecision::Retry { after: compute_backoff(&self.backoff, attempt.0) }
+        RetryDecision::Retry {
+            after: compute_backoff(&self.backoff, attempt.0),
+        }
     }
 }
 
@@ -80,7 +90,10 @@ mod tests {
     #[test]
     fn retries_on_429_until_max() {
         let e = RetryEngine::new(policy(), true);
-        let err = InferenceError::RateLimited { provider: ProviderKind::OpenAi, retry_after: None };
+        let err = InferenceError::RateLimited {
+            provider: ProviderKind::OpenAi,
+            retry_after: None,
+        };
         assert!(matches!(e.decide(Attempt(0), &err), RetryDecision::Retry { .. }));
         assert!(matches!(e.decide(Attempt(2), &err), RetryDecision::Retry { .. }));
         assert!(matches!(e.decide(Attempt(3), &err), RetryDecision::GiveUp));
@@ -89,14 +102,19 @@ mod tests {
     #[test]
     fn no_retry_on_content_filter() {
         let e = RetryEngine::new(policy(), true);
-        let err = InferenceError::ContentFiltered { reason: "harmful".into() };
+        let err = InferenceError::ContentFiltered {
+            reason: "harmful".into(),
+        };
         assert!(matches!(e.decide(Attempt(0), &err), RetryDecision::GiveUp));
     }
 
     #[test]
     fn no_retry_when_not_idempotent() {
         let e = RetryEngine::new(policy(), false);
-        let err = InferenceError::ServerError { status: 503, body: None };
+        let err = InferenceError::ServerError {
+            status: 503,
+            body: None,
+        };
         assert!(matches!(e.decide(Attempt(0), &err), RetryDecision::GiveUp));
     }
 

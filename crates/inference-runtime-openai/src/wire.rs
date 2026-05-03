@@ -54,8 +54,9 @@ fn serialize_message(m: &Message) -> ChatMessage {
     .to_string();
     let content = match &m.content {
         MessageContent::Text(t) => serde_json::Value::String(t.clone()),
-        MessageContent::Parts(parts) => serde_json::to_value(parts)
-            .unwrap_or(serde_json::Value::String(String::new())),
+        MessageContent::Parts(parts) => {
+            serde_json::to_value(parts).unwrap_or(serde_json::Value::String(String::new()))
+        }
     };
     ChatMessage { role, content }
 }
@@ -132,6 +133,9 @@ pub struct ChatChoice {
 
 impl Default for ChatMessage {
     fn default() -> Self {
-        Self { role: "assistant".into(), content: serde_json::Value::Null }
+        Self {
+            role: "assistant".into(),
+            content: serde_json::Value::Null,
+        }
     }
 }

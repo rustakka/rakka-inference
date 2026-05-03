@@ -112,9 +112,9 @@ rakka-telemetry        = { path = "../rakka/crates/rakka-telemetry",        vers
 # Backend-agnostic compute acceleration substrate; replaces the older
 # rakka-cuda dep. CUDA backend ships in `rakka-accel-cuda`; portable
 # blueprints live in `rakka-accel-patterns`.
-rakka-accel          = { path = "../rakka-accel/crates/rakka-accel",          version = "0.2.1" }
-rakka-accel-cuda     = { path = "../rakka-accel/crates/rakka-accel-cuda",     version = "0.2.1" }
-rakka-accel-patterns = { path = "../rakka-accel/crates/rakka-accel-patterns", version = "0.2.1" }
+rakka-accel          = { path = "../rakka-accel/crates/rakka-accel",          version = "0.2.7" }
+rakka-accel-cuda     = { path = "../rakka-accel/crates/rakka-accel-cuda",     version = "0.2.7" }
+rakka-accel-patterns = { path = "../rakka-accel/crates/rakka-accel-patterns", version = "0.2.7" }
 
 # Optional GPU/runtime libs
 cudarc              = { version = "0.19.4", features = ["cuda-version-from-build-system", "fallback-latest"] }

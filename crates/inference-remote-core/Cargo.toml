@@ -8,8 +8,10 @@ license.workspace = true
 [dependencies]
 inference-core = { workspace = true }
 
-# Rakka primitives we wrap rather than reinvent.
-rakka                  = { workspace = true }
+# Rakka primitives we wrap rather than reinvent. The umbrella `rakka`
+# crate is intentionally not pulled in here — this crate uses the
+# sub-crates directly so it can publish to crates.io without waiting
+# on the umbrella's release cadence.
 rakka-core             = { workspace = true }
 rakka-distributed-data = { workspace = true }
 
