@@ -75,7 +75,11 @@ impl Actor for MetricsActor {
 
     async fn handle(&mut self, _ctx: &mut Context<Self>, msg: Self::Msg) {
         match msg {
-            MetricsMsg::RecordSuccess { deployment, usage, cost_usd } => {
+            MetricsMsg::RecordSuccess {
+                deployment,
+                usage,
+                cost_usd,
+            } => {
                 let e = self.entry(&deployment);
                 e.requests_succeeded += 1;
                 e.usage.add(usage);

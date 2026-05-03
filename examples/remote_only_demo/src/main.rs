@@ -38,9 +38,7 @@ use inference_remote_core::session::{CredentialProvider, SessionConfig, SessionS
 use inference_runtime_openai::config::SecretRef;
 use inference_runtime_openai::{OpenAiConfig, OpenAiRunner, OpenAiVariant};
 
-use inference_testkit::mock_openai::{
-    inject_429_once, inject_5xx_once, mount_chat_happy_path, MockOpenAi,
-};
+use inference_testkit::mock_openai::{inject_429_once, inject_5xx_once, mount_chat_happy_path, MockOpenAi};
 
 fn batch(prompt: &str, stream: bool) -> ExecuteBatch {
     ExecuteBatch {
@@ -50,7 +48,10 @@ fn batch(prompt: &str, stream: bool) -> ExecuteBatch {
             role: Role::User,
             content: MessageContent::Text(prompt.into()),
         }],
-        sampling: SamplingParams { max_tokens: Some(64), ..Default::default() },
+        sampling: SamplingParams {
+            max_tokens: Some(64),
+            ..Default::default()
+        },
         stream,
         estimated_tokens: 16,
     }
@@ -122,12 +123,17 @@ async fn build_runner(base_url: &str) -> Result<OpenAiRunner> {
     };
     let client = build_client(&session_cfg.timeouts, &session_cfg.user_agent)?;
     let token = credential.token().await?;
-    let snap = Arc::new(ArcSwap::from_pointee(SessionSnapshot { client, credential: token }));
+    let snap = Arc::new(ArcSwap::from_pointee(SessionSnapshot {
+        client,
+        credential: token,
+    }));
 
     let endpoint = Url::parse(&format!("{}/v1/", base_url.trim_end_matches('/')))?;
     let cfg = OpenAiConfig {
         variant: OpenAiVariant::Direct { endpoint },
-        api_key: SecretRef::Inline { value: "sk-mock".into() },
+        api_key: SecretRef::Inline {
+            value: "sk-mock".into(),
+        },
         organization: None,
         project: None,
         rate_limits: RateLimits::default(),

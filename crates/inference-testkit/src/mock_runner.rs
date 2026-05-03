@@ -25,7 +25,10 @@ pub struct MockScript {
 
 impl MockScript {
     pub fn from_text<I: IntoIterator<Item: Into<String>>>(chunks: I) -> Self {
-        Self { chunks: chunks.into_iter().map(Into::into).collect(), ..Default::default() }
+        Self {
+            chunks: chunks.into_iter().map(Into::into).collect(),
+            ..Default::default()
+        }
     }
 }
 

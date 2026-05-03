@@ -32,9 +32,7 @@ pub use classify::{classify_http_status, parse_retry_after};
 pub use engine::{AddRequest, EngineMetrics, EngineMsg, RemoteEngineConfig, RemoteEngineCoreActor};
 pub use http::{build_client, HttpClient};
 pub use queue::{Priority, PriorityRequest, RequestQueue};
-pub use rate_limit::{
-    AcquirePermit, Permit, RateLimiterActor, RateLimiterHandle, StrictRateLimiterActor,
-};
+pub use rate_limit::{AcquirePermit, Permit, RateLimiterActor, RateLimiterHandle, StrictRateLimiterActor};
 pub use retry::{Attempt, RetryDecision, RetryEngine};
 pub use session::{
     CredentialProvider, RemoteSessionActor, SessionConfig, SessionRebuildRequest, SessionSnapshot,

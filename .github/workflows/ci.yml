@@ -18,7 +18,14 @@ jobs:
   fmt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
         with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@stable
         with: { components: rustfmt }

@@ -94,8 +94,7 @@ impl DeploymentPlacementActor {
                 }
                 let want = deployment.gpus.unwrap_or(1);
                 for i in 0..deployment.replicas {
-                    let node =
-                        constraints.gpu_nodes[(i as usize) % constraints.gpu_nodes.len()].clone();
+                    let node = constraints.gpu_nodes[(i as usize) % constraints.gpu_nodes.len()].clone();
                     // Per-node GPU choice is the upstream
                     // `rakka_accel::cuda::placement::PlacementActor`'s job —
                     // topology constraints (NVLink islands, MIG, P2P
@@ -103,7 +102,11 @@ impl DeploymentPlacementActor {
                     // here and lets the per-node placement actor refine
                     // when it's wired up under the `local-gpu` feature.
                     let gpus = (0..want).collect();
-                    assignments.push(NodeAssignment { replica_index: i, node, gpus });
+                    assignments.push(NodeAssignment {
+                        replica_index: i,
+                        node,
+                        gpus,
+                    });
                 }
             }
             TransportKind::RemoteNetwork { provider } => {
@@ -113,11 +116,18 @@ impl DeploymentPlacementActor {
                 for i in 0..deployment.replicas {
                     let node =
                         constraints.egress_nodes[(i as usize) % constraints.egress_nodes.len()].clone();
-                    assignments.push(NodeAssignment { replica_index: i, node, gpus: vec![] });
+                    assignments.push(NodeAssignment {
+                        replica_index: i,
+                        node,
+                        gpus: vec![],
+                    });
                 }
             }
         }
-        Ok(PlacementResult { deployment: deployment.name.clone(), assignments })
+        Ok(PlacementResult {
+            deployment: deployment.name.clone(),
+            assignments,
+        })
     }
 }
 
@@ -127,7 +137,11 @@ impl Actor for DeploymentPlacementActor {
 
     async fn handle(&mut self, _ctx: &mut Context<Self>, msg: Self::Msg) {
         match msg {
-            PlacementMsg::Place { deployment, constraints, reply } => {
+            PlacementMsg::Place {
+                deployment,
+                constraints,
+                reply,
+            } => {
                 let _ = reply.send(self.place(&deployment, &constraints));
             }
         }

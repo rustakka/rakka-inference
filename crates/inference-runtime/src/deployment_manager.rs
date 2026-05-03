@@ -64,8 +64,13 @@ impl Actor for DeploymentManagerActor {
                 let res = match deployment.validate() {
                     Ok(()) => {
                         let name = deployment.name.clone();
-                        self.records
-                            .insert(name, DeploymentRecord { deployment, state: DeploymentState::Pending });
+                        self.records.insert(
+                            name,
+                            DeploymentRecord {
+                                deployment,
+                                state: DeploymentState::Pending,
+                            },
+                        );
                         Ok(())
                     }
                     Err(e) => Err(InferenceError::Internal(e.to_string())),

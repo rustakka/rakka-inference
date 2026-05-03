@@ -35,10 +35,15 @@ pub fn classify_anthropic_error(
                     if env.error.message.to_lowercase().contains("context length")
                         || env.error.message.to_lowercase().contains("too long") =>
                 {
-                    return InferenceError::ContextLengthExceeded { tokens: 0, max_tokens: 0 };
+                    return InferenceError::ContextLengthExceeded {
+                        tokens: 0,
+                        max_tokens: 0,
+                    };
                 }
                 "permission_error" => {
-                    return InferenceError::Forbidden { message: env.error.message };
+                    return InferenceError::Forbidden {
+                        message: env.error.message,
+                    };
                 }
                 _ => {}
             }
@@ -58,8 +63,7 @@ mod tests {
 
     #[test]
     fn maps_context_length() {
-        let body =
-            r#"{"type":"error","error":{"type":"invalid_request_error","message":"prompt too long"}}"#;
+        let body = r#"{"type":"error","error":{"type":"invalid_request_error","message":"prompt too long"}}"#;
         let e = classify_anthropic_error(400, None, Some(body.into()));
         assert!(matches!(e, InferenceError::ContextLengthExceeded { .. }));
     }

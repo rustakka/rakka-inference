@@ -35,10 +35,7 @@ impl RuntimeKind {
     pub fn is_remote(&self) -> bool {
         matches!(
             self,
-            RuntimeKind::OpenAi
-                | RuntimeKind::Anthropic
-                | RuntimeKind::Gemini
-                | RuntimeKind::LiteLlm
+            RuntimeKind::OpenAi | RuntimeKind::Anthropic | RuntimeKind::Gemini | RuntimeKind::LiteLlm
         )
     }
 
@@ -70,10 +67,18 @@ pub enum ProviderKind {
 impl From<&RuntimeKind> for TransportKind {
     fn from(kind: &RuntimeKind) -> Self {
         match kind {
-            RuntimeKind::OpenAi => Self::RemoteNetwork { provider: ProviderKind::OpenAi },
-            RuntimeKind::Anthropic => Self::RemoteNetwork { provider: ProviderKind::Anthropic },
-            RuntimeKind::Gemini => Self::RemoteNetwork { provider: ProviderKind::Gemini },
-            RuntimeKind::LiteLlm => Self::RemoteNetwork { provider: ProviderKind::LiteLlm },
+            RuntimeKind::OpenAi => Self::RemoteNetwork {
+                provider: ProviderKind::OpenAi,
+            },
+            RuntimeKind::Anthropic => Self::RemoteNetwork {
+                provider: ProviderKind::Anthropic,
+            },
+            RuntimeKind::Gemini => Self::RemoteNetwork {
+                provider: ProviderKind::Gemini,
+            },
+            RuntimeKind::LiteLlm => Self::RemoteNetwork {
+                provider: ProviderKind::LiteLlm,
+            },
             _ => Self::LocalGpu,
         }
     }
@@ -101,7 +106,10 @@ pub enum RuntimeConfig {
     Gemini(serde_json::Value),
     LiteLlm(serde_json::Value),
     /// Custom backend (third-party runtime crate).
-    Custom { kind: String, config: serde_json::Value },
+    Custom {
+        kind: String,
+        config: serde_json::Value,
+    },
 }
 
 impl RuntimeConfig {
@@ -177,4 +185,3 @@ pub(crate) mod humantime_serde_ms {
         Ok(Duration::from_millis(ms))
     }
 }
-

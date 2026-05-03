@@ -37,12 +37,17 @@ pub fn classify_openai_error(
         if let Some(body_str) = body.as_deref() {
             if let Ok(env) = serde_json::from_str::<ErrorEnvelope>(body_str) {
                 if env.error.code.as_deref() == Some("context_length_exceeded") {
-                    return InferenceError::ContextLengthExceeded { tokens: 0, max_tokens: 0 };
+                    return InferenceError::ContextLengthExceeded {
+                        tokens: 0,
+                        max_tokens: 0,
+                    };
                 }
                 if env.error.kind.as_deref() == Some("content_filter")
                     || env.error.kind.as_deref() == Some("content_filter_results_violation")
                 {
-                    return InferenceError::ContentFiltered { reason: env.error.message };
+                    return InferenceError::ContentFiltered {
+                        reason: env.error.message,
+                    };
                 }
             }
         }

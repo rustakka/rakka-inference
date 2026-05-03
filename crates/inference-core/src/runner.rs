@@ -44,8 +44,13 @@ impl std::fmt::Debug for RunHandle {
 /// runtimes no-op.
 #[derive(Debug, Clone)]
 pub enum WeightSource {
-    HuggingFace { repo: String, revision: Option<String> },
-    LocalPath { path: std::path::PathBuf },
+    HuggingFace {
+        repo: String,
+        revision: Option<String>,
+    },
+    LocalPath {
+        path: std::path::PathBuf,
+    },
     /// The runtime knows how to fetch its own weights (vLLM, mistralrs).
     RuntimeManaged,
 }

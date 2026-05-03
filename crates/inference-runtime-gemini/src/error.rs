@@ -28,14 +28,19 @@ pub fn classify_gemini_error(
         if let Ok(env) = serde_json::from_str::<ErrorEnvelope>(body_str) {
             // Gemini returns `RESOURCE_EXHAUSTED` for quota.
             if env.error.status == "RESOURCE_EXHAUSTED" {
-                return InferenceError::RateLimited { provider: ProviderKind::Gemini, retry_after };
+                return InferenceError::RateLimited {
+                    provider: ProviderKind::Gemini,
+                    retry_after,
+                };
             }
             // `FAILED_PRECONDITION` covers safety/policy and a few
             // other unrelated cases — treat the safety subset as
             // ContentFiltered when the message hints at it.
             let lower = env.error.message.to_lowercase();
             if lower.contains("safety") || lower.contains("blocked") {
-                return InferenceError::ContentFiltered { reason: env.error.message };
+                return InferenceError::ContentFiltered {
+                    reason: env.error.message,
+                };
             }
         }
     }

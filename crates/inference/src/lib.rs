@@ -28,27 +28,27 @@
 pub use inference_core as core;
 pub use inference_runtime as runtime;
 
-#[cfg(feature = "vllm")]
-pub use inference_runtime_vllm as runtime_vllm;
-#[cfg(feature = "tensorrt")]
-pub use inference_runtime_tensorrt as runtime_tensorrt;
-#[cfg(feature = "ort")]
-pub use inference_runtime_ort as runtime_ort;
 #[cfg(feature = "candle")]
 pub use inference_runtime_candle as runtime_candle;
 #[cfg(feature = "cudarc")]
 pub use inference_runtime_cudarc as runtime_cudarc;
 #[cfg(feature = "mistralrs")]
 pub use inference_runtime_mistralrs as runtime_mistralrs;
+#[cfg(feature = "ort")]
+pub use inference_runtime_ort as runtime_ort;
+#[cfg(feature = "tensorrt")]
+pub use inference_runtime_tensorrt as runtime_tensorrt;
+#[cfg(feature = "vllm")]
+pub use inference_runtime_vllm as runtime_vllm;
 
-#[cfg(feature = "openai")]
-pub use inference_runtime_openai as runtime_openai;
 #[cfg(feature = "anthropic")]
 pub use inference_runtime_anthropic as runtime_anthropic;
 #[cfg(feature = "gemini")]
 pub use inference_runtime_gemini as runtime_gemini;
 #[cfg(feature = "litellm")]
 pub use inference_runtime_litellm as runtime_litellm;
+#[cfg(feature = "openai")]
+pub use inference_runtime_openai as runtime_openai;
 
 #[cfg(feature = "pipeline")]
 pub use inference_pipeline as pipeline;
@@ -86,8 +86,8 @@ pub use rakka_accel_patterns as cuda_patterns;
 /// `Deployment`s and write actors.
 pub mod prelude {
     pub use inference_core::{
-        Deployment, ExecuteBatch, InferenceError, InferenceResult, ModelRunner, ProviderKind,
-        RateLimits, RetryPolicy, RuntimeConfig, RuntimeKind, SecretString, Serving, Timeouts,
-        TokenChunk, Tokens, TransportKind,
+        Deployment, ExecuteBatch, InferenceError, InferenceResult, ModelRunner, ProviderKind, RateLimits,
+        RetryPolicy, RuntimeConfig, RuntimeKind, SecretString, Serving, Timeouts, TokenChunk, Tokens,
+        TransportKind,
     };
 }

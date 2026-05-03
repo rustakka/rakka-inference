@@ -56,13 +56,18 @@ pub enum SecretRef {
 fn default_retry() -> RetryPolicy {
     // LiteLLM has its own retries; drive client-side retries low so we
     // don't compound. Doc §10.3.
-    RetryPolicy { max_retries: 1, ..RetryPolicy::default() }
+    RetryPolicy {
+        max_retries: 1,
+        ..RetryPolicy::default()
+    }
 }
 
 impl LiteLlmConfig {
     pub fn into_openai(self, openai_secret: inference_runtime_openai::config::SecretRef) -> OpenAiConfig {
         OpenAiConfig {
-            variant: OpenAiVariant::Direct { endpoint: self.endpoint },
+            variant: OpenAiVariant::Direct {
+                endpoint: self.endpoint,
+            },
             api_key: openai_secret,
             organization: None,
             project: None,
@@ -83,7 +88,9 @@ pub struct LiteLlmRunner {
 
 impl LiteLlmRunner {
     pub fn new(config: OpenAiConfig, session: Arc<ArcSwap<SessionSnapshot>>) -> InferenceResult<Self> {
-        Ok(Self { inner: OpenAiRunner::new(config, session)? })
+        Ok(Self {
+            inner: OpenAiRunner::new(config, session)?,
+        })
     }
 }
 
@@ -101,7 +108,9 @@ impl ModelRunner for LiteLlmRunner {
         RuntimeKind::LiteLlm
     }
     fn transport_kind(&self) -> TransportKind {
-        TransportKind::RemoteNetwork { provider: ProviderKind::LiteLlm }
+        TransportKind::RemoteNetwork {
+            provider: ProviderKind::LiteLlm,
+        }
     }
     fn rate_limits(&self) -> Option<&RateLimits> {
         self.inner.rate_limits()

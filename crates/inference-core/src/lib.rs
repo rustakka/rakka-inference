@@ -25,8 +25,7 @@ pub mod tokens;
 pub use batch::{ExecuteBatch, Message, MessageContent, Role, SamplingParams};
 pub use cost::{CostEstimate, EstimateCost};
 pub use deployment::{
-    Budget, BudgetAction, CapacityPolicy, Deployment, RateLimits, Replica, RetryPolicy,
-    Serving, Timeouts,
+    Budget, BudgetAction, CapacityPolicy, Deployment, RateLimits, Replica, RetryPolicy, Serving, Timeouts,
 };
 pub use error::{InferenceError, InferenceResult};
 pub use registry::infer_runtime;

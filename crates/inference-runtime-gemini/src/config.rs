@@ -46,9 +46,15 @@ pub struct SafetySetting {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "from", rename_all = "snake_case")]
 pub enum SecretRef {
-    Env { name: String },
-    File { path: std::path::PathBuf },
-    Inline { value: String },
+    Env {
+        name: String,
+    },
+    File {
+        path: std::path::PathBuf,
+    },
+    Inline {
+        value: String,
+    },
     /// Vertex uses application default credentials; resolved by the
     /// operator-supplied `CredentialProvider`.
     Adc,
@@ -60,7 +66,11 @@ fn default_aistudio_endpoint() -> Url {
 
 impl GeminiConfig {
     pub fn generate_content_url(&self, model: &str, stream: bool) -> Result<Url, url::ParseError> {
-        let suffix = if stream { ":streamGenerateContent?alt=sse" } else { ":generateContent" };
+        let suffix = if stream {
+            ":streamGenerateContent?alt=sse"
+        } else {
+            ":generateContent"
+        };
         match &self.variant {
             GeminiVariant::AiStudio { endpoint } => {
                 endpoint.join(&format!("models/{model}{suffix}"))

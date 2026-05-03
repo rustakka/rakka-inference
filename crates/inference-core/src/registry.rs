@@ -13,7 +13,18 @@ pub fn infer_runtime(model: &str) -> RuntimeKind {
     // Remote provider model families take precedence. The patterns are
     // intentionally conservative — operators with custom local
     // fine-tunes named `gpt-*` should set `runtime` explicitly.
-    if matches_any(&m, &["gpt-4", "gpt-4o", "gpt-4-turbo", "gpt-3.5", "o1-", "o3-", "chatgpt-"]) {
+    if matches_any(
+        &m,
+        &[
+            "gpt-4",
+            "gpt-4o",
+            "gpt-4-turbo",
+            "gpt-3.5",
+            "o1-",
+            "o3-",
+            "chatgpt-",
+        ],
+    ) {
         return RuntimeKind::OpenAi;
     }
     if m.starts_with("claude-") || m.starts_with("anthropic/") {
@@ -65,11 +76,17 @@ mod tests {
 
     #[test]
     fn local_fallthrough_for_unknown() {
-        assert_eq!(infer_runtime("meta-llama/Llama-3.1-70B-Instruct"), RuntimeKind::Vllm);
+        assert_eq!(
+            infer_runtime("meta-llama/Llama-3.1-70B-Instruct"),
+            RuntimeKind::Vllm
+        );
     }
 
     #[test]
     fn mistral_picks_rust_native() {
-        assert_eq!(infer_runtime("mistralai/Mistral-7B-Instruct-v0.3"), RuntimeKind::MistralRs);
+        assert_eq!(
+            infer_runtime("mistralai/Mistral-7B-Instruct-v0.3"),
+            RuntimeKind::MistralRs
+        );
     }
 }
