@@ -4,7 +4,12 @@ build-backend = "maturin"
 
 [project]
 name = "rakka-inference"
-version = "0.2.1"
+# Maturin reads the version from the manifest-path crate's Cargo.toml
+# (inference-py-bindings, which inherits via `version.workspace = true`).
+# Hardcoding here would freeze the wheel at one number and silently no-op
+# every subsequent release through `pypa/gh-action-pypi-publish`'s
+# skip-existing.
+dynamic = ["version"]
 description = "Multi-runtime GPU + remote inference as a supervised actor system on the rakka actor runtime."
 readme = "README.md"
 requires-python = ">=3.10"
