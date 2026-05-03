@@ -25,7 +25,7 @@ members = [
 ]
 
 [workspace.package]
-version       = "0.2.3"
+version       = "0.2.4"
 edition       = "2021"
 rust-version  = "1.78"
 license       = "Apache-2.0"
@@ -125,23 +125,23 @@ ort                 = { version = "2.0.0-rc.10", default-features = false }
 mistralrs           = "0.8"
 
 # Internal crates -----------------------------------------------------------
-inference-core              = { path = "crates/inference-core",              version = "0.2.3" }
-inference-runtime           = { path = "crates/inference-runtime",           version = "0.2.3" }
-inference-python-bridge     = { path = "crates/inference-python-bridge",     version = "0.2.3" }
-inference-remote-core       = { path = "crates/inference-remote-core",       version = "0.2.3" }
-inference-runtime-vllm      = { path = "crates/inference-runtime-vllm",      version = "0.2.3" }
-inference-runtime-tensorrt  = { path = "crates/inference-runtime-tensorrt",  version = "0.2.3" }
-inference-runtime-ort       = { path = "crates/inference-runtime-ort",       version = "0.2.3" }
-inference-runtime-candle    = { path = "crates/inference-runtime-candle",    version = "0.2.3" }
-inference-runtime-cudarc    = { path = "crates/inference-runtime-cudarc",    version = "0.2.3" }
-inference-runtime-mistralrs = { path = "crates/inference-runtime-mistralrs", version = "0.2.3" }
-inference-runtime-openai    = { path = "crates/inference-runtime-openai",    version = "0.2.3" }
-inference-runtime-anthropic = { path = "crates/inference-runtime-anthropic", version = "0.2.3" }
-inference-runtime-gemini    = { path = "crates/inference-runtime-gemini",    version = "0.2.3" }
-inference-runtime-litellm   = { path = "crates/inference-runtime-litellm",   version = "0.2.3" }
-inference-pipeline          = { path = "crates/inference-pipeline",          version = "0.2.3" }
-inference-testkit           = { path = "crates/inference-testkit",           version = "0.2.3" }
-inference                   = { path = "crates/inference",                   version = "0.2.3" }
+inference-core              = { path = "crates/inference-core",              version = "0.2.4" }
+inference-runtime           = { path = "crates/inference-runtime",           version = "0.2.4" }
+inference-python-bridge     = { path = "crates/inference-python-bridge",     version = "0.2.4" }
+inference-remote-core       = { path = "crates/inference-remote-core",       version = "0.2.4" }
+inference-runtime-vllm      = { path = "crates/inference-runtime-vllm",      version = "0.2.4" }
+inference-runtime-tensorrt  = { path = "crates/inference-runtime-tensorrt",  version = "0.2.4" }
+inference-runtime-ort       = { path = "crates/inference-runtime-ort",       version = "0.2.4" }
+inference-runtime-candle    = { path = "crates/inference-runtime-candle",    version = "0.2.4" }
+inference-runtime-cudarc    = { path = "crates/inference-runtime-cudarc",    version = "0.2.4" }
+inference-runtime-mistralrs = { path = "crates/inference-runtime-mistralrs", version = "0.2.4" }
+inference-runtime-openai    = { path = "crates/inference-runtime-openai",    version = "0.2.4" }
+inference-runtime-anthropic = { path = "crates/inference-runtime-anthropic", version = "0.2.4" }
+inference-runtime-gemini    = { path = "crates/inference-runtime-gemini",    version = "0.2.4" }
+inference-runtime-litellm   = { path = "crates/inference-runtime-litellm",   version = "0.2.4" }
+inference-pipeline          = { path = "crates/inference-pipeline",          version = "0.2.4" }
+inference-testkit           = { path = "crates/inference-testkit",           version = "0.2.4" }
+inference                   = { path = "crates/inference",                   version = "0.2.4" }
 
 [profile.release]
 opt-level     = 3
