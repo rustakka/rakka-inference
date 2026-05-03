@@ -1,9 +1,17 @@
 [package]
-name        = "inference-core"
-version.workspace = true
+name                   = "inference-core"
+version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true
 license.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+authors.workspace      = true
+keywords.workspace     = true
+categories.workspace   = true
+readme                 = "README.md"
+documentation          = "https://docs.rs/inference-core"
+description            = "Foundation crate for rakka-inference — typed errors, deployment value object, ModelRunner trait, batch primitives."
 
 # Per architecture doc §10.4 the foundation crate's allowed deps are
 # serde / thiserror / bytes / secrecy. The doc's §5.4 trait body for

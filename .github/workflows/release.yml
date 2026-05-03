@@ -51,8 +51,12 @@ concurrency:
 env:
   CARGO_TERM_COLOR: always
   # Default allowlist used when the repo variable is unset.
+  # Order doesn't matter here (the publish loop walks a strict
+  # dep-order list lower in the file); the allowlist only filters
+  # which crates that loop actually publishes vs skips.
   DEFAULT_PUBLISH_ALLOWLIST: >-
     inference-core
+    inference-runtime
     inference-remote-core
     inference-runtime-openai
     inference-runtime-anthropic

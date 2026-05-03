@@ -1,9 +1,17 @@
 [package]
-name = "inference-runtime"
-version.workspace = true
-edition.workspace = true
+name                   = "inference-runtime"
+version.workspace      = true
+edition.workspace      = true
 rust-version.workspace = true
-license.workspace = true
+license.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+authors.workspace      = true
+keywords.workspace     = true
+categories.workspace   = true
+readme                 = "README.md"
+documentation          = "https://docs.rs/inference-runtime"
+description            = "Runtime-agnostic actor topology for rakka-inference — gateway, request actor, dp-coordinator, engine-core, two-tier worker, placement, deployment manager, metrics."
 
 [features]
 default = []
