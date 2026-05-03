@@ -6,11 +6,20 @@ rust-version.workspace = true
 license.workspace = true
 
 [features]
-default = []
-python  = ["dep:pyo3", "dep:tracing"]
+default          = []
+python           = ["dep:pyo3", "dep:tracing"]
+# Maturin enables this when building wheels — adds the
+# `pyo3/extension-module` linkage so the cdylib loads under CPython.
+# Workspace `cargo build` keeps `default = []` so a Python toolchain
+# is never required to build the rest of the workspace.
+python-extension = ["python", "pyo3/extension-module"]
 
 [lib]
-crate-type = ["rlib", "cdylib"]
+# `_native` matches the maturin `module-name = "rakka_inference._native"`
+# convention — the cdylib ships into `rakka_inference/_native.<abi>.so`
+# and is re-exported from the pure-Python wrapper.
+name        = "_native"
+crate-type  = ["rlib", "cdylib"]
 
 [dependencies]
 inference-core = { workspace = true }

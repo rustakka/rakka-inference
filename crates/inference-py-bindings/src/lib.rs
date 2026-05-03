@@ -7,6 +7,11 @@
 //! workspace builds without a Python venv. With `--features python`
 //! it builds a `cdylib` suitable for loading as a Python extension
 //! module (`pip install maturin && maturin develop --features python`).
+//!
+//! When loaded via maturin / wheel, the extension module is exposed
+//! as `rakka_inference._native`; the user-facing API lives in the
+//! pure-Python `python/rakka_inference/` package which re-exports
+//! the native classes.
 
 #![forbid(unsafe_code)]
 #![deny(rust_2018_idioms)]
@@ -82,7 +87,7 @@ mod py {
     }
 
     #[pymodule]
-    fn inference(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
+    fn _native(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
         m.add_class::<PyDeployment>()?;
         m.add_class::<PyCluster>()?;
         Ok(())
