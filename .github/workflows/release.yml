@@ -55,13 +55,13 @@ env:
   # dep-order list lower in the file); the allowlist only filters
   # which crates that loop actually publishes vs skips.
   DEFAULT_PUBLISH_ALLOWLIST: >-
-    inference-core
-    inference-runtime
-    inference-remote-core
-    inference-runtime-openai
-    inference-runtime-anthropic
-    inference-runtime-gemini
-    inference-runtime-litellm
+    rakka-inference-core
+    rakka-inference-runtime
+    rakka-inference-remote-core
+    rakka-inference-runtime-openai
+    rakka-inference-runtime-anthropic
+    rakka-inference-runtime-gemini
+    rakka-inference-runtime-litellm
 
 jobs:
   verify:
@@ -315,15 +315,19 @@ jobs:
           # Strict dep order. A crate appears after every crate it
           # depends on. Adding a new crate? Slot it into the earliest
           # layer that has all its dependencies already published.
+          # Names match Cargo.toml [package] name (rakka-inference-*
+          # for the publishable subset; the GPU/local/python/rollup
+          # crates still use the squat-blocked short names and are
+          # gated out of the default allowlist until they're renamed).
           for crate in \
-            inference-core \
-            inference-runtime \
+            rakka-inference-core \
+            rakka-inference-runtime \
             inference-python-bridge \
-            inference-remote-core \
-            inference-runtime-openai \
-            inference-runtime-anthropic \
-            inference-runtime-gemini \
-            inference-runtime-litellm \
+            rakka-inference-remote-core \
+            rakka-inference-runtime-openai \
+            rakka-inference-runtime-anthropic \
+            rakka-inference-runtime-gemini \
+            rakka-inference-runtime-litellm \
             inference-runtime-vllm \
             inference-runtime-tensorrt \
             inference-runtime-ort \
@@ -358,9 +362,10 @@ jobs:
       - name: Dry-run publish for the publishable subset
         working-directory: rakka-inference
         run: |
-          for c in inference-core inference-remote-core \
-                   inference-runtime-openai inference-runtime-anthropic \
-                   inference-runtime-gemini inference-runtime-litellm; do
+          for c in rakka-inference-core rakka-inference-runtime \
+                   rakka-inference-remote-core \
+                   rakka-inference-runtime-openai rakka-inference-runtime-anthropic \
+                   rakka-inference-runtime-gemini rakka-inference-runtime-litellm; do
             echo "==> $c"
             cargo publish -p "$c" --dry-run --allow-dirty || true
           done

@@ -2662,22 +2662,22 @@ dependencies = [
 name = "inference"
 version = "0.2.4"
 dependencies = [
- "inference-core",
  "inference-pipeline",
- "inference-runtime",
- "inference-runtime-anthropic",
  "inference-runtime-candle",
  "inference-runtime-cudarc",
- "inference-runtime-gemini",
- "inference-runtime-litellm",
  "inference-runtime-mistralrs",
- "inference-runtime-openai",
  "inference-runtime-ort",
  "inference-runtime-tensorrt",
  "inference-runtime-vllm",
  "inference-testkit",
  "rakka-accel",
  "rakka-accel-patterns",
+ "rakka-inference-core",
+ "rakka-inference-runtime",
+ "rakka-inference-runtime-anthropic",
+ "rakka-inference-runtime-gemini",
+ "rakka-inference-runtime-litellm",
+ "rakka-inference-runtime-openai",
 ]
 
 [[package]]
@@ -2687,10 +2687,10 @@ dependencies = [
  "anyhow",
  "clap",
  "inference",
- "inference-core",
- "inference-runtime",
  "rakka-config",
  "rakka-core",
+ "rakka-inference-core",
+ "rakka-inference-runtime",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
@@ -2701,29 +2701,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "inference-core"
-version = "0.2.4"
-dependencies = [
- "async-trait",
- "bytes",
- "chrono",
- "futures",
- "secrecy",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "url",
-]
-
-[[package]]
 name = "inference-pipeline"
 version = "0.2.4"
 dependencies = [
  "async-trait",
  "futures",
- "inference-core",
- "inference-runtime",
  "rakka-accel-patterns",
+ "rakka-inference-core",
+ "rakka-inference-runtime",
  "rakka-streams",
  "tokio",
  "tracing",
@@ -2733,8 +2718,8 @@ dependencies = [
 name = "inference-py-bindings"
 version = "0.2.4"
 dependencies = [
- "inference-core",
  "pyo3",
+ "rakka-inference-core",
  "tracing",
 ]
 
@@ -2742,85 +2727,10 @@ dependencies = [
 name = "inference-python-bridge"
 version = "0.2.4"
 dependencies = [
- "inference-core",
  "parking_lot",
  "pyo3",
+ "rakka-inference-core",
  "tokio",
-]
-
-[[package]]
-name = "inference-remote-core"
-version = "0.2.4"
-dependencies = [
- "arc-swap",
- "async-trait",
- "bytes",
- "chrono",
- "eventsource-stream",
- "futures",
- "futures-util",
- "hyper",
- "inference-core",
- "parking_lot",
- "rakka-core",
- "rakka-distributed-data",
- "reqwest 0.12.28",
- "secrecy",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "tower",
- "tracing",
- "url",
- "wiremock",
-]
-
-[[package]]
-name = "inference-runtime"
-version = "0.2.4"
-dependencies = [
- "arc-swap",
- "async-trait",
- "axum",
- "bytes",
- "chrono",
- "futures",
- "inference-core",
- "parking_lot",
- "rakka-accel",
- "rakka-cluster-tools",
- "rakka-config",
- "rakka-core",
- "rakka-distributed-data",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "tower",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "inference-runtime-anthropic"
-version = "0.2.4"
-dependencies = [
- "arc-swap",
- "async-trait",
- "futures",
- "futures-util",
- "inference-core",
- "inference-remote-core",
- "inference-runtime",
- "once_cell",
- "reqwest 0.12.28",
- "secrecy",
- "serde",
- "serde_json",
- "tokio",
- "tracing",
- "url",
 ]
 
 [[package]]
@@ -2831,9 +2741,9 @@ dependencies = [
  "candle-core 0.8.4",
  "candle-nn 0.8.4",
  "candle-transformers",
- "inference-core",
- "inference-runtime",
  "rakka-accel",
+ "rakka-inference-core",
+ "rakka-inference-runtime",
  "serde",
 ]
 
@@ -2843,46 +2753,10 @@ version = "0.2.4"
 dependencies = [
  "async-trait",
  "cudarc",
- "inference-core",
- "inference-runtime",
  "rakka-accel",
+ "rakka-inference-core",
+ "rakka-inference-runtime",
  "serde",
-]
-
-[[package]]
-name = "inference-runtime-gemini"
-version = "0.2.4"
-dependencies = [
- "arc-swap",
- "async-trait",
- "futures",
- "futures-util",
- "inference-core",
- "inference-remote-core",
- "inference-runtime",
- "once_cell",
- "reqwest 0.12.28",
- "secrecy",
- "serde",
- "serde_json",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "inference-runtime-litellm"
-version = "0.2.4"
-dependencies = [
- "arc-swap",
- "async-trait",
- "inference-core",
- "inference-remote-core",
- "inference-runtime",
- "inference-runtime-openai",
- "serde",
- "serde_json",
- "url",
 ]
 
 [[package]]
@@ -2890,34 +2764,10 @@ name = "inference-runtime-mistralrs"
 version = "0.2.4"
 dependencies = [
  "async-trait",
- "inference-core",
- "inference-runtime",
  "mistralrs",
+ "rakka-inference-core",
+ "rakka-inference-runtime",
  "serde",
-]
-
-[[package]]
-name = "inference-runtime-openai"
-version = "0.2.4"
-dependencies = [
- "arc-swap",
- "async-trait",
- "bytes",
- "futures",
- "futures-util",
- "inference-core",
- "inference-remote-core",
- "inference-runtime",
- "once_cell",
- "reqwest 0.12.28",
- "secrecy",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "tracing",
- "url",
- "wiremock",
 ]
 
 [[package]]
@@ -2925,9 +2775,9 @@ name = "inference-runtime-ort"
 version = "0.2.4"
 dependencies = [
  "async-trait",
- "inference-core",
- "inference-runtime",
  "ort",
+ "rakka-inference-core",
+ "rakka-inference-runtime",
  "serde",
 ]
 
@@ -2936,8 +2786,8 @@ name = "inference-runtime-tensorrt"
 version = "0.2.4"
 dependencies = [
  "async-trait",
- "inference-core",
- "inference-runtime",
+ "rakka-inference-core",
+ "rakka-inference-runtime",
  "serde",
 ]
 
@@ -2946,9 +2796,9 @@ name = "inference-runtime-vllm"
 version = "0.2.4"
 dependencies = [
  "async-trait",
- "inference-core",
  "inference-python-bridge",
- "inference-runtime",
+ "rakka-inference-core",
+ "rakka-inference-runtime",
  "serde",
 ]
 
@@ -2958,9 +2808,9 @@ version = "0.2.4"
 dependencies = [
  "async-trait",
  "futures",
- "inference-core",
- "inference-remote-core",
- "inference-runtime",
+ "rakka-inference-core",
+ "rakka-inference-remote-core",
+ "rakka-inference-runtime",
  "serde_json",
  "tokio",
  "wiremock",
@@ -4577,6 +4427,156 @@ dependencies = [
 ]
 
 [[package]]
+name = "rakka-inference-core"
+version = "0.2.4"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "chrono",
+ "futures",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "url",
+]
+
+[[package]]
+name = "rakka-inference-remote-core"
+version = "0.2.4"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "bytes",
+ "chrono",
+ "eventsource-stream",
+ "futures",
+ "futures-util",
+ "hyper",
+ "parking_lot",
+ "rakka-core",
+ "rakka-distributed-data",
+ "rakka-inference-core",
+ "reqwest 0.12.28",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tower",
+ "tracing",
+ "url",
+ "wiremock",
+]
+
+[[package]]
+name = "rakka-inference-runtime"
+version = "0.2.4"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "axum",
+ "bytes",
+ "chrono",
+ "futures",
+ "parking_lot",
+ "rakka-accel",
+ "rakka-cluster-tools",
+ "rakka-config",
+ "rakka-core",
+ "rakka-distributed-data",
+ "rakka-inference-core",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tower",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "rakka-inference-runtime-anthropic"
+version = "0.2.4"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "futures",
+ "futures-util",
+ "once_cell",
+ "rakka-inference-core",
+ "rakka-inference-remote-core",
+ "rakka-inference-runtime",
+ "reqwest 0.12.28",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "rakka-inference-runtime-gemini"
+version = "0.2.4"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "futures",
+ "futures-util",
+ "once_cell",
+ "rakka-inference-core",
+ "rakka-inference-remote-core",
+ "rakka-inference-runtime",
+ "reqwest 0.12.28",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "rakka-inference-runtime-litellm"
+version = "0.2.4"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "rakka-inference-core",
+ "rakka-inference-remote-core",
+ "rakka-inference-runtime",
+ "rakka-inference-runtime-openai",
+ "serde",
+ "serde_json",
+ "url",
+]
+
+[[package]]
+name = "rakka-inference-runtime-openai"
+version = "0.2.4"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "bytes",
+ "futures",
+ "futures-util",
+ "once_cell",
+ "rakka-inference-core",
+ "rakka-inference-remote-core",
+ "rakka-inference-runtime",
+ "reqwest 0.12.28",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+ "url",
+ "wiremock",
+]
+
+[[package]]
 name = "rakka-macros"
 version = "0.2.2"
 dependencies = [
@@ -4912,11 +4912,11 @@ dependencies = [
  "arc-swap",
  "async-trait",
  "futures",
- "inference-core",
- "inference-remote-core",
- "inference-runtime",
- "inference-runtime-openai",
  "inference-testkit",
+ "rakka-inference-core",
+ "rakka-inference-remote-core",
+ "rakka-inference-runtime",
+ "rakka-inference-runtime-openai",
  "secrecy",
  "tokio",
  "tracing",

@@ -1,5 +1,5 @@
 [package]
-name                   = "inference-runtime-gemini"
+name                   = "rakka-inference-runtime-gemini"
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true
@@ -10,8 +10,11 @@ authors.workspace      = true
 keywords.workspace     = true
 categories.workspace   = true
 readme                 = "README.md"
-documentation          = "https://docs.rs/inference-runtime-gemini"
+documentation          = "https://docs.rs/rakka-inference-runtime-gemini"
 description            = "Google Gemini provider for rakka-inference — implements ModelRunner against Vertex AI and AI Studio endpoints, with cost table, error classification, and SSE streaming."
+
+[lib]
+name = "inference_runtime_gemini"
 
 [dependencies]
 inference-core        = { workspace = true }

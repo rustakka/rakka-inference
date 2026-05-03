@@ -1,5 +1,5 @@
 [package]
-name                   = "inference-runtime-litellm"
+name                   = "rakka-inference-runtime-litellm"
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true
@@ -10,8 +10,11 @@ authors.workspace      = true
 keywords.workspace     = true
 categories.workspace   = true
 readme                 = "README.md"
-documentation          = "https://docs.rs/inference-runtime-litellm"
+documentation          = "https://docs.rs/rakka-inference-runtime-litellm"
 description            = "LiteLLM proxy provider for rakka-inference — implements ModelRunner against the LiteLLM unified API gateway, fronting OpenAI-compatible endpoints for any provider LiteLLM supports."
+
+[lib]
+name = "inference_runtime_litellm"
 
 [dependencies]
 inference-core           = { workspace = true }

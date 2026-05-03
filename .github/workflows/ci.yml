@@ -217,12 +217,13 @@ jobs:
           fails=0
           # Only check the "publishable now" set from the release
           # checklist. Extend this list as the allowlist widens.
-          for crate in inference-core \
-                       inference-remote-core \
-                       inference-runtime-openai \
-                       inference-runtime-anthropic \
-                       inference-runtime-gemini \
-                       inference-runtime-litellm; do
+          for crate in rakka-inference-core \
+                       rakka-inference-runtime \
+                       rakka-inference-remote-core \
+                       rakka-inference-runtime-openai \
+                       rakka-inference-runtime-anthropic \
+                       rakka-inference-runtime-gemini \
+                       rakka-inference-runtime-litellm; do
             echo "==> $crate"
             cargo semver-checks check-release --package "$crate" || fails=$((fails+1))
           done

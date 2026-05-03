@@ -1,5 +1,5 @@
 [package]
-name                   = "inference-runtime-anthropic"
+name                   = "rakka-inference-runtime-anthropic"
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true
@@ -10,8 +10,11 @@ authors.workspace      = true
 keywords.workspace     = true
 categories.workspace   = true
 readme                 = "README.md"
-documentation          = "https://docs.rs/inference-runtime-anthropic"
+documentation          = "https://docs.rs/rakka-inference-runtime-anthropic"
 description            = "Anthropic Messages API provider for rakka-inference — implements ModelRunner against api.anthropic.com, with cost table, error classification, and SSE streaming."
+
+[lib]
+name = "inference_runtime_anthropic"
 
 [dependencies]
 inference-core        = { workspace = true }

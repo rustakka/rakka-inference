@@ -1,5 +1,5 @@
 [package]
-name                   = "inference-runtime-openai"
+name                   = "rakka-inference-runtime-openai"
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true
@@ -10,8 +10,11 @@ authors.workspace      = true
 keywords.workspace     = true
 categories.workspace   = true
 readme                 = "README.md"
-documentation          = "https://docs.rs/inference-runtime-openai"
+documentation          = "https://docs.rs/rakka-inference-runtime-openai"
 description            = "OpenAI Chat Completions provider for rakka-inference — implements ModelRunner against api.openai.com, with cost table, error classification, and SSE streaming."
+
+[lib]
+name = "inference_runtime_openai"
 
 [dependencies]
 inference-core        = { workspace = true }

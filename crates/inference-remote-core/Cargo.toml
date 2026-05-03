@@ -1,5 +1,5 @@
 [package]
-name                   = "inference-remote-core"
+name                   = "rakka-inference-remote-core"
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true
@@ -10,8 +10,11 @@ authors.workspace      = true
 keywords.workspace     = true
 categories.workspace   = true
 readme                 = "README.md"
-documentation          = "https://docs.rs/inference-remote-core"
+documentation          = "https://docs.rs/rakka-inference-remote-core"
 description            = "Remote-provider infrastructure for rakka-inference — distributed rate limiter (CRDT), circuit breaker, retry/backoff, SSE parser, session lifecycle."
+
+[lib]
+name = "inference_remote_core"
 
 [dependencies]
 inference-core = { workspace = true }
