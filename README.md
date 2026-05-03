@@ -1,49 +1,64 @@
 # rakka-inference
 
-**Multi-runtime GPU + remote inference as a supervised actor system on
-[`rakka`](../rakka).**
+**One supervised actor topology for every place a model can run.**
+Local GPU runtimes (vLLM, TensorRT, ONNX Runtime, Candle, cudarc,
+mistral.rs) and managed APIs (OpenAI, Anthropic, Gemini, LiteLLM)
+sit under the same routing CRDT, the same supervision tree, the same
+backpressure story. A request doesn't know — and doesn't need to — whether
+it landed on an H100 two racks away or in another company's data center.
 
-One actor topology hosts heterogeneous inference workloads — local GPU
-runtimes (vLLM, TensorRT, ONNX Runtime, Candle, cudarc, mistral.rs) and
-remote inference providers (OpenAI, Anthropic, Gemini, LiteLLM) — under
-the same supervision tree, the same routing CRDT, the same backpressure
-story. Cost, latency, and reliability stop being three pipelines and
-become one.
+```toml
+[dependencies]
+inference = { version = "0.2", features = ["openai", "anthropic", "candle", "pipeline"] }
+```
 
-> Treat managed APIs and owned hardware as just another runtime. The
-> gateway, request actor, and routing CRDT don't know — and don't care
-> — whether a request lands on an H100 two racks away or in another
-> company's data center.
+```rust
+use inference::prelude::*;
+
+// Same value object describes a vLLM-on-4×H100 replica or a Gemini Vertex
+// deployment. The `runtime` field is the only thing that changes —
+// and it's auto-inferred from the model name when omitted.
+let dep = Deployment {
+    name: "gpt-4o-mini".into(),
+    model: "gpt-4o-mini".into(),
+    runtime: None,
+    runtime_config: None,
+    gpus: None,
+    replicas: 1,
+    serving: Serving::default(),
+    budget: None,
+    idempotent: true,
+};
+```
+
+Built on [`rakka`](../rakka) for actor supervision, clustering, and
+CRDTs, and on [`rakka-accel`](../rakka-accel) for two-tier GPU
+supervision. Cost, latency, and reliability stop being three pipelines
+and become one.
 
 ---
 
-## Why this exists
+## Why
 
-Production AI rarely runs only on owned hardware. Frontier models, burst
-capacity, and compliance edge cases all benefit from offloading to
-managed APIs. Stitching managed APIs onto a separate retry / rate-limit /
-observability stack from your local GPU pool fragments the system. This
-crate folds the two together:
+Production AI rarely runs only on owned hardware. Frontier models,
+burst capacity, and compliance edge cases all push work onto managed
+APIs. Bolting providers onto a separate retry / rate-limit /
+observability stack from your local GPU pool fragments the system —
+and the cracks are exactly where 3 a.m. pages come from.
 
-- **Unified routing.** `model="gpt-4o"` lands on a remote deployment;
-  `model="llama-3.1-70b"` lands on a local one. One CRDT, one HTTP path.
-- **Distributed rate limiting.** Multiple cluster nodes calling the
-  same provider with the same API key share a CRDT-backed bucket. No
-  surprise 429s from naïve client-side limits firing on each node
-  independently.
-- **Supervised failure handling.** Circuit breakers, retry with jitter,
-  content-filter detection, sticky CUDA-context recovery, credential
-  rotation — all under one `OneForOne` strategy with the upstream
-  `rakka_accel::error::device_supervisor_strategy()` for the
-  GPU-bearing tier.
-- **Hybrid pipelines compose.** A request that classifies cheaply on a
-  local model and escalates to GPT-4o for hard cases is one supervised
-  actor graph spanning local and remote, with one trace, one
-  backpressure story, and falls back to Anthropic when OpenAI is
-  saturated.
-- **Pure-remote builds compile zero GPU deps.** A no-GPU egress server
-  is `cargo build -p inference --features remote-only` away — `cudarc`
-  and `rakka-accel` aren't even in the dependency graph.
+| You'd otherwise hand-roll                                   | rakka-inference gives you                                                       |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| One routing layer for local pools, another for the API SDK  | Single routing CRDT — `gpt-4o` and `llama-3.1-70b` resolve through the same path |
+| Per-process token buckets that 429 on cluster scale-out     | `RateLimiterActor` over `rakka_distributed_data::GCounter` — one bucket, all nodes |
+| Hand-written retry / breaker / backoff per provider         | `CircuitBreakerActor` + jittered retry + content-filter triage, one strategy    |
+| Sticky CUDA-context recovery glued to async tasks           | `rakka_accel::error::device_supervisor_strategy()` adopted unchanged            |
+| Cascade graphs duct-taped from threadpools and channels     | `InferenceCascade` / `DynamicBatchingServer` / `ModelReplicaPool` actors        |
+| Credential rotation that drops in-flight traffic            | `RemoteSessionActor::rebuild` drains old, routes new — zero dropped requests    |
+| A no-GPU egress server that still pulls `cudarc` transitively | `--features remote-only` ⇒ `cudarc`, `rakka-accel`, `candle` not in the graph |
+| Cost guardrails as Slack alerts after the bill arrives      | `Budget { max_spend_per_hour_usd, on_exceeded: Reject }` enforced at the actor  |
+
+Every concern that's normally a separate library or a separate
+incident is folded into one supervised graph with typed messages.
 
 ---
 
@@ -53,33 +68,13 @@ crate folds the two together:
 # Stand up an OpenAI-compatible gateway over real (or mocked) providers.
 cargo run -p inference-cli --features all-remote -- serve --config demo.toml
 
-# Try the end-to-end demo (happy path / 429 retry / circuit-open) without
-# spending a cent — uses wiremock under the hood.
+# End-to-end demo (happy path / 429 retry / circuit-open) without
+# spending a cent — wiremock under the hood.
 cargo run --bin remote_only_demo
 
-# Build a binary with no GPU dependencies whatsoever.
+# Pure-remote binary, zero GPU deps in the graph.
 cargo build -p inference --no-default-features --features remote-only
 ```
-
-```rust
-use inference::prelude::*;
-
-let dep = Deployment {
-    name: "gpt-4o-mini".into(),
-    model: "gpt-4o-mini".into(),
-    runtime: None,                   // inferred from model name
-    runtime_config: None,            // defaults from rate_limits / retry / circuit_breaker
-    gpus: None,
-    replicas: 1,
-    serving: Serving::default(),     // 32 concurrent, queue on overflow
-    budget: None,
-    idempotent: true,
-};
-```
-
-The same `Deployment` value object describes a vLLM-on-4×H100 replica
-or a Gemini Vertex deployment. The `runtime` field is the only thing
-that changes.
 
 ---
 
@@ -209,66 +204,36 @@ and let the feature graph compute *deps*.
 
 ---
 
-## Highlights
+## What you don't have to think about
 
-### Hot-path actor primitives, reused
-
-The `local-gpu` feature wires `inference-runtime`'s `WorkerActor` /
-`ContextActor` two-tier supervision directly to
-`rakka_accel::error::device_supervisor_strategy()`. The supervisor
-recognizes panic-string markers (`ContextPoisoned`, `OutOfMemory`,
-`Unrecoverable`) and routes them to `Restart` / `Resume` / `Stop` —
-exactly what `rakka-accel` does for its own `DeviceActor` ↔
-`ContextActor` pair. No reinvention.
-
-### Distributed rate limiting that actually works in a cluster
-
-The `RateLimiterActor` uses `rakka_distributed_data::counters::GCounter`
-to share its token-spent log across nodes. Two cluster members calling
-OpenAI with the same API key collectively respect the bucket —
-no surprise 429 storms on scale-out.
-
-### Circuit breakers that propagate the right typed error
-
-When the breaker opens, downstream sees
-`InferenceError::CircuitOpen { provider, opened_at_unix_ms, retry_at_unix_ms }`.
-The `RequestActor` decides whether to fall back to a different
-deployment, surface a 429 to the caller, or queue with a timeout —
-all without knowing whether the bottleneck was GPU memory or a remote
-provider's outage.
-
-### Pipelines for free
-
-The `cuda-patterns` feature on the rollup makes
-[`rakka-accel-patterns`](../rakka-accel/crates/rakka-accel-patterns/)
-visible as `inference::cuda_patterns`:
-
-```rust
-use inference::cuda_patterns::{DynamicBatchingServer, InferenceCascade, ModelReplicaPool};
-```
-
-You get dynamic batching, cascade routing (cheap classifier →
-escalation), N-replica pools with round-robin / least-loaded, fair-share
-WFQ scheduling, hot-swap servers, speculative decoding, and MoE routers
-without writing a single new actor. Plug each into a closure that
-forwards into `ModelRunner::execute` and you've composed §9 of the
-architecture doc.
-
-### Selective compilation guaranteed
-
-The dependency-budget invariant is enforced by the feature graph:
-
-```sh
-$ cargo tree -p inference --features remote-only --no-default-features | grep -E 'cudarc|rakka-accel|candle|pyo3'
-$  # ← no output: zero GPU deps
-```
-
-Because the inference crates are layered (core → runtime → remote-core
-→ per-runtime → rollup), a remote-only build skips all of
-`inference-runtime-{vllm,tensorrt,ort,candle,cudarc,mistralrs}`,
-`inference-python-bridge`, `rakka-accel`, and the entire cudarc dep
-tree. **Any** consumer can pick the *exact* runtime mix without
-dragging unrelated system libraries into their binary.
+- **Two-tier GPU supervision.** `local-gpu` wires `WorkerActor` /
+  `ContextActor` to `rakka_accel::error::device_supervisor_strategy()`.
+  Sticky-error CUDA contexts get `Restart`; OOM gets `Resume`;
+  unrecoverable failures `Stop`. No panic-string parsing in your code.
+- **Distributed rate limits.** `RateLimiterActor` shares its
+  token-spent log across cluster nodes through
+  `rakka_distributed_data::GCounter`. Two members calling OpenAI on
+  the same API key collectively respect the bucket — no surprise 429
+  storms on scale-out.
+- **Typed circuit-breaker propagation.** When the breaker opens, the
+  caller sees
+  `InferenceError::CircuitOpen { provider, opened_at_unix_ms, retry_at_unix_ms }`.
+  Fall back, surface a 429, or queue — without knowing whether the
+  bottleneck was GPU memory or a remote outage.
+- **Pipelines from blueprints, not threadpools.** Enable
+  `cuda-patterns` and `inference::cuda_patterns::{DynamicBatchingServer,
+  InferenceCascade, ModelReplicaPool, FairShareScheduler,
+  ModelHotSwapServer, SpeculativeDecoder, MoeRouter}` are one import
+  away. Plug a closure into `ModelRunner::execute` and you've composed
+  §9 of the architecture doc.
+- **Compile-time dependency budgets.**
+  `cargo build -p inference --features remote-only` produces a binary
+  with zero `cudarc`, zero `rakka-accel`, zero `candle`, zero `pyo3`
+  in the graph. Layered crates make the invariant load-bearing, not
+  aspirational.
+- **Hot credential rotation.** `RemoteSessionActor::rebuild` drains
+  in-flight requests on the old credential and routes new ones on the
+  rotated value. Zero dropped traffic.
 
 ---
 
@@ -352,25 +317,31 @@ retry-after, and circuit-breaker open after consecutive 5xx.
 
 If you're using Claude Code, Cursor, or another AI coding assistant on
 a project that depends on `rakka-inference`, install our
-**[ai-skills bundle](ai-skills/)**:
+**[ai-skills bundle](ai-skills/)** — seven skills covering quickstart,
+choosing a runtime, wiring remote providers, composing pipelines,
+deployment, typed-error troubleshooting, and extending with a new
+backend.
 
-```sh
-/plugin install /path/to/rakka-inference/ai-skills
+```text
+/plugin marketplace add rustakka/rakka-inference
+/plugin install rakka-inference-ai-skills@rakka-inference
 ```
 
-Seven skills cover the consumer-facing surface — quickstart, choosing
-a runtime, wiring remote providers, composing pipelines, deploying to
-production, troubleshooting typed errors, and extending with a new
-backend. Each `SKILL.md` is a thin router into the canonical docs
-(this README, the per-crate READMEs, the architecture RFC), so it
-stays in sync with the code instead of restating API surfaces that
-belong in rustdoc.
+Each `SKILL.md` is a thin router into the canonical docs (this README,
+the per-crate READMEs, the architecture RFC) so the skills stay in
+sync with the code instead of restating API surfaces that belong in
+rustdoc. Other harnesses (Cursor, Codex CLI, Gemini CLI, Aider, etc.)
+have install instructions in [`ai-skills/README.md`](ai-skills/README.md).
 
-The companion [rakka ai-skills bundle](https://github.com/rustakka/rakka/tree/main/ai-skills)
-ships skills for actor design, supervision, persistence, clustering,
-and Python bindings. Install both bundles together when you're
-building a service that uses both rakka primitives and rakka-inference
-runtimes.
+Companion bundles for the broader stack:
+
+- [`rakka` ai-skills](https://github.com/rustakka/rakka/tree/main/ai-skills)
+  — actor design, supervision, persistence, clustering, Python bindings.
+- [`rakka-accel` ai-skills](https://github.com/rustakka/rakka-accel/tree/main/ai-skills)
+  — DeviceActor, kernel selection, two-tier GPU supervision, backend choice.
+
+Install all three when you're building a service that uses rakka
+primitives, rakka-accel GPU acceleration, and rakka-inference runtimes.
 
 ---
 
