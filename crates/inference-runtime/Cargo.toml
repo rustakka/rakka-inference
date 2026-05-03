@@ -1,17 +1,17 @@
 [package]
 name = "inference-runtime"
-version = "0.1.0"
+version = "0.2.1"
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 
 [features]
 default = []
-# Pulls in rakka-cuda for the local-GPU two-tier supervision pattern
+# Pulls in rakka-accel for the local-GPU two-tier supervision pattern
 # and the per-actor stream allocator. Off by default so a pure-remote
 # inference build (`inference --features remote-only`) compiles no
 # GPU dependencies whatsoever.
-local-gpu = ["dep:rakka-cuda"]
+local-gpu = ["dep:rakka-accel", "rakka-accel/cuda"]
 
 [dependencies]
 inference-core = { workspace = true }
@@ -23,10 +23,10 @@ rakka-config           = { workspace = true }
 rakka-cluster-tools    = { workspace = true }
 rakka-distributed-data = { workspace = true }
 
-# rakka-cuda is the upstream substrate for two-tier supervision and
+# rakka-accel is the upstream substrate for two-tier supervision and
 # GPU dispatch. Optional — only present when the `local-gpu` feature
 # is enabled (see §10.5 / R7 of the doc-redesign delta).
-rakka-cuda = { workspace = true, optional = true }
+rakka-accel = { workspace = true, optional = true }
 
 # HTTP gateway
 axum     = { workspace = true }

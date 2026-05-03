@@ -9,7 +9,7 @@ Adding `inference = { features = [...] }` is a single statement of
 intent. The Cargo feature graph computes the actual dependency graph
 for you: enable `openai` and you pull `inference-runtime-openai` plus
 its `reqwest` / `eventsource-stream` deps; enable `candle` and you
-additionally pull `rakka-cuda`, `cudarc`, `candle-*`. Disable
+additionally pull `rakka-accel`, `cudarc`, `candle-*`. Disable
 everything and you compile only `inference-core` + `inference-runtime`.
 
 ## The shape that matters: `remote-only`
@@ -22,7 +22,7 @@ inference = { workspace = true, default-features = false, features = ["remote-on
 
 ```sh
 $ cargo tree -p inference --no-default-features --features remote-only \
-    | grep -Ec 'cudarc|rakka-cuda|candle|pyo3'
+    | grep -Ec 'cudarc|rakka-accel|candle|pyo3'
 0
 ```
 
@@ -39,9 +39,9 @@ full grid. Headlines:
 - `vllm`, `tensorrt`, `ort`, `candle`, `cudarc`, `mistralrs` — local
   runtimes; each gates its own system deps.
 - `pipeline` — `rakka-streams` adapter (no GPU).
-- `cuda-patterns` — `rakka-cuda-patterns` re-export (DynamicBatching,
+- `cuda-patterns` — `rakka-accel-patterns` re-export (DynamicBatching,
   Cascade, ReplicaPool, FairShare, HotSwap, Speculative, MoE).
-- `cuda` — direct `rakka-cuda` re-export, reachable as
+- `cuda` — direct `rakka-accel` re-export, reachable as
   `inference::cuda::*`.
 - `testkit` — `inference-testkit` mocks.
 
@@ -76,5 +76,5 @@ use inference::prelude::*;
 | `inference::runtime_mistralrs` | …if `features = ["mistralrs"]`                              |
 | `inference::pipeline`        | …if `features = ["pipeline"]`                                 |
 | `inference::testkit`         | …if `features = ["testkit"]`                                  |
-| `inference::cuda`            | re-export of `rakka_cuda` if `features = ["cuda"]`            |
-| `inference::cuda_patterns`   | re-export of `rakka_cuda_patterns` if `features = ["cuda-patterns"]` |
+| `inference::cuda`            | re-export of `rakka_accel` if `features = ["cuda"]`            |
+| `inference::cuda_patterns`   | re-export of `rakka_accel_patterns` if `features = ["cuda-patterns"]` |

@@ -34,7 +34,7 @@ crate folds the two together:
 - **Supervised failure handling.** Circuit breakers, retry with jitter,
   content-filter detection, sticky CUDA-context recovery, credential
   rotation — all under one `OneForOne` strategy with the upstream
-  `rakka_cuda::error::device_supervisor_strategy()` for the
+  `rakka_accel::error::device_supervisor_strategy()` for the
   GPU-bearing tier.
 - **Hybrid pipelines compose.** A request that classifies cheaply on a
   local model and escalates to GPT-4o for hard cases is one supervised
@@ -43,7 +43,7 @@ crate folds the two together:
   saturated.
 - **Pure-remote builds compile zero GPU deps.** A no-GPU egress server
   is `cargo build -p inference --features remote-only` away — `cudarc`
-  and `rakka-cuda` aren't even in the dependency graph.
+  and `rakka-accel` aren't even in the dependency graph.
 
 ---
 
@@ -112,7 +112,7 @@ The full design lives in
    │   ├─ WorkerActor     │         │ │ WorkerPool              ││
    │   │   └─ ContextActor│         │ │  ├─ RemoteWorkerActor   ││
    │   │       ├─ ModelRunner       │ │  └─ RemoteWorkerActor   ││
-   │   │       └─ rakka_cuda::*     │ └─────────────────────────┘│
+   │   │       └─ rakka_accel::*     │ └─────────────────────────┘│
    │   └─ ...                       │ uses:                      │
    └──────────────────────┘         │   RateLimiterActor (CRDT)  │
                                     │   CircuitBreakerActor      │
@@ -120,11 +120,11 @@ The full design lives in
                                     └────────────────────────────┘
 ```
 
-The local-GPU tier rides on top of [`rakka-cuda`](../rakka-cuda)'s
+The local-GPU tier rides on top of [`rakka-accel`](../rakka-accel)'s
 substrate: `DeviceActor`, `ContextActor`, `GpuRef<T>`, `GpuDispatcher`,
 `PerActorAllocator`, `PlacementActor`, `BlasActor`/`CudnnActor`/etc.
 We don't reinvent two-tier supervision; we adopt
-`rakka_cuda::error::device_supervisor_strategy()` and add the
+`rakka_accel::error::device_supervisor_strategy()` and add the
 inference-specific `Box<dyn ModelRunner>` slot on top.
 
 The remote-network tier is HTTP/2 + SSE + connection pooling, with
@@ -142,7 +142,7 @@ recommended preset shapes:
 
 | Preset                | What you get                                                 | What you skip               |
 |-----------------------|--------------------------------------------------------------|-----------------------------|
-| `remote-only`         | OpenAI + Anthropic + Gemini + LiteLLM + pipeline + rate-limiting / circuit-breaker / cost tracking | All GPU code (cudarc, rakka-cuda, candle, pyo3) |
+| `remote-only`         | OpenAI + Anthropic + Gemini + LiteLLM + pipeline + rate-limiting / circuit-breaker / cost tracking | All GPU code (cudarc, rakka-accel, candle, pyo3) |
 | `default-prod`        | vLLM + TensorRT + ORT + OpenAI + Anthropic + pipeline        | Other GPU runtimes; LiteLLM; Gemini |
 | `all-runtimes`        | Everything                                                   | —                           |
 
@@ -155,7 +155,7 @@ inference                                              ← rollup; one dep, feat
    ├── inference-core                                  ← traits, types, no actor / GPU / HTTP deps
    │
    ├── inference-runtime                               ← gateway, request, dp-coordinator,
-   │      [feature: local-gpu → rakka-cuda]              engine-core, worker (two-tier),
+   │      [feature: local-gpu → rakka-accel]              engine-core, worker (two-tier),
    │                                                    placement, deployment-mgr, metrics
    │
    ├── inference-remote-core                           ← rate limiter (GCounter CRDT),
@@ -170,10 +170,10 @@ inference                                              ← rollup; one dep, feat
    │                                                    workspace build
    │
    ├── inference-python-bridge                         ← PythonGpuBridge + python-pinned dispatcher
-   │      [feature: python → pyo3]                       (will lift to rakka-cuda F4 — see TODO)
+   │      [feature: python → pyo3]                       (will lift to rakka-accel F4 — see TODO)
    │
    ├── inference-pipeline                              ← rakka-streams + re-export of
-   │      [feature: cuda-patterns → rakka-cuda-patterns] DynamicBatchingServer / InferenceCascade /
+   │      [feature: cuda-patterns → rakka-accel-patterns] DynamicBatchingServer / InferenceCascade /
    │                                                    ModelReplicaPool / FairShareScheduler /
    │                                                    ModelHotSwapServer / SpeculativeDecoder
    │
@@ -196,7 +196,7 @@ inference = { workspace = true, features = ["openai", "anthropic", "pipeline"] }
 ```toml
 # Local Candle + remote OpenAI fallback:
 inference = { workspace = true, features = ["candle", "openai", "pipeline"] }
-# (Pulls rakka-cuda + cudarc + candle-* automatically via the `candle` feature.)
+# (Pulls rakka-accel + cudarc + candle-* automatically via the `candle` feature.)
 ```
 
 ```toml
@@ -215,10 +215,10 @@ and let the feature graph compute *deps*.
 
 The `local-gpu` feature wires `inference-runtime`'s `WorkerActor` /
 `ContextActor` two-tier supervision directly to
-`rakka_cuda::error::device_supervisor_strategy()`. The supervisor
+`rakka_accel::error::device_supervisor_strategy()`. The supervisor
 recognizes panic-string markers (`ContextPoisoned`, `OutOfMemory`,
 `Unrecoverable`) and routes them to `Restart` / `Resume` / `Stop` —
-exactly what `rakka-cuda` does for its own `DeviceActor` ↔
+exactly what `rakka-accel` does for its own `DeviceActor` ↔
 `ContextActor` pair. No reinvention.
 
 ### Distributed rate limiting that actually works in a cluster
@@ -240,7 +240,7 @@ provider's outage.
 ### Pipelines for free
 
 The `cuda-patterns` feature on the rollup makes
-[`rakka-cuda-patterns`](../rakka-cuda/crates/rakka-cuda-patterns/)
+[`rakka-accel-patterns`](../rakka-accel/crates/rakka-accel-patterns/)
 visible as `inference::cuda_patterns`:
 
 ```rust
@@ -259,14 +259,14 @@ architecture doc.
 The dependency-budget invariant is enforced by the feature graph:
 
 ```sh
-$ cargo tree -p inference --features remote-only --no-default-features | grep -E 'cudarc|rakka-cuda|candle|pyo3'
+$ cargo tree -p inference --features remote-only --no-default-features | grep -E 'cudarc|rakka-accel|candle|pyo3'
 $  # ← no output: zero GPU deps
 ```
 
 Because the inference crates are layered (core → runtime → remote-core
 → per-runtime → rollup), a remote-only build skips all of
 `inference-runtime-{vllm,tensorrt,ort,candle,cudarc,mistralrs}`,
-`inference-python-bridge`, `rakka-cuda`, and the entire cudarc dep
+`inference-python-bridge`, `rakka-accel`, and the entire cudarc dep
 tree. **Any** consumer can pick the *exact* runtime mix without
 dragging unrelated system libraries into their binary.
 
@@ -345,6 +345,32 @@ retry-after, and circuit-breaker open after consecutive 5xx.
 | Pipeline (rakka-streams + cuda-patterns) | ✅ re-export shim + reference hybrid graph                                                |
 | CLI (`rakka serve`)             | ✅ TOML config → ActorSystem → gateway; `cost-report`/`rotate-credentials` are stubs         |
 | Python bindings                 | 🟡 PyO3 skeleton (`Cluster`, `Deployment`); decorator surface deferred                       |
+
+---
+
+## AI-assisted development
+
+If you're using Claude Code, Cursor, or another AI coding assistant on
+a project that depends on `rakka-inference`, install our
+**[ai-skills bundle](ai-skills/)**:
+
+```sh
+/plugin install /path/to/rakka-inference/ai-skills
+```
+
+Seven skills cover the consumer-facing surface — quickstart, choosing
+a runtime, wiring remote providers, composing pipelines, deploying to
+production, troubleshooting typed errors, and extending with a new
+backend. Each `SKILL.md` is a thin router into the canonical docs
+(this README, the per-crate READMEs, the architecture RFC), so it
+stays in sync with the code instead of restating API surfaces that
+belong in rustdoc.
+
+The companion [rakka ai-skills bundle](https://github.com/rustakka/rakka/tree/main/ai-skills)
+ships skills for actor design, supervision, persistence, clustering,
+and Python bindings. Install both bundles together when you're
+building a service that uses both rakka primitives and rakka-inference
+runtimes.
 
 ---
 

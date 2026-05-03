@@ -16,7 +16,7 @@
 | Build                                                          | Result                                            |
 |----------------------------------------------------------------|---------------------------------------------------|
 | `cargo build -p inference-runtime-candle` (default)            | Stub.                                             |
-| `cargo build -p inference-runtime-candle --features candle`    | Pulls `candle-core`, `candle-nn`, `candle-transformers`, and `rakka-cuda` for `GpuDispatcher` + `PerActorAllocator`. |
+| `cargo build -p inference-runtime-candle --features candle`    | Pulls `candle-core`, `candle-nn`, `candle-transformers`, and `rakka-accel` for `GpuDispatcher` + `PerActorAllocator`. |
 
 ## Configuration
 
@@ -30,13 +30,13 @@ let cfg = CandleConfig {
 };
 ```
 
-## How it integrates with rakka-cuda
+## How it integrates with rakka-accel
 
 The runner uses upstream substrate, not local re-implementations:
 
-- `rakka_cuda::dispatcher::GpuDispatcher` for thread pinning
-- `rakka_cuda::stream::PerActorAllocator` for per-request stream allocation
-- `rakka_cuda::device::DeviceActor` two-tier supervision (via the
+- `rakka_accel::cuda::dispatcher::GpuDispatcher` for thread pinning
+- `rakka_accel::cuda::stream::PerActorAllocator` for per-request stream allocation
+- `rakka_accel::cuda::device::DeviceActor` two-tier supervision (via the
   rollup's `cuda` feature)
 
 The Candle-specific bit is the model loader and the forward-pass

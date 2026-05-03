@@ -2660,7 +2660,7 @@ dependencies = [
 
 [[package]]
 name = "inference"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "inference-core",
  "inference-pipeline",
@@ -2676,22 +2676,22 @@ dependencies = [
  "inference-runtime-tensorrt",
  "inference-runtime-vllm",
  "inference-testkit",
- "rakka-cuda",
- "rakka-cuda-patterns",
+ "rakka-accel",
+ "rakka-accel-patterns",
 ]
 
 [[package]]
 name = "inference-cli"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "anyhow",
  "clap",
  "inference",
  "inference-core",
  "inference-runtime",
- "rakka",
  "rakka-config",
  "rakka-core",
+ "rakka-rs",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
@@ -2703,7 +2703,7 @@ dependencies = [
 
 [[package]]
 name = "inference-core"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "bytes",
@@ -2718,13 +2718,13 @@ dependencies = [
 
 [[package]]
 name = "inference-pipeline"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "futures",
  "inference-core",
  "inference-runtime",
- "rakka-cuda-patterns",
+ "rakka-accel-patterns",
  "rakka-streams",
  "tokio",
  "tracing",
@@ -2732,7 +2732,7 @@ dependencies = [
 
 [[package]]
 name = "inference-py-bindings"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "inference-core",
  "pyo3",
@@ -2741,7 +2741,7 @@ dependencies = [
 
 [[package]]
 name = "inference-python-bridge"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "inference-core",
  "parking_lot",
@@ -2751,7 +2751,7 @@ dependencies = [
 
 [[package]]
 name = "inference-remote-core"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -2763,9 +2763,9 @@ dependencies = [
  "hyper",
  "inference-core",
  "parking_lot",
- "rakka",
  "rakka-core",
  "rakka-distributed-data",
+ "rakka-rs",
  "reqwest 0.12.28",
  "secrecy",
  "serde",
@@ -2780,7 +2780,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -2790,12 +2790,12 @@ dependencies = [
  "futures",
  "inference-core",
  "parking_lot",
- "rakka",
+ "rakka-accel",
  "rakka-cluster-tools",
  "rakka-config",
  "rakka-core",
- "rakka-cuda",
  "rakka-distributed-data",
+ "rakka-rs",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
@@ -2807,7 +2807,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-anthropic"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -2828,7 +2828,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-candle"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "candle-core 0.8.4",
@@ -2836,25 +2836,25 @@ dependencies = [
  "candle-transformers",
  "inference-core",
  "inference-runtime",
- "rakka-cuda",
+ "rakka-accel",
  "serde",
 ]
 
 [[package]]
 name = "inference-runtime-cudarc"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "cudarc",
  "inference-core",
  "inference-runtime",
- "rakka-cuda",
+ "rakka-accel",
  "serde",
 ]
 
 [[package]]
 name = "inference-runtime-gemini"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -2875,7 +2875,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-litellm"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -2890,7 +2890,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-mistralrs"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "inference-core",
@@ -2901,7 +2901,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-openai"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -2925,7 +2925,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-ort"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "inference-core",
@@ -2936,7 +2936,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-tensorrt"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "inference-core",
@@ -2946,7 +2946,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-vllm"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "inference-core",
@@ -2957,7 +2957,7 @@ dependencies = [
 
 [[package]]
 name = "inference-testkit"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "futures",
@@ -4455,17 +4455,58 @@ dependencies = [
 ]
 
 [[package]]
-name = "rakka"
-version = "0.2.0"
+name = "rakka-accel"
+version = "0.2.1"
 dependencies = [
+ "async-trait",
+ "rakka-accel-cuda",
+ "rakka-config",
+ "rakka-core",
+ "thiserror 1.0.69",
+ "tokio",
+]
+
+[[package]]
+name = "rakka-accel-cuda"
+version = "0.2.1"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "bitflags 2.11.1",
+ "cudarc",
+ "futures",
+ "futures-util",
+ "lru",
+ "parking_lot",
  "rakka-config",
  "rakka-core",
  "rakka-macros",
+ "rakka-rs",
+ "thiserror 1.0.69",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+]
+
+[[package]]
+name = "rakka-accel-patterns"
+version = "0.2.1"
+dependencies = [
+ "async-trait",
+ "parking_lot",
+ "rakka-accel-cuda",
+ "rakka-config",
+ "rakka-core",
+ "rakka-macros",
+ "rakka-rs",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
 name = "rakka-cluster"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "bincode",
@@ -4482,7 +4523,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-cluster-tools"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "parking_lot",
@@ -4495,7 +4536,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-config"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "serde",
  "serde_json",
@@ -4505,7 +4546,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-core"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "bincode",
@@ -4528,46 +4569,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "rakka-cuda"
-version = "0.0.1"
-dependencies = [
- "arc-swap",
- "async-trait",
- "bitflags 2.11.1",
- "cudarc",
- "futures",
- "futures-util",
- "lru",
- "parking_lot",
- "rakka",
- "rakka-config",
- "rakka-core",
- "rakka-macros",
- "thiserror 1.0.69",
- "tokio",
- "tokio-stream",
- "tracing",
-]
-
-[[package]]
-name = "rakka-cuda-patterns"
-version = "0.0.1"
-dependencies = [
- "async-trait",
- "parking_lot",
- "rakka",
- "rakka-config",
- "rakka-core",
- "rakka-cuda",
- "rakka-macros",
- "thiserror 1.0.69",
- "tokio",
- "tracing",
-]
-
-[[package]]
 name = "rakka-distributed-data"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "parking_lot",
@@ -4580,7 +4583,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-macros"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4589,7 +4592,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-remote"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "bincode",
@@ -4609,8 +4612,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rakka-rs"
+version = "0.2.1"
+dependencies = [
+ "rakka-config",
+ "rakka-core",
+ "rakka-macros",
+]
+
+[[package]]
 name = "rakka-streams"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "async-trait",
  "bytes",
@@ -4908,7 +4920,7 @@ checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
 
 [[package]]
 name = "remote_only_demo"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "anyhow",
  "arc-swap",
@@ -7739,7 +7751,7 @@ checksum = "1ffae5123b2d3fc086436f8834ae3ab053a283cfac8fe0a0b8eaae044768a4c4"
 
 [[package]]
 name = "xtask"
-version = "0.1.0"
+version = "0.2.1"
 dependencies = [
  "anyhow",
  "clap",

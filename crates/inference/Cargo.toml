@@ -1,6 +1,6 @@
 [package]
 name = "inference"
-version = "0.1.0"
+version = "0.2.1"
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
@@ -13,8 +13,8 @@ default = []
 vllm      = ["dep:inference-runtime-vllm",      "inference-runtime-vllm/vllm"]
 tensorrt  = ["dep:inference-runtime-tensorrt",  "inference-runtime-tensorrt/tensorrt"]
 ort       = ["dep:inference-runtime-ort",       "inference-runtime-ort/ort"]
-candle    = ["dep:inference-runtime-candle",    "inference-runtime-candle/candle", "cuda"]
-cudarc    = ["dep:inference-runtime-cudarc",    "inference-runtime-cudarc/cudarc", "cuda"]
+candle    = ["dep:inference-runtime-candle",    "inference-runtime-candle/candle", "accel"]
+cudarc    = ["dep:inference-runtime-cudarc",    "inference-runtime-cudarc/cudarc", "accel"]
 mistralrs = ["dep:inference-runtime-mistralrs", "inference-runtime-mistralrs/mistralrs"]
 
 # Remote runtimes (no system deps; safe to enable on any host)
@@ -26,20 +26,27 @@ litellm   = ["dep:inference-runtime-litellm", "openai"]
 # Cross-cutting
 pipeline      = ["dep:inference-pipeline"]
 testkit       = ["dep:inference-testkit"]
-# Pulls in rakka-cuda + rakka-cuda-patterns for callers that want the
-# upstream substrate visible through `inference::cuda` and
-# `inference::cuda_patterns`. Implied by `candle` / `cudarc`.
-cuda          = ["dep:rakka-cuda", "inference-runtime/local-gpu"]
-cuda-patterns = ["dep:rakka-cuda-patterns", "pipeline", "inference-pipeline/cuda-patterns"]
+# Pulls in rakka-accel (with the CUDA backend re-exported at
+# `rakka_accel::cuda`) and the rakka-accel-patterns blueprints so
+# callers can reach `inference::accel::*` and
+# `inference::accel_patterns::*` directly. Implied by `candle` /
+# `cudarc`. Off by default — `remote-only` builds skip these and
+# therefore compile no GPU deps at all.
+accel          = ["dep:rakka-accel", "rakka-accel/cuda", "inference-runtime/local-gpu"]
+accel-patterns = ["dep:rakka-accel-patterns", "pipeline", "inference-pipeline/cuda-patterns"]
+# Back-compat aliases that match the v0.1 names. Will be removed in
+# v0.4. Prefer `accel` / `accel-patterns`.
+cuda          = ["accel"]
+cuda-patterns = ["accel-patterns"]
 
 # Aggregates per doc §10.5
 all-native      = ["tensorrt", "ort", "candle", "cudarc", "mistralrs"]
 all-python      = ["vllm"]
 all-local       = ["all-native", "all-python"]
 all-remote      = ["openai", "anthropic", "gemini", "litellm"]
-all-runtimes    = ["all-local", "all-remote", "cuda-patterns"]
+all-runtimes    = ["all-local", "all-remote", "accel-patterns"]
 default-prod    = ["vllm", "tensorrt", "ort", "openai", "anthropic", "pipeline"]
-# remote-only deliberately excludes `cuda` and `cuda-patterns` so the
+# remote-only deliberately excludes `accel` / `accel-patterns` so the
 # resulting binary pulls no GPU deps whatsoever.
 remote-only     = ["all-remote", "pipeline"]
 
@@ -62,6 +69,6 @@ inference-runtime-litellm   = { workspace = true, optional = true }
 inference-pipeline          = { workspace = true, optional = true }
 inference-testkit           = { workspace = true, optional = true }
 
-# Upstream rakka-cuda re-exports (gated on `cuda` / `cuda-patterns`).
-rakka-cuda          = { workspace = true, optional = true }
-rakka-cuda-patterns = { workspace = true, optional = true }
+# Upstream rakka-accel re-exports (gated on `cuda` / `cuda-patterns`).
+rakka-accel          = { workspace = true, optional = true }
+rakka-accel-patterns = { workspace = true, optional = true }

@@ -1,13 +1,13 @@
 [package]
 name = "inference-runtime-candle"
-version = "0.1.0"
+version = "0.2.1"
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 
 [features]
 default = []
-# Pulls in `candle-*` crates plus rakka-cuda's GpuDispatcher /
+# Pulls in `candle-*` crates plus rakka-accel's GpuDispatcher /
 # PerActorAllocator substrate so the runner's thread-pinning and
 # stream allocation reuse the upstream primitives instead of rolling
 # their own.
@@ -15,7 +15,7 @@ candle  = [
   "dep:candle-core",
   "dep:candle-nn",
   "dep:candle-transformers",
-  "dep:rakka-cuda",
+  "dep:rakka-accel",
 ]
 
 [dependencies]
@@ -26,4 +26,4 @@ serde               = { workspace = true }
 candle-core         = { workspace = true, optional = true }
 candle-nn           = { workspace = true, optional = true }
 candle-transformers = { workspace = true, optional = true }
-rakka-cuda          = { workspace = true, optional = true }
+rakka-accel          = { workspace = true, optional = true }

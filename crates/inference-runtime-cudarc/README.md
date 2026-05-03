@@ -1,6 +1,6 @@
 # inference-runtime-cudarc
 
-> Direct CUDA kernel dispatch via `cudarc` and `rakka-cuda`'s kernel
+> Direct CUDA kernel dispatch via `cudarc` and `rakka-accel`'s kernel
 > actors. The escape hatch for novel architectures, research code, and
 > custom CUDA kernel packages that don't fit any framework.
 
@@ -17,7 +17,7 @@
 | Build                                                          | Result                                            |
 |----------------------------------------------------------------|---------------------------------------------------|
 | `cargo build -p inference-runtime-cudarc` (default)            | Stub.                                             |
-| `cargo build -p inference-runtime-cudarc --features cudarc`    | Pulls `cudarc` + `rakka-cuda`.                    |
+| `cargo build -p inference-runtime-cudarc --features cudarc`    | Pulls `cudarc` + `rakka-accel`.                    |
 
 ## What it gives you
 
@@ -31,8 +31,8 @@ let cfg = CudarcConfig {
 ```
 
 The runner doesn't manage a CUDA context itself — that lives in
-`rakka_cuda::device::DeviceActor`. The runner simply posts typed
-kernel messages (e.g. `rakka_cuda::kernel::BlasMsg::Sgemm`) to the
+`rakka_accel::cuda::device::DeviceActor`. The runner simply posts typed
+kernel messages (e.g. `rakka_accel::cuda::kernel::BlasMsg::Sgemm`) to the
 appropriate child actor and lifts replies into `TokenChunk`s.
 
 A canonical hand-roll:
@@ -40,10 +40,10 @@ A canonical hand-roll:
 ```rust
 // Inside the runner's execute() body, gated on `feature = "cudarc"`:
 //
-// 1. Pin to a thread via rakka_cuda::dispatcher::GpuDispatcher.
-// 2. Allocate a stream from rakka_cuda::stream::PerActorAllocator.
+// 1. Pin to a thread via rakka_accel::cuda::dispatcher::GpuDispatcher.
+// 2. Allocate a stream from rakka_accel::cuda::stream::PerActorAllocator.
 // 3. Launch your kernel via cudarc::driver::CudaSlice + cudarc::nvrtc.
-// 4. Sync via rakka_cuda::completion::HostFnCompletion (sub-microsecond).
+// 4. Sync via rakka_accel::cuda::completion::HostFnCompletion (sub-microsecond).
 // 5. Stream tokenised output as TokenChunks.
 ```
 

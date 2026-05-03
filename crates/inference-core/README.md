@@ -52,7 +52,7 @@ impl ModelRunner for MyCustomRunner {
 - `chrono` (no-default-features, `clock` only) — for `Tokens` timestamps
 - `url` — for endpoint validation
 
-**No** `tokio`, **no** `rakka`, **no** `rakka-cuda`, **no** `pyo3`,
+**No** `tokio`, **no** `rakka`, **no** `rakka-accel`, **no** `pyo3`,
 **no** `reqwest`. This is what makes `cargo build -p inference
 --features remote-only` produce a binary with zero GPU deps — the
 foundation layer simply doesn't carry any.

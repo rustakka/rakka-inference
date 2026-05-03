@@ -44,5 +44,5 @@ default).
 
 Per the architecture doc's §13 Phase 2a, the vLLM runner is wired
 through `inference-python-bridge` once that bridge gets re-exported
-from `rakka-cuda` (planned F4). The current local `PythonGpuBridge`
+from `rakka-accel` (planned F4). The current local `PythonGpuBridge`
 implementation is a drop-in placeholder; the lift is mechanical.

@@ -21,7 +21,7 @@ ready to ship?". It runs:
 5. `cargo xtask audit --check` (vs `docs/reports/audit-baseline.json`)
 6. The **remote-only invariant** — the dep tree of an `inference
    --features remote-only` build must contain zero `cudarc`,
-   `rakka-cuda`, `candle`, or `pyo3` references.
+   `rakka-accel`, `candle`, or `pyo3` references.
 
 If any of these fail locally, CI will fail too.
 
@@ -70,7 +70,7 @@ BREAKING CHANGE: `inference_runtime::Worker` is now `WorkerActor`.
 
 The architectural invariant: `inference --features remote-only`
 compiles **zero** GPU dependencies. Anywhere you add a
-`rakka-cuda`-bearing dependency, gate it behind a feature so this
+`rakka-accel`-bearing dependency, gate it behind a feature so this
 invariant keeps holding.
 
 ## Developer surface (`cargo xtask`)
@@ -104,7 +104,7 @@ git commit -m "chore(audit): refresh baseline after <reason>"
 
 1. Write a crate that depends only on `inference-core` (and
    `inference-remote-core` if you're adding a remote provider, or
-   `rakka-cuda` if you're adding a local GPU runtime).
+   `rakka-accel` if you're adding a local GPU runtime).
 2. Implement `inference_core::ModelRunner`.
 3. Add the crate to `Cargo.toml` and to the rollup
    (`crates/inference/Cargo.toml`) behind a feature flag.
@@ -123,7 +123,7 @@ The `inference-core` README has a copy-paste skeleton.
 - No `unwrap()` in non-test code; use `?` or surface a typed error.
 - No `panic!`/`todo!`/`unimplemented!` in non-test code; prefer a
   documented `InferenceError::Internal("...")` so callers see why.
-- Keep `inference-core` free of `tokio` / `rakka` / `rakka-cuda` /
+- Keep `inference-core` free of `tokio` / `rakka` / `rakka-accel` /
   `pyo3` / HTTP clients. The dep budget is what makes
   `remote-only` work.
 

@@ -129,7 +129,7 @@ fn verify() -> Result<()> {
     audit(vec!["--check".into()])?;
 
     // Remote-only invariant: cargo tree must show zero GPU deps.
-    println!("==> remote-only invariant: cargo tree | grep -Ec 'cudarc|rakka-cuda|candle|pyo3' == 0");
+    println!("==> remote-only invariant: cargo tree | grep -Ec 'cudarc|rakka-accel|candle|pyo3' == 0");
     let output = Command::new(cargo_bin)
         .args([
             "tree",
@@ -148,7 +148,7 @@ fn verify() -> Result<()> {
     let leaks: Vec<&str> = tree
         .lines()
         .filter(|l| {
-            l.contains("cudarc") || l.contains("rakka-cuda") || l.contains("candle") || l.contains("pyo3")
+            l.contains("cudarc") || l.contains("rakka-accel") || l.contains("candle") || l.contains("pyo3")
         })
         .collect();
     if !leaks.is_empty() {
@@ -324,13 +324,13 @@ fn release_checklist() -> Result<()> {
     ];
     let gated_until_upstream: &[(&str, &str)] = &[
         ("inference-runtime", "depends on rakka-* crates which are not yet on crates.io"),
-        ("inference-python-bridge", "depends on rakka-cuda crates (when feature `python` is on, also pyo3)"),
-        ("inference-runtime-vllm", "depends on rakka-cuda + python-bridge"),
-        ("inference-runtime-tensorrt", "depends on rakka-cuda"),
-        ("inference-runtime-ort", "depends on rakka-cuda"),
-        ("inference-runtime-candle", "depends on rakka-cuda"),
-        ("inference-runtime-cudarc", "depends on rakka-cuda"),
-        ("inference-runtime-mistralrs", "depends on rakka-cuda"),
+        ("inference-python-bridge", "depends on rakka-accel crates (when feature `python` is on, also pyo3)"),
+        ("inference-runtime-vllm", "depends on rakka-accel + python-bridge"),
+        ("inference-runtime-tensorrt", "depends on rakka-accel"),
+        ("inference-runtime-ort", "depends on rakka-accel"),
+        ("inference-runtime-candle", "depends on rakka-accel"),
+        ("inference-runtime-cudarc", "depends on rakka-accel"),
+        ("inference-runtime-mistralrs", "depends on rakka-accel"),
         ("inference-pipeline", "depends on rakka-streams; promote when rakka publishes"),
         ("inference-testkit", "depends on rakka-testkit"),
         ("inference-cli", "depends on rakka + inference-runtime"),
@@ -350,7 +350,7 @@ fn release_checklist() -> Result<()> {
     println!(
         "release.yml uses RAKKA_INFERENCE_PUBLISH_ALLOWLIST (repo var) to control the\n\
          publish set. Default = the 'publishable now' list above. Once `rakka` and\n\
-         `rakka-cuda` ship to crates.io, set RAKKA_INFERENCE_PUBLISH_ALLOWLIST=\"\" to\n\
+         `rakka-accel` ship to crates.io, set RAKKA_INFERENCE_PUBLISH_ALLOWLIST=\"\" to\n\
          publish the full workspace in dep order."
     );
     Ok(())

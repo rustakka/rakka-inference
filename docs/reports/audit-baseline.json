@@ -2,7 +2,7 @@
   "crates": {
     "inference": {
       "files": 1,
-      "loc": 81,
+      "loc": 93,
       "unwrap_used": 0,
       "expect_used": 0,
       "panic_macro": 0,
@@ -114,7 +114,7 @@
     },
     "inference-runtime": {
       "files": 9,
-      "loc": 1262,
+      "loc": 1265,
       "unwrap_used": 0,
       "expect_used": 1,
       "panic_macro": 2,
@@ -307,7 +307,7 @@
   },
   "total": {
     "files": 67,
-    "loc": 6659,
+    "loc": 6674,
     "unwrap_used": 0,
     "expect_used": 7,
     "panic_macro": 2,

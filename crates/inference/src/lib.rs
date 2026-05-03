@@ -1,8 +1,10 @@
 //! # rakka-inference
 //!
 //! Multi-runtime GPU + remote inference as a supervised actor system
-//! on top of [rakka](https://github.com/local/rakka). See
-//! `docs/rustakka-inference-architecture-v4.md` for the design.
+//! on top of [rakka](https://github.com/rustakka/rakka) and the
+//! backend-agnostic [rakka-accel](https://github.com/rustakka/rakka-accel)
+//! compute substrate. See `docs/rustakka-inference-architecture-v4.md`
+//! for the design.
 //!
 //! This crate is a **rollup**: it re-exports the public surface of the
 //! workspace's per-runtime crates behind feature flags so downstream
@@ -54,20 +56,30 @@ pub use inference_pipeline as pipeline;
 #[cfg(feature = "testkit")]
 pub use inference_testkit as testkit;
 
-/// Re-export of the upstream `rakka-cuda` substrate so callers can
-/// reach `DeviceActor`, `ContextActor`, `GpuRef`, `GpuDispatcher`,
-/// `PerActorAllocator`, `PlacementActor`, the kernel actors, etc.,
-/// without taking a separate dependency. Doc §4 ("Foundational
-/// Mapping" — `WorkerActor` ≡ `DeviceActor`).
-#[cfg(feature = "cuda")]
-pub use rakka_cuda as cuda;
+/// Re-export of the upstream `rakka-accel` substrate so callers can
+/// reach `AccelBackend`, `AccelRef<T>`, `AccelError`, and (with the
+/// `cuda` backend re-exported at `rakka_accel::cuda`) `DeviceActor`,
+/// `ContextActor`, `GpuRef`, `GpuDispatcher`, `PerActorAllocator`,
+/// `PlacementActor`, the kernel actors, etc., without taking a
+/// separate dependency. Doc §4 ("Foundational Mapping" —
+/// `WorkerActor` ≡ `DeviceActor`).
+#[cfg(feature = "accel")]
+pub use rakka_accel as accel;
 
-/// Re-export of `rakka-cuda-patterns` so callers can compose §9
+/// Re-export of `rakka-accel-patterns` so callers can compose §9
 /// pipelines (`DynamicBatchingServer`, `InferenceCascade`,
 /// `ModelReplicaPool`, `FairShareScheduler`, `ModelHotSwapServer`,
 /// `SpeculativeDecoder`, `MoeRouter`) without a second dep.
-#[cfg(feature = "cuda-patterns")]
-pub use rakka_cuda_patterns as cuda_patterns;
+#[cfg(feature = "accel-patterns")]
+pub use rakka_accel_patterns as accel_patterns;
+
+// Back-compat aliases for the v0.1 names. Will be removed in v0.4.
+#[cfg(feature = "accel")]
+#[doc(hidden)]
+pub use rakka_accel as cuda;
+#[cfg(feature = "accel-patterns")]
+#[doc(hidden)]
+pub use rakka_accel_patterns as cuda_patterns;
 
 /// Re-export the most commonly used types so callers can `use
 /// inference::prelude::*;` and have everything they need to declare

@@ -61,10 +61,10 @@ pub enum SessionRebuildCause {
 }
 
 /// Opaque CUDA-context handle. Real local runtimes downcast to
-/// `Arc<rakka_cuda::device::DeviceState>` (which itself wraps the
+/// `Arc<rakka_accel::cuda::device::DeviceState>` (which itself wraps the
 /// `cudarc::driver::CudaContext`); tests and remote runtimes pass
 /// `None`. Kept type-erased so `inference-core` doesn't depend on
-/// `rakka-cuda`/`cudarc` — preserves the §10.4 dependency budget so
+/// `rakka-accel`/`cudarc` — preserves the §10.4 dependency budget so
 /// `inference --features remote-only` builds compile no GPU deps at
 /// all. Local-runtime crates downcast at the seam.
 pub type CudaContextHandle = Arc<dyn std::any::Any + Send + Sync>;

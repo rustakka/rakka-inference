@@ -4,12 +4,12 @@
 //! XTTS, Bark, …). Doc §2.6, §5.7, §5.9.
 //!
 //! Architecture-doc reference §10.1 places `PythonGpuBridge` in this
-//! crate. As of the rakka-cuda F1–F5 surfaces, the upstream crate
+//! crate. As of the rakka-accel F1–F5 surfaces, the upstream crate
 //! still notes the `PythonGpuBridge` as F4-deferred (see
-//! `rakka-cuda/src/lib.rs` header). We implement it here in the
-//! meantime. When rakka-cuda exposes its own `PythonGpuBridge`, this
+//! `rakka-accel/src/lib.rs` header). We implement it here in the
+//! meantime. When rakka-accel exposes its own `PythonGpuBridge`, this
 //! crate switches to a re-export — see `bridge.rs` for the lift
-//! marker (`TODO(rakka-cuda F4)`).
+//! marker (`TODO(rakka-accel F4)`).
 //!
 //! The crate is feature-gated: with `--features python` it pulls in
 //! PyO3 and exposes the real `PythonGpuBridge`. Without the feature

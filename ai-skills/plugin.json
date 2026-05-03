@@ -1,0 +1,7 @@
+{
+  "name": "rakka-inference-ai-skills",
+  "version": "0.2.1",
+  "description": "Skills for AI coding assistants working on projects that depend on rakka-inference.",
+  "homepage": "https://github.com/rustakka/rakka-inference",
+  "skills_dir": "skills"
+}

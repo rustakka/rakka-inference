@@ -1,7 +1,7 @@
 # inference-pipeline
 
 > Streams DSL adapter + a re-export shim over
-> [`rakka-cuda-patterns`](../../../rakka-cuda/crates/rakka-cuda-patterns/).
+> [`rakka-accel-patterns`](../../../rakka-accel/crates/rakka-accel-patterns/).
 > If you're composing inference graphs (§9 of the architecture doc),
 > this is the crate you reach for.
 
@@ -10,7 +10,7 @@
 The doc's §9 building blocks — dynamic batching, cascade routing,
 replica pools, fair-share scheduling, hot-swap, speculative decoding,
 MoE gating — are all *generic actor blueprints* that already live in
-`rakka-cuda-patterns`. They take user-supplied closures / trait impls
+`rakka-accel-patterns`. They take user-supplied closures / trait impls
 as the backend, so we don't reimplement them — we just plug a
 `Box<dyn ModelRunner>` into each one.
 

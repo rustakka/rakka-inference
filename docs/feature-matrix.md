@@ -21,7 +21,7 @@ actual dependency graph for you.
 | The full v3-ish production preset                  | `default-prod`                                 |
 | Everything                                         | `all-runtimes`                                 |
 | Mocking + wiremock for tests                       | `testkit` (alongside the runtimes you mock)    |
-| Reach into `rakka_cuda::*` directly                | `cuda` (re-exports as `inference::cuda`)       |
+| Reach into `rakka_accel::*` directly                | `cuda` (re-exports as `inference::cuda`)       |
 | Use `DynamicBatchingServer` / `InferenceCascade`   | `cuda-patterns` (re-exports as `inference::cuda_patterns`) |
 | Embed in Python                                    | `inference-py-bindings/python` on the bindings crate |
 
@@ -39,16 +39,16 @@ actual dependency graph for you.
 | `tensorrt`           | `inference-runtime-tensorrt`                   | `libnvinfer.so` (link-time) | Default-features-off compiles a stub. |
 | `ort`                | `inference-runtime-ort`                        | `ort`                 | ONNX Runtime via the `ort` crate. |
 | `candle`             | `inference-runtime-candle` + `cuda`            | `candle-*`, `cudarc`  | Pure-Rust transformer inference. |
-| `cudarc`             | `inference-runtime-cudarc` + `cuda`            | `cudarc`              | Direct kernel dispatch via `rakka_cuda::kernel::*`. |
+| `cudarc`             | `inference-runtime-cudarc` + `cuda`            | `cudarc`              | Direct kernel dispatch via `rakka_accel::cuda::kernel::*`. |
 | `mistralrs`          | `inference-runtime-mistralrs`                  | `mistralrs`           | Rust-native LLM runtime. |
 | `pipeline`           | `inference-pipeline`                           | `rakka-streams`       | Streams DSL adapter. |
-| `cuda`               | `rakka-cuda` re-export, `inference-runtime/local-gpu` | `cudarc`         | Use only if you want `inference::cuda::*` reachable. |
-| `cuda-patterns`      | `rakka-cuda-patterns` re-export, `pipeline`    | `cudarc`              | `DynamicBatchingServer`, `InferenceCascade`, `ModelReplicaPool`, `FairShareScheduler`, `ModelHotSwapServer`, `SpeculativeDecoder`, `MoeRouter`. |
+| `cuda`               | `rakka-accel` re-export, `inference-runtime/local-gpu` | `cudarc`         | Use only if you want `inference::cuda::*` reachable. |
+| `cuda-patterns`      | `rakka-accel-patterns` re-export, `pipeline`    | `cudarc`              | `DynamicBatchingServer`, `InferenceCascade`, `ModelReplicaPool`, `FairShareScheduler`, `ModelHotSwapServer`, `SpeculativeDecoder`, `MoeRouter`. |
 | `testkit`            | `inference-testkit`                            | `wiremock`            | `MockRunner`, OpenAI/Anthropic/Gemini wiremock fixtures. |
 
 The `candle` and `cudarc` features automatically imply `cuda` because
-their bodies use `rakka_cuda::dispatcher::GpuDispatcher` and
-`rakka_cuda::kernel::*` for thread pinning and kernel dispatch.
+their bodies use `rakka_accel::cuda::dispatcher::GpuDispatcher` and
+`rakka_accel::cuda::kernel::*` for thread pinning and kernel dispatch.
 
 ---
 
@@ -75,7 +75,7 @@ This is enforced by the feature graph:
 
 ```sh
 $ cargo tree -p inference --no-default-features --features remote-only \
-    | grep -Ec 'cudarc|rakka-cuda|candle|pyo3'
+    | grep -Ec 'cudarc|rakka-accel|candle|pyo3'
 0
 ```
 
@@ -96,16 +96,16 @@ Some crates expose their own gates so they can be consumed
 
 | Feature      | Adds                                            |
 |--------------|-------------------------------------------------|
-| `local-gpu`  | `rakka-cuda` dep; `WorkerActor` adopts upstream `device_supervisor_strategy()` |
+| `local-gpu`  | `rakka-accel` dep; `WorkerActor` adopts upstream `device_supervisor_strategy()` |
 
-Default builds compile without rakka-cuda; useful when you're embedding
+Default builds compile without rakka-accel; useful when you're embedding
 the runtime-agnostic actors into a remote-only service.
 
 ### `inference-pipeline`
 
 | Feature           | Adds                            |
 |-------------------|---------------------------------|
-| `cuda-patterns`   | `rakka-cuda-patterns` re-export |
+| `cuda-patterns`   | `rakka-accel-patterns` re-export |
 
 Without the feature you still get `request_source`, `HybridGraph`, and
 the `rakka-streams` `Source` adapter — useful for remote-only
@@ -180,4 +180,4 @@ rollup to wire it in. The 18-crate layout is *additive*: a third-party
 runtime (Bedrock, Cohere, internal proxy, custom CUDA kernel package)
 ships as a sibling crate that depends on `inference-core` and
 `inference-remote-core` (for remote) or `inference-core` +
-`rakka-cuda` (for local), without forking the workspace.
+`rakka-accel` (for local), without forking the workspace.

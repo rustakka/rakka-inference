@@ -104,7 +104,7 @@ Pure HTTP / async — no GPU, no Python:
 - `tower` for middleware composition
 - `rakka-core` + `rakka-distributed-data` for actor + CRDT
 
-Importantly, `rakka-cuda` is **not** a dependency. This crate is the
+Importantly, `rakka-accel` is **not** a dependency. This crate is the
 linchpin of the remote-only invariant: a build with `--features
 remote-only` reaches `inference-remote-core` and stops — no `cudarc`,
 no `pyo3`, no GPU code anywhere in the dep graph.

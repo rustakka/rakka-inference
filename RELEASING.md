@@ -82,7 +82,7 @@ Five jobs, in order:
    - `cargo xtask audit --check`
    - **the remote-only invariant**: `cargo tree -p inference
      --features remote-only` must contain zero `cudarc` /
-     `rakka-cuda` / `candle` / `pyo3` lines. This is the
+     `rakka-accel` / `candle` / `pyo3` lines. This is the
      architectural invariant — pull-requests that violate it fail
      CI before they reach a tag.
 
@@ -123,7 +123,7 @@ Five jobs, in order:
 ## The crates allowlist
 
 `rakka-inference` declares path dependencies on the sibling
-`rakka` and `rakka-cuda` workspaces. Until those workspaces publish
+`rakka` and `rakka-accel` workspaces. Until those workspaces publish
 to crates.io, `cargo publish` for any inference-* crate that
 transitively depends on them fails. The allowlist mechanism handles
 this:
@@ -138,14 +138,14 @@ this:
   inference-runtime-gemini
   inference-runtime-litellm
   ```
-  These six crates have no `rakka` / `rakka-cuda` dependency in
+  These six crates have no `rakka` / `rakka-accel` dependency in
   their published surface and can ship today.
 
 - **Override** via repo variable
   `RAKKA_INFERENCE_PUBLISH_ALLOWLIST`. Set on
   *Settings → Secrets and variables → Actions → Variables → New repository variable*.
 
-- **Full publish** — once `rakka` and `rakka-cuda` ship their stable
+- **Full publish** — once `rakka` and `rakka-accel` ship their stable
   versions to crates.io, set `RAKKA_INFERENCE_PUBLISH_ALLOWLIST=""`
   (empty) and the next tag will publish every member crate in dep
   order.
@@ -272,6 +272,6 @@ cold publish of all 18 crates takes ~10 minutes.
   `release.yml` job `publish-pypi`).
 - **`semver-checks` hard-fail** — warn-only at `0.x`. Flip
   `RAKKA_INFERENCE_WORKSPACE_VERSION` to `1.` to arm.
-- **Coordinated cross-workspace releases** with `rakka` / `rakka-cuda`
+- **Coordinated cross-workspace releases** with `rakka` / `rakka-accel`
   — handled today by the allowlist; flip to full when those workspaces
   publish.
