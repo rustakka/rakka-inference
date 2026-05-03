@@ -133,7 +133,7 @@ jobs:
           cp LICENSE "$stage/" 2>/dev/null || true
           cp RELEASING.md "$stage/" 2>/dev/null || true
           7z a "${stage}.zip" "$stage"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: rakka-binaries-${{ matrix.target }}
           path: |
