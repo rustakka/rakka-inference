@@ -84,7 +84,10 @@ pub struct Serving {
 
 impl Default for Serving {
     fn default() -> Self {
-        Self { max_concurrent: 32, on_capacity_exhausted: CapacityPolicy::Queue }
+        Self {
+            max_concurrent: 32,
+            on_capacity_exhausted: CapacityPolicy::Queue,
+        }
     }
 }
 

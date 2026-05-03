@@ -5,8 +5,8 @@
 //! **restartable** and owns the runtime-specific resources (CUDA
 //! context, weights, etc). When the runner reports
 //! `CudaContextPoisoned` the parent panics with the
-//! [`rakka_accel::cuda::error::CONTEXT_POISONED_TAG`] marker so that
-//! [`rakka_accel::cuda::error::device_supervisor_strategy`] routes the
+//! `rakka_accel::cuda::error::CONTEXT_POISONED_TAG` marker so that
+//! `rakka_accel::cuda::error::device_supervisor_strategy` routes the
 //! failure to `Directive::Restart`.
 //!
 //! The supervision *policy* (3 retries / 60s, decider, marker tags) is
@@ -76,7 +76,11 @@ impl WorkerActor {
     where
         F: Fn() -> WorkerSlot + Send + Sync + 'static,
     {
-        Self { slot_factory: Box::new(slot_factory), child: None, parent_to_child_seq: 0 }
+        Self {
+            slot_factory: Box::new(slot_factory),
+            child: None,
+            parent_to_child_seq: 0,
+        }
     }
 
     fn spawn_child(&mut self, ctx: &mut Context<Self>) {
@@ -87,10 +91,7 @@ impl WorkerActor {
         let name = format!("ctx-{}", self.parent_to_child_seq);
         let cell = Mutex::new(Some((self.slot_factory)()));
         let props = Props::create(move || {
-            let s = cell
-                .lock()
-                .take()
-                .expect("worker context factory invoked twice");
+            let s = cell.lock().take().expect("worker context factory invoked twice");
             ContextActor::new(s)
         });
         match ctx.spawn(props, &name) {
@@ -184,7 +185,9 @@ pub struct ContextActor {
 
 impl ContextActor {
     pub fn new(slot: WorkerSlot) -> Self {
-        Self { runner: Arc::new(AsyncMutex::new(slot.runner)) }
+        Self {
+            runner: Arc::new(AsyncMutex::new(slot.runner)),
+        }
     }
 }
 
@@ -216,10 +219,7 @@ impl Actor for ContextActor {
                             if matches!(e, InferenceError::CudaContextPoisoned(_)) {
                                 let _ = output.send(Err(e.clone())).await;
                                 #[cfg(feature = "local-gpu")]
-                                panic!(
-                                    "{}: {e}",
-                                    rakka_accel::cuda::error::CONTEXT_POISONED_TAG
-                                );
+                                panic!("{}: {e}", rakka_accel::cuda::error::CONTEXT_POISONED_TAG);
                                 #[cfg(not(feature = "local-gpu"))]
                                 panic!("ContextPoisoned: {e}");
                             }

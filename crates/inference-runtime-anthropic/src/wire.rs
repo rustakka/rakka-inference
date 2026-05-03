@@ -51,9 +51,9 @@ impl MessagesRequest<'_> {
             .to_string();
             let content = match &m.content {
                 MessageContent::Text(t) => serde_json::Value::String(t.clone()),
-                MessageContent::Parts(parts) => serde_json::Value::Array(
-                    parts.iter().map(serialize_part).collect(),
-                ),
+                MessageContent::Parts(parts) => {
+                    serde_json::Value::Array(parts.iter().map(serialize_part).collect())
+                }
             };
             messages.push(MessagesMessage { role, content });
         }
@@ -89,14 +89,28 @@ fn serialize_part(p: &ContentPart) -> serde_json::Value {
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum SseEvent {
-    MessageStart { message: MessageStart },
-    ContentBlockStart { index: u32 },
-    ContentBlockDelta { index: u32, delta: BlockDelta },
-    ContentBlockStop { index: u32 },
-    MessageDelta { delta: MessageDelta, usage: Option<UsageDelta> },
+    MessageStart {
+        message: MessageStart,
+    },
+    ContentBlockStart {
+        index: u32,
+    },
+    ContentBlockDelta {
+        index: u32,
+        delta: BlockDelta,
+    },
+    ContentBlockStop {
+        index: u32,
+    },
+    MessageDelta {
+        delta: MessageDelta,
+        usage: Option<UsageDelta>,
+    },
     MessageStop,
     Ping,
-    Error { error: AnthropicErrorBody },
+    Error {
+        error: AnthropicErrorBody,
+    },
 }
 
 #[derive(Debug, Deserialize)]
@@ -153,6 +167,12 @@ pub struct MessagesResponse {
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ResponseContent {
-    Text { text: String },
-    ToolUse { id: String, name: String, input: serde_json::Value },
+    Text {
+        text: String,
+    },
+    ToolUse {
+        id: String,
+        name: String,
+        input: serde_json::Value,
+    },
 }

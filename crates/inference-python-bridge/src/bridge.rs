@@ -35,7 +35,10 @@ pub struct PythonGpuBridge {
 
 impl PythonGpuBridge {
     pub fn new(interpreter_id: u64) -> Arc<Self> {
-        Arc::new(Self { interpreter_id, serializer: Mutex::new(()) })
+        Arc::new(Self {
+            interpreter_id,
+            serializer: Mutex::new(()),
+        })
     }
 
     pub fn interpreter_id(&self) -> u64 {

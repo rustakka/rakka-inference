@@ -18,7 +18,5 @@
 pub mod mock_openai;
 pub mod mock_runner;
 
-pub use mock_openai::{
-    inject_5xx_once, inject_429_once, mount_chat_happy_path, MockOpenAi,
-};
+pub use mock_openai::{inject_429_once, inject_5xx_once, mount_chat_happy_path, MockOpenAi};
 pub use mock_runner::{MockRunner, MockScript};

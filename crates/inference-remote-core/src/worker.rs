@@ -103,9 +103,7 @@ impl RemoteWorkerActor {
                     return Ok(());
                 }
                 Err(err) => {
-                    if let RetryDecision::Retry { after } =
-                        self.slot.retry_engine.decide(attempt, &err)
-                    {
+                    if let RetryDecision::Retry { after } = self.slot.retry_engine.decide(attempt, &err) {
                         tokio::time::sleep(after).await;
                         attempt.0 += 1;
                         continue;
@@ -143,9 +141,7 @@ impl Actor for RemoteWorkerActor {
     }
 }
 
-fn dummy_permit_reply()
-    -> tokio::sync::oneshot::Sender<Result<crate::rate_limit::Permit, InferenceError>>
-{
+fn dummy_permit_reply() -> tokio::sync::oneshot::Sender<Result<crate::rate_limit::Permit, InferenceError>> {
     let (tx, rx) = tokio::sync::oneshot::channel();
     drop(rx);
     tx

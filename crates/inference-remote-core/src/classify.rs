@@ -21,10 +21,19 @@ pub fn classify_http_status(
     body: Option<String>,
 ) -> InferenceError {
     match status {
-        429 => InferenceError::RateLimited { provider, retry_after },
-        400 => InferenceError::BadRequest { message: body.unwrap_or_else(|| "bad request".into()) },
-        401 => InferenceError::Unauthorized { message: body.unwrap_or_else(|| "unauthorized".into()) },
-        403 => InferenceError::Forbidden { message: body.unwrap_or_else(|| "forbidden".into()) },
+        429 => InferenceError::RateLimited {
+            provider,
+            retry_after,
+        },
+        400 => InferenceError::BadRequest {
+            message: body.unwrap_or_else(|| "bad request".into()),
+        },
+        401 => InferenceError::Unauthorized {
+            message: body.unwrap_or_else(|| "unauthorized".into()),
+        },
+        403 => InferenceError::Forbidden {
+            message: body.unwrap_or_else(|| "forbidden".into()),
+        },
         s if (500..600).contains(&s) => InferenceError::ServerError { status: s, body },
         s => InferenceError::Internal(format!("unexpected status {s}: {body:?}")),
     }
@@ -38,13 +47,11 @@ pub fn parse_retry_after(value: Option<&str>) -> Option<Duration> {
         return Some(Duration::from_secs(secs));
     }
     // HTTP-date parsing — keep it light, fall back to None on miss.
-    chrono::DateTime::parse_from_rfc2822(v.trim())
-        .ok()
-        .and_then(|t| {
-            let now = chrono::Utc::now().timestamp();
-            let then = t.timestamp();
-            (then > now).then(|| Duration::from_secs((then - now) as u64))
-        })
+    chrono::DateTime::parse_from_rfc2822(v.trim()).ok().and_then(|t| {
+        let now = chrono::Utc::now().timestamp();
+        let then = t.timestamp();
+        (then > now).then(|| Duration::from_secs((then - now) as u64))
+    })
 }
 
 #[cfg(test)]

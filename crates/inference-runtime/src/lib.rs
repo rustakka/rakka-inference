@@ -31,12 +31,10 @@ pub use deployment_manager::{
 pub use dp_coordinator::{DpCoordinatorActor, DpCoordinatorMsg, RouteTarget};
 pub use engine_core::{AddRequest, EngineCoreActor, EngineCoreMsg, LocalEngineConfig};
 pub use gateway::{spawn_gateway, ApiGatewayActor, ApiGatewayMsg, GatewayConfig};
-pub use metrics::{
-    DeploymentMetrics, FailureKind, MetricsActor, MetricsMsg, MetricsSnapshot,
-};
+pub use metrics::{DeploymentMetrics, FailureKind, MetricsActor, MetricsMsg, MetricsSnapshot};
 pub use placement::{
     DeploymentPlacementActor, NodeAssignment, PlacementConstraints, PlacementError, PlacementMsg,
     PlacementResult,
 };
-pub use request::{Route, RequestActor, RequestMsg, StreamingResponse};
+pub use request::{RequestActor, RequestMsg, Route, StreamingResponse};
 pub use worker::{ContextActor, ContextMsg, WorkerActor, WorkerMsg, WorkerSlot};

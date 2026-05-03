@@ -90,12 +90,9 @@ impl CircuitBreakerHandle {
             CircuitState::Closed | CircuitState::HalfOpen => Ok(()),
             CircuitState::Open => {
                 let opened_ns = self.opened_at_ns.load(Ordering::Acquire);
-                let opened_at_unix_ms = chrono::Utc::now()
-                    .timestamp_millis()
-                    .saturating_sub(
-                        (self.epoch.elapsed().as_nanos() as u64).saturating_sub(opened_ns) as i64
-                            / 1_000_000,
-                    ) as u64;
+                let opened_at_unix_ms = chrono::Utc::now().timestamp_millis().saturating_sub(
+                    (self.epoch.elapsed().as_nanos() as u64).saturating_sub(opened_ns) as i64 / 1_000_000,
+                ) as u64;
                 let retry_at_unix_ms =
                     opened_at_unix_ms.saturating_add(self.config.open_duration.as_millis() as u64);
                 Err(InferenceError::CircuitOpen {
@@ -155,9 +152,15 @@ impl CircuitBreakerHandle {
 
 #[derive(Debug)]
 pub enum CircuitBreakerMsg {
-    Check { reply: oneshot::Sender<Result<(), InferenceError>> },
-    GetState { reply: oneshot::Sender<CircuitState> },
-    ForceOpen { duration: Duration },
+    Check {
+        reply: oneshot::Sender<Result<(), InferenceError>>,
+    },
+    GetState {
+        reply: oneshot::Sender<CircuitState>,
+    },
+    ForceOpen {
+        duration: Duration,
+    },
 }
 
 pub struct CircuitBreakerActor {
@@ -211,7 +214,10 @@ mod tests {
         for _ in 0..2 {
             let _ = h
                 .run(|| async {
-                    Err::<(), _>(InferenceError::ServerError { status: 503, body: None })
+                    Err::<(), _>(InferenceError::ServerError {
+                        status: 503,
+                        body: None,
+                    })
                 })
                 .await;
         }
@@ -230,7 +236,12 @@ mod tests {
             },
         );
         let _ = h
-            .run(|| async { Err::<(), _>(InferenceError::ServerError { status: 500, body: None }) })
+            .run(|| async {
+                Err::<(), _>(InferenceError::ServerError {
+                    status: 500,
+                    body: None,
+                })
+            })
             .await;
         assert_eq!(h.state(), CircuitState::Open);
         tokio::time::sleep(Duration::from_millis(20)).await;

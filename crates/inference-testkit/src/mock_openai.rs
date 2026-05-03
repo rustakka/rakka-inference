@@ -14,7 +14,9 @@ pub struct MockOpenAi {
 
 impl MockOpenAi {
     pub async fn start() -> Self {
-        Self { server: MockServer::start().await }
+        Self {
+            server: MockServer::start().await,
+        }
     }
 
     pub fn url(&self) -> String {

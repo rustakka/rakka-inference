@@ -31,7 +31,10 @@ pub struct LocalEngineConfig {
 
 impl Default for LocalEngineConfig {
     fn default() -> Self {
-        Self { max_concurrent: 32, queue_capacity: 1024 }
+        Self {
+            max_concurrent: 32,
+            queue_capacity: 1024,
+        }
     }
 }
 
@@ -45,7 +48,9 @@ pub enum EngineCoreMsg {
     Add(AddRequest),
     /// Request a load-score snapshot. Used by `DpCoordinatorActor`'s
     /// periodic poll.
-    GetLoad { reply: oneshot::Sender<f64> },
+    GetLoad {
+        reply: oneshot::Sender<f64>,
+    },
 }
 
 pub struct EngineCoreActor {

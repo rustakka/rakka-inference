@@ -29,7 +29,9 @@ pub struct RouteTarget {
 
 impl std::fmt::Debug for RouteTarget {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("RouteTarget").field("load", &self.load).finish_non_exhaustive()
+        f.debug_struct("RouteTarget")
+            .field("load", &self.load)
+            .finish_non_exhaustive()
     }
 }
 
@@ -64,7 +66,9 @@ pub struct DpCoordinatorActor {
 
 impl Default for DpCoordinatorActor {
     fn default() -> Self {
-        Self { state: Arc::new(RwLock::new(CoordinatorState::default())) }
+        Self {
+            state: Arc::new(RwLock::new(CoordinatorState::default())),
+        }
     }
 }
 
@@ -74,7 +78,12 @@ impl DpCoordinatorActor {
     }
 
     fn register(&self, deployment: String, target: RouteTarget) {
-        self.state.write().routes.entry(deployment).or_default().push(target);
+        self.state
+            .write()
+            .routes
+            .entry(deployment)
+            .or_default()
+            .push(target);
     }
 
     fn deregister(&self, deployment: &str, path: &rakka_core::actor::ActorPath) {
@@ -95,9 +104,11 @@ impl DpCoordinatorActor {
 
     fn pick(&self, deployment: &str) -> Result<RouteTarget, InferenceError> {
         let st = self.state.read();
-        let candidates = st.routes.get(deployment).filter(|v| !v.is_empty()).ok_or_else(|| {
-            InferenceError::Internal(format!("no engine for deployment `{deployment}`"))
-        })?;
+        let candidates = st
+            .routes
+            .get(deployment)
+            .filter(|v| !v.is_empty())
+            .ok_or_else(|| InferenceError::Internal(format!("no engine for deployment `{deployment}`")))?;
         // Lowest load wins.
         let pick = candidates
             .iter()
@@ -115,12 +126,15 @@ impl Actor for DpCoordinatorActor {
     async fn handle(&mut self, _ctx: &mut Context<Self>, msg: Self::Msg) {
         match msg {
             DpCoordinatorMsg::Register { deployment, target } => self.register(deployment, target),
-            DpCoordinatorMsg::Deregister { deployment, engine_path } => {
-                self.deregister(&deployment, &engine_path)
-            }
-            DpCoordinatorMsg::ReportLoad { deployment, engine_path, load } => {
-                self.report_load(&deployment, &engine_path, load)
-            }
+            DpCoordinatorMsg::Deregister {
+                deployment,
+                engine_path,
+            } => self.deregister(&deployment, &engine_path),
+            DpCoordinatorMsg::ReportLoad {
+                deployment,
+                engine_path,
+                load,
+            } => self.report_load(&deployment, &engine_path, load),
             DpCoordinatorMsg::RouteTo { deployment, reply } => {
                 let _ = reply.send(self.pick(&deployment));
             }

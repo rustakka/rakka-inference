@@ -20,10 +20,7 @@ use crate::dp_coordinator::{DpCoordinatorMsg, RouteTarget};
 pub enum RequestMsg {
     /// Kick off the request: routes via the coordinator and dispatches
     /// to the chosen engine.
-    Dispatch {
-        deployment: String,
-        batch: ExecuteBatch,
-    },
+    Dispatch { deployment: String, batch: ExecuteBatch },
     /// Forwarded chunk from the engine.
     Chunk(Result<TokenChunk, InferenceError>),
     /// Gateway gave up on the response (client disconnected). Cancel.
@@ -61,12 +58,7 @@ impl RequestActor {
         }
     }
 
-    async fn dispatch(
-        &mut self,
-        ctx: &mut Context<Self>,
-        deployment: String,
-        batch: ExecuteBatch,
-    ) {
+    async fn dispatch(&mut self, ctx: &mut Context<Self>, deployment: String, batch: ExecuteBatch) {
         if self.dispatched {
             return;
         }
@@ -76,7 +68,10 @@ impl RequestActor {
         let target = match self
             .coordinator
             .ask_with(
-                |reply| DpCoordinatorMsg::RouteTo { deployment: deployment.clone(), reply },
+                |reply| DpCoordinatorMsg::RouteTo {
+                    deployment: deployment.clone(),
+                    reply,
+                },
                 std::time::Duration::from_secs(2),
             )
             .await

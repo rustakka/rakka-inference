@@ -75,7 +75,10 @@ impl RemoteSessionActor {
     /// callers can wire `snapshot()` into worker constructors.
     pub async fn bootstrap(config: SessionConfig) -> InferenceResult<Self> {
         let snapshot = Self::build_snapshot(&config).await?;
-        Ok(Self { config, snapshot: Arc::new(ArcSwap::from_pointee(snapshot)) })
+        Ok(Self {
+            config,
+            snapshot: Arc::new(ArcSwap::from_pointee(snapshot)),
+        })
     }
 
     pub fn snapshot(&self) -> Arc<ArcSwap<SessionSnapshot>> {

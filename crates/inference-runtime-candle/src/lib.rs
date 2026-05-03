@@ -9,8 +9,8 @@
 //! enable `--features candle` to wire in the real model runtime.
 //!
 //! When the feature is on, the runner uses
-//! [`rakka_accel::cuda::dispatcher::GpuDispatcher`] for thread pinning and
-//! [`rakka_accel::cuda::stream::PerActorAllocator`] for per-request stream
+//! `rakka_accel::cuda::dispatcher::GpuDispatcher` for thread pinning and
+//! `rakka_accel::cuda::stream::PerActorAllocator` for per-request stream
 //! allocation — both are upstream substrate, not redefined here.
 
 #![forbid(unsafe_code)]

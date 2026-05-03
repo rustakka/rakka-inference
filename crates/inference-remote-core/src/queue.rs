@@ -58,7 +58,11 @@ pub struct RequestQueue {
 
 impl RequestQueue {
     pub fn new(capacity: usize) -> Self {
-        Self { inner: BinaryHeap::new(), capacity, next_seq: 0 }
+        Self {
+            inner: BinaryHeap::new(),
+            capacity,
+            next_seq: 0,
+        }
     }
 
     pub fn len(&self) -> usize {

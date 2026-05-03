@@ -34,7 +34,11 @@ pub enum OpenAiVariant {
     Direct { endpoint: Url },
     /// Azure OpenAI: builds the endpoint URL from resource +
     /// deployment + api_version per the Azure docs.
-    Azure { resource: String, deployment: String, api_version: String },
+    Azure {
+        resource: String,
+        deployment: String,
+        api_version: String,
+    },
 }
 
 impl OpenAiVariant {
@@ -54,10 +58,16 @@ impl OpenAiVariant {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "from", rename_all = "snake_case")]
 pub enum SecretRef {
-    Env { name: String },
-    File { path: std::path::PathBuf },
+    Env {
+        name: String,
+    },
+    File {
+        path: std::path::PathBuf,
+    },
     /// Inline literal — discouraged; emits a warning on load.
-    Inline { value: String },
+    Inline {
+        value: String,
+    },
 }
 
 impl OpenAiConfig {

@@ -36,12 +36,19 @@ pub enum MessageContent {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ContentPart {
-    Text { text: String },
+    Text {
+        text: String,
+    },
     /// Base64-encoded image input. Provider runtimes translate to their
     /// preferred wire format.
-    ImageBase64 { mime: String, data: String },
+    ImageBase64 {
+        mime: String,
+        data: String,
+    },
     /// URL-referenced image (provider-supported only).
-    ImageUrl { url: String },
+    ImageUrl {
+        url: String,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]

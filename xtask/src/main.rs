@@ -60,7 +60,13 @@ fn print_help() {
 fn build_matrix() -> Result<()> {
     cargo(&["build", "--workspace"])?;
     cargo(&["build", "-p", "inference", "--features", "remote-only"])?;
-    cargo(&["build", "-p", "inference", "--features", "candle,openai,anthropic,pipeline"])?;
+    cargo(&[
+        "build",
+        "-p",
+        "inference",
+        "--features",
+        "candle,openai,anthropic,pipeline",
+    ])?;
     Ok(())
 }
 
@@ -98,7 +104,10 @@ fn verify() -> Result<()> {
     let cargo_bin = env!("CARGO");
     let steps: Vec<(&str, &[&str])> = vec![
         ("cargo build --workspace", &["build", "--workspace"]),
-        ("cargo test --workspace --quiet", &["test", "--workspace", "--quiet"]),
+        (
+            "cargo test --workspace --quiet",
+            &["test", "--workspace", "--quiet"],
+        ),
         (
             "cargo clippy --workspace --all-targets -- -D warnings",
             &["clippy", "--workspace", "--all-targets", "--", "-D", "warnings"],
@@ -142,7 +151,10 @@ fn verify() -> Result<()> {
         .output()
         .context("spawning cargo tree")?;
     if !output.status.success() {
-        return Err(anyhow!("cargo tree failed: {}", String::from_utf8_lossy(&output.stderr)));
+        return Err(anyhow!(
+            "cargo tree failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        ));
     }
     let tree = String::from_utf8_lossy(&output.stdout);
     let leaks: Vec<&str> = tree
@@ -156,7 +168,10 @@ fn verify() -> Result<()> {
         for l in &leaks {
             eprintln!("  {l}");
         }
-        return Err(anyhow!("remote-only build leaked {} GPU dep line(s)", leaks.len()));
+        return Err(anyhow!(
+            "remote-only build leaked {} GPU dep line(s)",
+            leaks.len()
+        ));
     }
 
     println!("\nverify: OK");
@@ -196,7 +211,9 @@ fn bump(args: Vec<String>) -> Result<()> {
     write_workspace_deps_versions(cargo_toml, &current, &next)?;
 
     // Refresh Cargo.lock — `cargo update --workspace` is enough.
-    let _ = Command::new(env!("CARGO")).args(["update", "--workspace"]).status();
+    let _ = Command::new(env!("CARGO"))
+        .args(["update", "--workspace"])
+        .status();
 
     println!("RAKKA_INFERENCE_NEW_VERSION={next}");
     Ok(())
@@ -258,10 +275,13 @@ fn read_workspace_version(path: &Path) -> Result<String> {
 
 fn write_workspace_version(path: &Path, version: &str) -> Result<()> {
     let text = fs::read_to_string(path)?;
-    let block_start =
-        text.find("[workspace.package]").ok_or_else(|| anyhow!("no [workspace.package] block"))?;
+    let block_start = text
+        .find("[workspace.package]")
+        .ok_or_else(|| anyhow!("no [workspace.package] block"))?;
     let after_block = &text[block_start..];
-    let local_idx = after_block.find("version").ok_or_else(|| anyhow!("no version line"))?;
+    let local_idx = after_block
+        .find("version")
+        .ok_or_else(|| anyhow!("no version line"))?;
     let abs = block_start + local_idx;
     let line_end = text[abs..].find('\n').map(|i| abs + i).unwrap_or(text.len());
     let new_line = format!("version       = \"{version}\"");
@@ -323,18 +343,30 @@ fn release_checklist() -> Result<()> {
         "inference-runtime-litellm",
     ];
     let gated_until_upstream: &[(&str, &str)] = &[
-        ("inference-runtime", "depends on rakka-* crates which are not yet on crates.io"),
-        ("inference-python-bridge", "depends on rakka-accel crates (when feature `python` is on, also pyo3)"),
+        (
+            "inference-runtime",
+            "depends on rakka-* crates which are not yet on crates.io",
+        ),
+        (
+            "inference-python-bridge",
+            "depends on rakka-accel crates (when feature `python` is on, also pyo3)",
+        ),
         ("inference-runtime-vllm", "depends on rakka-accel + python-bridge"),
         ("inference-runtime-tensorrt", "depends on rakka-accel"),
         ("inference-runtime-ort", "depends on rakka-accel"),
         ("inference-runtime-candle", "depends on rakka-accel"),
         ("inference-runtime-cudarc", "depends on rakka-accel"),
         ("inference-runtime-mistralrs", "depends on rakka-accel"),
-        ("inference-pipeline", "depends on rakka-streams; promote when rakka publishes"),
+        (
+            "inference-pipeline",
+            "depends on rakka-streams; promote when rakka publishes",
+        ),
         ("inference-testkit", "depends on rakka-testkit"),
         ("inference-cli", "depends on rakka + inference-runtime"),
-        ("inference", "rollup; promote after every member it re-exports is publishable"),
+        (
+            "inference",
+            "rollup; promote after every member it re-exports is publishable",
+        ),
     ];
 
     println!("Publishable now ({}):", publishable_now.len());
@@ -405,7 +437,8 @@ fn audit(args: Vec<String>) -> Result<()> {
             "--check" => check_mode = true,
             "--json" => {
                 json_out = Some(PathBuf::from(
-                    iter.next().ok_or_else(|| anyhow!("--json requires a path argument"))?,
+                    iter.next()
+                        .ok_or_else(|| anyhow!("--json requires a path argument"))?,
                 ));
             }
             other => return Err(anyhow!("unknown audit flag: {other}")),
@@ -451,10 +484,34 @@ fn audit(args: Vec<String>) -> Result<()> {
         let mut regressions = Vec::new();
         for (name, counts) in &per_crate {
             let baseline = parse_json_crate(&baseline_text, name).unwrap_or_default();
-            check_metric(&mut regressions, name, "unwrap_used", counts.unwrap_used, baseline.unwrap_used);
-            check_metric(&mut regressions, name, "expect_used", counts.expect_used, baseline.expect_used);
-            check_metric(&mut regressions, name, "panic_macro", counts.panic_macro, baseline.panic_macro);
-            check_metric(&mut regressions, name, "todo_macro", counts.todo_macro, baseline.todo_macro);
+            check_metric(
+                &mut regressions,
+                name,
+                "unwrap_used",
+                counts.unwrap_used,
+                baseline.unwrap_used,
+            );
+            check_metric(
+                &mut regressions,
+                name,
+                "expect_used",
+                counts.expect_used,
+                baseline.expect_used,
+            );
+            check_metric(
+                &mut regressions,
+                name,
+                "panic_macro",
+                counts.panic_macro,
+                baseline.panic_macro,
+            );
+            check_metric(
+                &mut regressions,
+                name,
+                "todo_macro",
+                counts.todo_macro,
+                baseline.todo_macro,
+            );
             check_metric(
                 &mut regressions,
                 name,
@@ -462,7 +519,13 @@ fn audit(args: Vec<String>) -> Result<()> {
                 counts.unimplemented_macro,
                 baseline.unimplemented_macro,
             );
-            check_metric(&mut regressions, name, "box_dyn_any", counts.box_dyn_any, baseline.box_dyn_any);
+            check_metric(
+                &mut regressions,
+                name,
+                "box_dyn_any",
+                counts.box_dyn_any,
+                baseline.box_dyn_any,
+            );
             check_metric(
                 &mut regressions,
                 name,
@@ -470,7 +533,13 @@ fn audit(args: Vec<String>) -> Result<()> {
                 counts.placeholder_marker,
                 baseline.placeholder_marker,
             );
-            check_metric(&mut regressions, name, "stub_comment", counts.stub_comment, baseline.stub_comment);
+            check_metric(
+                &mut regressions,
+                name,
+                "stub_comment",
+                counts.stub_comment,
+                baseline.stub_comment,
+            );
             check_metric(
                 &mut regressions,
                 name,
@@ -478,9 +547,27 @@ fn audit(args: Vec<String>) -> Result<()> {
                 counts.placeholder_comment,
                 baseline.placeholder_comment,
             );
-            check_metric(&mut regressions, name, "println_macro", counts.println_macro, baseline.println_macro);
-            check_metric(&mut regressions, name, "eprintln_macro", counts.eprintln_macro, baseline.eprintln_macro);
-            check_metric(&mut regressions, name, "dbg_macro", counts.dbg_macro, baseline.dbg_macro);
+            check_metric(
+                &mut regressions,
+                name,
+                "println_macro",
+                counts.println_macro,
+                baseline.println_macro,
+            );
+            check_metric(
+                &mut regressions,
+                name,
+                "eprintln_macro",
+                counts.eprintln_macro,
+                baseline.eprintln_macro,
+            );
+            check_metric(
+                &mut regressions,
+                name,
+                "dbg_macro",
+                counts.dbg_macro,
+                baseline.dbg_macro,
+            );
         }
         if !regressions.is_empty() {
             eprintln!("\naudit regressions vs baseline:");
@@ -497,7 +584,10 @@ fn audit(args: Vec<String>) -> Result<()> {
 
 fn check_metric(out: &mut Vec<String>, crate_name: &str, metric: &str, current: usize, baseline: usize) {
     if current > baseline {
-        out.push(format!("{crate_name}: {metric} {baseline} -> {current} (+{})", current - baseline));
+        out.push(format!(
+            "{crate_name}: {metric} {baseline} -> {current} (+{})",
+            current - baseline
+        ));
     }
 }
 

@@ -27,8 +27,11 @@ where
         .map(|res| res.map_err(|e| InferenceError::NetworkError(e.to_string())))
         .eventsource()
         .map(|res| {
-            res.map(|ev| SseChunk { event: Some(ev.event).filter(|s| !s.is_empty()), data: ev.data })
-                .map_err(|e| InferenceError::NetworkError(format!("sse decode: {e}")))
+            res.map(|ev| SseChunk {
+                event: Some(ev.event).filter(|s| !s.is_empty()),
+                data: ev.data,
+            })
+            .map_err(|e| InferenceError::NetworkError(format!("sse decode: {e}")))
         })
         .boxed()
 }
@@ -40,8 +43,9 @@ mod tests {
 
     #[tokio::test]
     async fn parses_two_chunks() {
-        let body =
-            "data: {\"x\":1}\n\ndata: {\"x\":2}\n\ndata: [DONE]\n\n".as_bytes().to_vec();
+        let body = "data: {\"x\":1}\n\ndata: {\"x\":2}\n\ndata: [DONE]\n\n"
+            .as_bytes()
+            .to_vec();
         let s = stream::iter(vec![Ok::<_, reqwest::Error>(Bytes::from(body))]);
         let mut decoded = decode_sse_stream(s);
         let first = decoded.next().await.unwrap().unwrap();
