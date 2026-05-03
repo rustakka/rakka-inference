@@ -8,17 +8,22 @@ name: Release
 #   1. Runs the 1.0-rc gate (`cargo xtask verify`).
 #   2. Builds release binaries (`rakka` from `inference-cli`) for
 #      Linux x86_64 + aarch64, macOS x86_64 + aarch64, Windows x86_64.
-#   3. Creates the GitHub Release with the artifacts attached.
-#   4. Publishes every allowlisted Rust crate to crates.io in
+#   3. Builds Python wheels + sdist via maturin.
+#   4. Creates the GitHub Release with the artifacts attached.
+#   5. Publishes every allowlisted Rust crate to crates.io in
 #      dependency order.
+#   6. Publishes wheels + sdist to PyPI via OIDC trusted publishing.
+#
+# rakka-inference path-depends on the sibling rakka and rakka-accel
+# workspaces. Every job that touches Cargo.toml checks all three out
+# side-by-side under the runner's work directory.
 #
 # Allowlist:
 #   The publish step honors a repo variable
 #   `RAKKA_INFERENCE_PUBLISH_ALLOWLIST` (space-separated crate names).
 #   Default = the "publishable now" subset from
-#   `cargo xtask release-checklist`. Once the sibling `rakka` and
-#   `rakka-cuda` workspaces publish to crates.io, set the variable to
-#   the empty string to publish the full workspace.
+#   `cargo xtask release-checklist`. Set to the empty string to
+#   publish every member crate in dep order.
 
 on:
   push:
@@ -59,13 +64,22 @@ jobs:
     name: Verify (1.0-rc gate)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy
+        with: { components: clippy }
       - uses: Swatinem/rust-cache@v2
+        with: { workspaces: rakka-inference }
       - name: cargo xtask verify
         run: cargo xtask verify
+        working-directory: rakka-inference
 
   build-binaries:
     name: Build binaries (${{ matrix.target }})
@@ -93,18 +107,27 @@ jobs:
             archive_ext: zip
             bin_ext: .exe
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
+        with: { targets: ${{ matrix.target }} }
       - uses: Swatinem/rust-cache@v2
         with:
+          workspaces: rakka-inference
           key: ${{ matrix.target }}
       - name: Install cross (Linux aarch64)
         if: matrix.cross == true
         run: cargo install cross --locked
       - name: Build rakka (inference-cli) — remote-only
         shell: bash
+        working-directory: rakka-inference
         run: |
           set -euo pipefail
           if [ "${{ matrix.cross }}" = "true" ]; then
@@ -117,17 +140,20 @@ jobs:
       - name: Stage artifacts (unix)
         if: matrix.archive_ext == 'tar.gz'
         shell: bash
+        working-directory: rakka-inference
         run: |
           set -euo pipefail
           stage="rakka-${{ matrix.target }}"
           mkdir -p "$stage"
           cp "target/${{ matrix.target }}/release/rakka" "$stage/"
-          cp README.md LICENSE 2>/dev/null "$stage/" || true
+          cp README.md "$stage/" 2>/dev/null || true
+          cp LICENSE "$stage/" 2>/dev/null || true
           cp RELEASING.md "$stage/" 2>/dev/null || true
-          tar -czf "${stage}.tar.gz" "$stage"
+          tar -czf "../${stage}.tar.gz" "$stage"
       - name: Stage artifacts (windows)
         if: matrix.archive_ext == 'zip'
         shell: bash
+        working-directory: rakka-inference
         run: |
           set -euo pipefail
           stage="rakka-${{ matrix.target }}"
@@ -136,7 +162,7 @@ jobs:
           cp README.md "$stage/" 2>/dev/null || true
           cp LICENSE "$stage/" 2>/dev/null || true
           cp RELEASING.md "$stage/" 2>/dev/null || true
-          7z a "${stage}.zip" "$stage"
+          7z a "../${stage}.zip" "$stage"
       - uses: actions/upload-artifact@v4
         with:
           name: rakka-binaries-${{ matrix.target }}
@@ -155,11 +181,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          path: rakka-inference
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
       - name: Generate release notes
         id: notes
+        working-directory: rakka-inference
         run: |
           set -euo pipefail
           tag="${GITHUB_REF#refs/tags/}"
@@ -176,11 +204,11 @@ jobs:
             grep -E "inference[-a-z]* = \{ path" Cargo.toml | sed 's/^/- /'
             echo
             echo "### Binaries"
-            ls artifacts | grep "rakka-binaries-" | sed 's/^/- /' || true
+            ls ../artifacts | grep "rakka-binaries-" | sed 's/^/- /' || true
             echo
             echo "### Python wheels"
-            ls artifacts | grep "rakka-inference-wheels-" | sed 's/^/- /' || true
-          } > RELEASE_NOTES.md
+            ls ../artifacts | grep "rakka-inference-wheels-" | sed 's/^/- /' || true
+          } > ../RELEASE_NOTES.md
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -204,9 +232,18 @@ jobs:
       CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
       ALLOWLIST: ${{ vars.RAKKA_INFERENCE_PUBLISH_ALLOWLIST }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with: { workspaces: rakka-inference }
 
       # Walk every publishable crate in dep order. The allowlist (repo
       # variable) restricts which crates actually publish; others are
@@ -214,6 +251,7 @@ jobs:
       # idempotent retry treats "already uploaded" as success so a
       # partial run can be safely re-tagged.
       - name: Publish allowlisted crates in dep order
+        working-directory: rakka-inference
         run: |
           set -euo pipefail
 
@@ -298,10 +336,20 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true'
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with: { workspaces: rakka-inference }
       - name: Dry-run publish for the publishable subset
+        working-directory: rakka-inference
         run: |
           for c in inference-core inference-remote-core \
                    inference-runtime-openai inference-runtime-anthropic \
@@ -352,13 +400,21 @@ jobs:
             python-target: x64
             manylinux: "off"
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+        with: { python-version: "3.12" }
       - name: Build wheels (maturin)
         uses: PyO3/maturin-action@v1
         with:
+          working-directory: rakka-inference
           target: ${{ matrix.python-target }}
           # One wheel per supported CPython ABI on this platform.
           # `python-extension` activates `pyo3/extension-module` per
@@ -368,7 +424,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: rakka-inference-wheels-${{ matrix.target }}
-          path: dist/*.whl
+          path: rakka-inference/dist/*.whl
 
   build-sdist:
     name: Build sdist (Python)
@@ -376,19 +432,27 @@ jobs:
     if: github.event_name == 'push' || github.event.inputs.skip_python != 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sibling rakka
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka, path: rakka }
+      - name: Checkout sibling rakka-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/rakka-accel, path: rakka-accel }
+      - name: Checkout rakka-inference
+        uses: actions/checkout@v4
+        with: { path: rakka-inference }
       - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+        with: { python-version: "3.12" }
       - name: Build sdist
         uses: PyO3/maturin-action@v1
         with:
+          working-directory: rakka-inference
           command: sdist
           args: --out dist
       - uses: actions/upload-artifact@v4
         with:
           name: rakka-inference-sdist
-          path: dist/*.tar.gz
+          path: rakka-inference/dist/*.tar.gz
 
   publish-pypi:
     name: Publish wheels + sdist to PyPI
