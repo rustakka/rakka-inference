@@ -1,0 +1,17 @@
+[package]
+name = "inference-runtime-mistralrs"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+default   = []
+mistralrs = ["dep:mistralrs"]
+
+[dependencies]
+inference-core    = { workspace = true }
+inference-runtime = { workspace = true }
+async-trait       = { workspace = true }
+serde             = { workspace = true }
+mistralrs         = { workspace = true, optional = true }

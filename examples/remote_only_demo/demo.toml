@@ -1,0 +1,29 @@
+# Sample project file for `rakka serve --config demo.toml`.
+# Doc §11.3.
+
+[cluster]
+name = "demo"
+bind = "127.0.0.1:8080"
+
+# A remote OpenAI-compatible deployment; in real use the endpoint
+# would be `https://api.openai.com/v1/`. For the demo we point at a
+# wiremock instance the test harness brings up.
+[[deployment]]
+name     = "gpt-4o-mini"
+model    = "gpt-4o-mini"
+runtime  = "open_ai"
+replicas = 1
+
+[deployment.serving]
+max_concurrent        = 16
+on_capacity_exhausted = "queue"
+
+# Local TinyLlama via candle — included as a cross-runtime example.
+# The candle runner currently returns "feature disabled" unless built
+# with `--features candle` on the rollup.
+[[deployment]]
+name     = "tinyllama-local"
+model    = "TinyLlama-1.1B-Chat-Q4_0"
+runtime  = "candle"
+gpus     = 1
+replicas = 1

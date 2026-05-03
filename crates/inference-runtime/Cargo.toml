@@ -1,0 +1,50 @@
+[package]
+name = "inference-runtime"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+default = []
+# Pulls in rakka-cuda for the local-GPU two-tier supervision pattern
+# and the per-actor stream allocator. Off by default so a pure-remote
+# inference build (`inference --features remote-only`) compiles no
+# GPU dependencies whatsoever.
+local-gpu = ["dep:rakka-cuda"]
+
+[dependencies]
+inference-core = { workspace = true }
+
+# Rakka actor primitives
+rakka                  = { workspace = true }
+rakka-core             = { workspace = true }
+rakka-config           = { workspace = true }
+rakka-cluster-tools    = { workspace = true }
+rakka-distributed-data = { workspace = true }
+
+# rakka-cuda is the upstream substrate for two-tier supervision and
+# GPU dispatch. Optional — only present when the `local-gpu` feature
+# is enabled (see §10.5 / R7 of the doc-redesign delta).
+rakka-cuda = { workspace = true, optional = true }
+
+# HTTP gateway
+axum     = { workspace = true }
+tower    = { workspace = true }
+
+# Async / errors
+tokio       = { workspace = true }
+async-trait = { workspace = true }
+chrono      = { version = "0.4", default-features = false, features = ["clock"] }
+futures     = { workspace = true }
+parking_lot = { workspace = true }
+arc-swap    = { workspace = true }
+tracing     = { workspace = true }
+serde       = { workspace = true }
+serde_json  = { workspace = true }
+thiserror   = { workspace = true }
+url         = { workspace = true }
+bytes       = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }

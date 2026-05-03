@@ -1,0 +1,25 @@
+[package]
+name = "remote_only_demo"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+description = "End-to-end demo: rate limiter + circuit breaker + retry against a wiremock OpenAI."
+
+[dependencies]
+inference-core           = { workspace = true }
+inference-runtime        = { workspace = true }
+inference-remote-core    = { workspace = true }
+inference-runtime-openai = { workspace = true }
+inference-testkit        = { workspace = true }
+
+tokio              = { workspace = true }
+async-trait        = { workspace = true }
+futures            = { workspace = true }
+arc-swap           = { workspace = true }
+secrecy            = { workspace = true }
+tracing            = { workspace = true }
+tracing-subscriber = { workspace = true }
+url                = { workspace = true }
+anyhow             = { workspace = true }

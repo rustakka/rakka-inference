@@ -1,0 +1,28 @@
+[package]
+name = "inference-pipeline"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+default = []
+# Pulls in `rakka-cuda-patterns` so callers get DynamicBatchingServer,
+# InferenceCascade, ModelReplicaPool, FairShareScheduler,
+# ModelHotSwapServer, SpeculativeDecoder, MoeRouter directly. Off by
+# default so `inference --features remote-only` doesn't pull GPU deps.
+cuda-patterns = ["dep:rakka-cuda-patterns"]
+
+[dependencies]
+inference-core    = { workspace = true }
+inference-runtime = { workspace = true }
+rakka-streams     = { workspace = true }
+
+# Upstream pattern primitives — exactly the §9 building blocks. Keep
+# behind the feature gate so remote-only builds skip cudarc.
+rakka-cuda-patterns = { workspace = true, optional = true }
+
+tokio       = { workspace = true }
+async-trait = { workspace = true }
+futures     = { workspace = true }
+tracing     = { workspace = true }

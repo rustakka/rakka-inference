@@ -1,0 +1,140 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - run: cargo fmt --all -- --check
+
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --workspace
+
+  audit:
+    name: audit (regression check vs baseline)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: cargo xtask audit --check
+        run: cargo xtask audit --check
+
+  rustdoc:
+    name: rustdoc (broken-link gate)
+    runs-on: ubuntu-latest
+    env:
+      RUSTDOCFLAGS: "-D warnings -D rustdoc::broken-intra-doc-links --cfg docsrs"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: Swatinem/rust-cache@v2
+      - name: cargo doc --workspace --no-deps
+        # Note: --all-features here would force the GPU feature graph.
+        # We document the default-feature surface; per-runtime crates
+        # carry their feature-gated bodies in the rendered output via
+        # the `cfg(docsrs)` flag.
+        run: cargo doc --workspace --no-deps
+
+  remote-only-invariant:
+    name: remote-only invariant (no GPU deps)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build inference --features remote-only
+        run: cargo build -p inference --no-default-features --features remote-only
+      - name: Assert zero GPU deps in dep graph
+        run: |
+          set -euo pipefail
+          tree=$(cargo tree -p inference --no-default-features --features remote-only)
+          if printf '%s\n' "$tree" | grep -E 'cudarc|rakka-cuda|candle|pyo3' ; then
+            echo "::error::remote-only build leaked GPU dependencies (above)"
+            exit 1
+          fi
+          echo "remote-only invariant holds: zero GPU deps in tree."
+
+  demo:
+    name: end-to-end demo (wiremock)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: cargo run --bin remote_only_demo
+        run: cargo run --bin remote_only_demo
+
+  verify:
+    name: verify (1.0-rc gate)
+    runs-on: ubuntu-latest
+    needs: [fmt, clippy, test, audit, remote-only-invariant]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: cargo xtask verify
+        run: cargo xtask verify
+
+  semver-checks:
+    name: semver-checks (cargo-semver-checks)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    # Warn-only on 0.x pre-1.0. Once any inference-* crate hits 1.0,
+    # flip the repo variable RAKKA_INFERENCE_WORKSPACE_VERSION to start
+    # with `1.` and this job becomes a hard gate.
+    continue-on-error: ${{ !startsWith(vars.RAKKA_INFERENCE_WORKSPACE_VERSION || '0.', '1.') }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install cargo-semver-checks
+        run: cargo install cargo-semver-checks --locked
+      - name: Check public-API SemVer for every publishable crate
+        run: |
+          set -e
+          fails=0
+          # Only check the "publishable now" set from the release
+          # checklist. Once `rakka` and `rakka-cuda` ship to crates.io,
+          # extend this list to include every inference-* crate.
+          for crate in inference-core \
+                       inference-remote-core \
+                       inference-runtime-openai \
+                       inference-runtime-anthropic \
+                       inference-runtime-gemini \
+                       inference-runtime-litellm; do
+            echo "==> $crate"
+            cargo semver-checks check-release --package "$crate" || fails=$((fails+1))
+          done
+          if [ "$fails" -gt 0 ]; then
+            echo "$fails crate(s) failed semver-checks"
+            exit 1
+          fi

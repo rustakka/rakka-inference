@@ -1,0 +1,53 @@
+version: 2
+
+# Weekly Cargo and GitHub-Actions dependency updates. Commits land
+# under `chore(deps)` so the version-bump workflow recognises them as
+# a "skip" and doesn't tag a release for a dep refresh.
+
+updates:
+  - package-ecosystem: cargo
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 8
+    target-branch: main
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "rust"
+    groups:
+      tokio-stack:
+        patterns:
+          - "tokio*"
+          - "futures*"
+          - "async-trait"
+      reqwest-stack:
+        patterns:
+          - "reqwest"
+          - "hyper*"
+          - "rustls*"
+          - "eventsource-stream"
+      serde-stack:
+        patterns:
+          - "serde*"
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 4
+    target-branch: main
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"

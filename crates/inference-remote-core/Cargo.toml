@@ -1,0 +1,42 @@
+[package]
+name = "inference-remote-core"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+inference-core = { workspace = true }
+
+# Rakka primitives we wrap rather than reinvent.
+rakka                  = { workspace = true }
+rakka-core             = { workspace = true }
+rakka-distributed-data = { workspace = true }
+
+# HTTP / streaming
+reqwest            = { workspace = true }
+hyper              = { workspace = true }
+eventsource-stream = { workspace = true }
+tower              = { workspace = true }
+
+# Async / concurrency
+tokio        = { workspace = true }
+async-trait  = { workspace = true }
+futures      = { workspace = true }
+futures-util = { workspace = true }
+parking_lot  = { workspace = true }
+arc-swap     = { workspace = true }
+
+# Logging / errors / serde
+tracing    = { workspace = true }
+serde      = { workspace = true }
+serde_json = { workspace = true }
+thiserror  = { workspace = true }
+secrecy    = { workspace = true }
+url        = { workspace = true }
+bytes      = { workspace = true }
+chrono     = { version = "0.4", default-features = false, features = ["clock"] }
+
+[dev-dependencies]
+wiremock = { workspace = true }
+tokio    = { workspace = true }

@@ -1,0 +1,137 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/inference-core",
+    "crates/inference-runtime",
+    "crates/inference-python-bridge",
+    "crates/inference-remote-core",
+    "crates/inference-runtime-vllm",
+    "crates/inference-runtime-tensorrt",
+    "crates/inference-runtime-ort",
+    "crates/inference-runtime-candle",
+    "crates/inference-runtime-cudarc",
+    "crates/inference-runtime-mistralrs",
+    "crates/inference-runtime-openai",
+    "crates/inference-runtime-anthropic",
+    "crates/inference-runtime-gemini",
+    "crates/inference-runtime-litellm",
+    "crates/inference-pipeline",
+    "crates/inference-testkit",
+    "crates/inference-cli",
+    "crates/inference-py-bindings",
+    "crates/inference",
+    "xtask",
+    "examples/remote_only_demo",
+]
+
+[workspace.package]
+version       = "0.1.0"
+edition       = "2021"
+rust-version  = "1.78"
+license       = "Apache-2.0"
+repository    = "https://github.com/local/rakka-inference"
+authors       = ["rakka-inference contributors"]
+
+[workspace.dependencies]
+# Async / runtime
+tokio        = { version = "1.39", features = ["full"] }
+tokio-util   = { version = "0.7", features = ["codec"] }
+async-trait  = "0.1"
+futures      = "0.3"
+futures-util = "0.3"
+futures-core = "0.3"
+pin-project-lite = "0.2"
+
+# Logging / tracing
+tracing            = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+
+# Concurrency primitives
+parking_lot = "0.12"
+arc-swap    = "1.7"
+dashmap     = "6"
+
+# Serialization
+serde      = { version = "1", features = ["derive"] }
+serde_json = "1"
+bytes      = "1"
+toml       = "0.8"
+
+# HTTP / web — for remote runtimes and ApiGatewayActor
+reqwest            = { version = "0.12", default-features = false, features = ["rustls-tls", "http2", "json", "stream"] }
+hyper              = "1"
+eventsource-stream = "0.2"
+tower              = { version = "0.5", default-features = false, features = ["util", "limit", "retry", "timeout"] }
+axum               = { version = "0.7", default-features = false, features = ["json", "http1", "http2", "tokio", "matched-path"] }
+
+# Secrets — typed credentials from inference-core down
+secrecy = "0.10"
+
+# Error handling
+thiserror = "1"
+anyhow    = "1"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Time / utility
+url       = { version = "2", features = ["serde"] }
+once_cell = "1"
+
+# Testing
+proptest = "1"
+wiremock = "0.6"
+
+# Python bindings (optional)
+pyo3                 = { version = "0.22", default-features = false, features = ["macros"] }
+pyo3-async-runtimes  = { version = "0.22", default-features = false, features = ["tokio-runtime"] }
+
+# Sibling rakka workspace ----------------------------------------------------
+rakka                  = { path = "../rakka/crates/rakka",                  version = "0.2.0" }
+rakka-core             = { path = "../rakka/crates/rakka-core",             version = "0.2.0" }
+rakka-config           = { path = "../rakka/crates/rakka-config",           version = "0.2.0" }
+rakka-macros           = { path = "../rakka/crates/rakka-macros",           version = "0.2.0" }
+rakka-testkit          = { path = "../rakka/crates/rakka-testkit",          version = "0.2.0" }
+rakka-cluster          = { path = "../rakka/crates/rakka-cluster",          version = "0.2.0" }
+rakka-cluster-tools    = { path = "../rakka/crates/rakka-cluster-tools",    version = "0.2.0" }
+rakka-cluster-sharding = { path = "../rakka/crates/rakka-cluster-sharding", version = "0.2.0" }
+rakka-distributed-data = { path = "../rakka/crates/rakka-distributed-data", version = "0.2.0" }
+rakka-streams          = { path = "../rakka/crates/rakka-streams",          version = "0.2.0" }
+rakka-persistence      = { path = "../rakka/crates/rakka-persistence",      version = "0.2.0" }
+rakka-telemetry        = { path = "../rakka/crates/rakka-telemetry",        version = "0.2.0" }
+
+# Sibling rakka-cuda workspace ----------------------------------------------
+rakka-cuda          = { path = "../rakka-cuda/crates/rakka-cuda",          version = "0.0.1" }
+rakka-cuda-patterns = { path = "../rakka-cuda/crates/rakka-cuda-patterns", version = "0.0.1" }
+
+# Optional GPU/runtime libs
+cudarc              = { version = "0.19.4", features = ["cuda-version-from-build-system", "fallback-latest"] }
+candle-core         = "0.8"
+candle-nn           = "0.8"
+candle-transformers = "0.8"
+ort                 = { version = "2.0.0-rc.10", default-features = false }
+mistralrs           = "0.8"
+
+# Internal crates -----------------------------------------------------------
+inference-core              = { path = "crates/inference-core",              version = "0.1.0" }
+inference-runtime           = { path = "crates/inference-runtime",           version = "0.1.0" }
+inference-python-bridge     = { path = "crates/inference-python-bridge",     version = "0.1.0" }
+inference-remote-core       = { path = "crates/inference-remote-core",       version = "0.1.0" }
+inference-runtime-vllm      = { path = "crates/inference-runtime-vllm",      version = "0.1.0" }
+inference-runtime-tensorrt  = { path = "crates/inference-runtime-tensorrt",  version = "0.1.0" }
+inference-runtime-ort       = { path = "crates/inference-runtime-ort",       version = "0.1.0" }
+inference-runtime-candle    = { path = "crates/inference-runtime-candle",    version = "0.1.0" }
+inference-runtime-cudarc    = { path = "crates/inference-runtime-cudarc",    version = "0.1.0" }
+inference-runtime-mistralrs = { path = "crates/inference-runtime-mistralrs", version = "0.1.0" }
+inference-runtime-openai    = { path = "crates/inference-runtime-openai",    version = "0.1.0" }
+inference-runtime-anthropic = { path = "crates/inference-runtime-anthropic", version = "0.1.0" }
+inference-runtime-gemini    = { path = "crates/inference-runtime-gemini",    version = "0.1.0" }
+inference-runtime-litellm   = { path = "crates/inference-runtime-litellm",   version = "0.1.0" }
+inference-pipeline          = { path = "crates/inference-pipeline",          version = "0.1.0" }
+inference-testkit           = { path = "crates/inference-testkit",           version = "0.1.0" }
+inference                   = { path = "crates/inference",                   version = "0.1.0" }
+
+[profile.release]
+opt-level     = 3
+lto           = "thin"
+codegen-units = 1

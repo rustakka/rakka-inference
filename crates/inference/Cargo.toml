@@ -1,0 +1,67 @@
+[package]
+name = "inference"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Multi-runtime GPU + remote inference as a supervised actor system on rakka."
+
+[features]
+default = []
+
+# Local runtimes
+vllm      = ["dep:inference-runtime-vllm",      "inference-runtime-vllm/vllm"]
+tensorrt  = ["dep:inference-runtime-tensorrt",  "inference-runtime-tensorrt/tensorrt"]
+ort       = ["dep:inference-runtime-ort",       "inference-runtime-ort/ort"]
+candle    = ["dep:inference-runtime-candle",    "inference-runtime-candle/candle", "cuda"]
+cudarc    = ["dep:inference-runtime-cudarc",    "inference-runtime-cudarc/cudarc", "cuda"]
+mistralrs = ["dep:inference-runtime-mistralrs", "inference-runtime-mistralrs/mistralrs"]
+
+# Remote runtimes (no system deps; safe to enable on any host)
+openai    = ["dep:inference-runtime-openai"]
+anthropic = ["dep:inference-runtime-anthropic"]
+gemini    = ["dep:inference-runtime-gemini"]
+litellm   = ["dep:inference-runtime-litellm", "openai"]
+
+# Cross-cutting
+pipeline      = ["dep:inference-pipeline"]
+testkit       = ["dep:inference-testkit"]
+# Pulls in rakka-cuda + rakka-cuda-patterns for callers that want the
+# upstream substrate visible through `inference::cuda` and
+# `inference::cuda_patterns`. Implied by `candle` / `cudarc`.
+cuda          = ["dep:rakka-cuda", "inference-runtime/local-gpu"]
+cuda-patterns = ["dep:rakka-cuda-patterns", "pipeline", "inference-pipeline/cuda-patterns"]
+
+# Aggregates per doc §10.5
+all-native      = ["tensorrt", "ort", "candle", "cudarc", "mistralrs"]
+all-python      = ["vllm"]
+all-local       = ["all-native", "all-python"]
+all-remote      = ["openai", "anthropic", "gemini", "litellm"]
+all-runtimes    = ["all-local", "all-remote", "cuda-patterns"]
+default-prod    = ["vllm", "tensorrt", "ort", "openai", "anthropic", "pipeline"]
+# remote-only deliberately excludes `cuda` and `cuda-patterns` so the
+# resulting binary pulls no GPU deps whatsoever.
+remote-only     = ["all-remote", "pipeline"]
+
+[dependencies]
+inference-core    = { workspace = true }
+inference-runtime = { workspace = true }
+
+inference-runtime-vllm      = { workspace = true, optional = true }
+inference-runtime-tensorrt  = { workspace = true, optional = true }
+inference-runtime-ort       = { workspace = true, optional = true }
+inference-runtime-candle    = { workspace = true, optional = true }
+inference-runtime-cudarc    = { workspace = true, optional = true }
+inference-runtime-mistralrs = { workspace = true, optional = true }
+
+inference-runtime-openai    = { workspace = true, optional = true }
+inference-runtime-anthropic = { workspace = true, optional = true }
+inference-runtime-gemini    = { workspace = true, optional = true }
+inference-runtime-litellm   = { workspace = true, optional = true }
+
+inference-pipeline          = { workspace = true, optional = true }
+inference-testkit           = { workspace = true, optional = true }
+
+# Upstream rakka-cuda re-exports (gated on `cuda` / `cuda-patterns`).
+rakka-cuda          = { workspace = true, optional = true }
+rakka-cuda-patterns = { workspace = true, optional = true }

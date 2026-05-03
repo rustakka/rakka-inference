@@ -1,0 +1,27 @@
+[package]
+name = "inference-runtime-anthropic"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+inference-core        = { workspace = true }
+inference-runtime     = { workspace = true }
+inference-remote-core = { workspace = true }
+
+reqwest      = { workspace = true }
+tokio        = { workspace = true }
+async-trait  = { workspace = true }
+futures      = { workspace = true }
+futures-util = { workspace = true }
+serde        = { workspace = true }
+serde_json   = { workspace = true }
+secrecy      = { workspace = true }
+tracing      = { workspace = true }
+url          = { workspace = true, features = ["serde"] }
+arc-swap     = { workspace = true }
+once_cell    = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }

@@ -1,0 +1,22 @@
+[package]
+name = "inference-runtime-cudarc"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+default = []
+# Wires the runner to rakka-cuda's BlasActor + DeviceActor substrate
+# (doc §3.1 row "cudarc"). Enabling this feature pulls cudarc and
+# rakka-cuda into the dependency graph; remote-only builds keep both
+# out by leaving the feature off.
+cudarc  = ["dep:cudarc", "dep:rakka-cuda"]
+
+[dependencies]
+inference-core    = { workspace = true }
+inference-runtime = { workspace = true }
+async-trait       = { workspace = true }
+serde             = { workspace = true }
+cudarc            = { workspace = true, optional = true }
+rakka-cuda        = { workspace = true, optional = true }

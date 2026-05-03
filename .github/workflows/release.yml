@@ -1,0 +1,321 @@
+name: Release
+
+# Releases are tagged from `main`. Push a tag matching `v*` (e.g.
+# `v0.1.0`, `v1.0.0-rc.1`) to fire this pipeline. The bump-and-tag
+# step is automated by `.github/workflows/version-bump.yml`.
+#
+# This workflow:
+#   1. Runs the 1.0-rc gate (`cargo xtask verify`).
+#   2. Builds release binaries (`rakka` from `inference-cli`) for
+#      Linux x86_64 + aarch64, macOS x86_64 + aarch64, Windows x86_64.
+#   3. Creates the GitHub Release with the artifacts attached.
+#   4. Publishes every allowlisted Rust crate to crates.io in
+#      dependency order.
+#
+# Allowlist:
+#   The publish step honors a repo variable
+#   `RAKKA_INFERENCE_PUBLISH_ALLOWLIST` (space-separated crate names).
+#   Default = the "publishable now" subset from
+#   `cargo xtask release-checklist`. Once the sibling `rakka` and
+#   `rakka-cuda` workspaces publish to crates.io, set the variable to
+#   the empty string to publish the full workspace.
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "cargo publish --dry-run; skip GitHub Release upload"
+        required: false
+        default: "true"
+      skip_crates:
+        description: "Skip the crates.io publish job"
+        required: false
+        default: "false"
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  # Default allowlist used when the repo variable is unset.
+  DEFAULT_PUBLISH_ALLOWLIST: >-
+    inference-core
+    inference-remote-core
+    inference-runtime-openai
+    inference-runtime-anthropic
+    inference-runtime-gemini
+    inference-runtime-litellm
+
+jobs:
+  verify:
+    name: Verify (1.0-rc gate)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: cargo xtask verify
+        run: cargo xtask verify
+
+  build-binaries:
+    name: Build binaries (${{ matrix.target }})
+    needs: verify
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            archive_ext: tar.gz
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            archive_ext: tar.gz
+            cross: true
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            archive_ext: tar.gz
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            archive_ext: tar.gz
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            archive_ext: zip
+            bin_ext: .exe
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+      - name: Install cross (Linux aarch64)
+        if: matrix.cross == true
+        run: cargo install cross --locked
+      - name: Build rakka (inference-cli) — remote-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ matrix.cross }}" = "true" ]; then
+            cross build --release --target ${{ matrix.target }} \
+              -p inference-cli --no-default-features --features remote-only
+          else
+            cargo build --release --target ${{ matrix.target }} \
+              -p inference-cli --no-default-features --features remote-only
+          fi
+      - name: Stage artifacts (unix)
+        if: matrix.archive_ext == 'tar.gz'
+        shell: bash
+        run: |
+          set -euo pipefail
+          stage="rakka-${{ matrix.target }}"
+          mkdir -p "$stage"
+          cp "target/${{ matrix.target }}/release/rakka" "$stage/"
+          cp README.md LICENSE 2>/dev/null "$stage/" || true
+          cp RELEASING.md "$stage/" 2>/dev/null || true
+          tar -czf "${stage}.tar.gz" "$stage"
+      - name: Stage artifacts (windows)
+        if: matrix.archive_ext == 'zip'
+        shell: bash
+        run: |
+          set -euo pipefail
+          stage="rakka-${{ matrix.target }}"
+          mkdir -p "$stage"
+          cp "target/${{ matrix.target }}/release/rakka${{ matrix.bin_ext }}" "$stage/"
+          cp README.md "$stage/" 2>/dev/null || true
+          cp LICENSE "$stage/" 2>/dev/null || true
+          cp RELEASING.md "$stage/" 2>/dev/null || true
+          7z a "${stage}.zip" "$stage"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rakka-binaries-${{ matrix.target }}
+          path: |
+            *.tar.gz
+            *.zip
+
+  github-release:
+    name: GitHub Release
+    needs: [verify, build-binaries]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Generate release notes
+        id: notes
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF#refs/tags/}"
+          prev=$(git tag --sort=-creatordate | grep -v "^${tag}$" | head -n1 || true)
+          range="${prev:+$prev..}HEAD"
+          {
+            echo "## rakka-inference ${tag}"
+            echo
+            echo "### Changes"
+            git log --no-merges --pretty=format:'- %s (%h)' "${range}"
+            echo
+            echo
+            echo "### Crates"
+            grep -E "inference[-a-z]* = \{ path" Cargo.toml | sed 's/^/- /'
+            echo
+            echo "### Binaries"
+            ls artifacts | grep "rakka-binaries-" | sed 's/^/- /' || true
+          } > RELEASE_NOTES.md
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.notes.outputs.tag }}
+          name: rakka-inference ${{ steps.notes.outputs.tag }}
+          body_path: RELEASE_NOTES.md
+          prerelease: ${{ contains(steps.notes.outputs.tag, '-') }}
+          files: |
+            artifacts/**/*.tar.gz
+            artifacts/**/*.zip
+
+  publish-crates:
+    name: Publish to crates.io
+    needs: [verify, github-release]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.event.inputs.skip_crates != 'true'
+    permissions:
+      contents: read
+    env:
+      CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+      ALLOWLIST: ${{ vars.RAKKA_INFERENCE_PUBLISH_ALLOWLIST }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      # Walk every publishable crate in dep order. The allowlist (repo
+      # variable) restricts which crates actually publish; others are
+      # logged-and-skipped so the run stays observable. The
+      # idempotent retry treats "already uploaded" as success so a
+      # partial run can be safely re-tagged.
+      - name: Publish allowlisted crates in dep order
+        run: |
+          set -euo pipefail
+
+          allowlist="${ALLOWLIST:-${DEFAULT_PUBLISH_ALLOWLIST}}"
+          allowlist=$(printf '%s' "$allowlist" | tr -s '[:space:]' ' ' | sed 's/^ //;s/ $//')
+          if [ -z "$allowlist" ]; then
+            echo "(allowlist empty — publishing every member crate in dep order)"
+          else
+            echo "allowlist: $allowlist"
+          fi
+
+          in_allowlist() {
+            local needle="$1"
+            if [ -z "$allowlist" ]; then return 0; fi
+            for c in $allowlist; do
+              if [ "$c" = "$needle" ]; then return 0; fi
+            done
+            return 1
+          }
+
+          publish_one() {
+            local crate=$1
+            if ! in_allowlist "$crate"; then
+              echo "SKIP $crate (not in allowlist)"
+              return 0
+            fi
+            local attempt=1
+            while true; do
+              echo "==> publishing $crate (attempt $attempt)"
+              local out
+              if out=$(cargo publish -p "$crate" 2>&1); then
+                printf '%s\n' "$out"
+                # Throttle between successful new-crate publishes so
+                # crates.io's "new crates per period" limit doesn't bite.
+                sleep 30
+                return 0
+              fi
+              printf '%s\n' "$out"
+              if printf '%s' "$out" | grep -qE "already (uploaded|exists)"; then
+                echo "    (already on crates.io — continuing)"
+                return 0
+              fi
+              if printf '%s' "$out" | grep -qE "(429|Too Many Requests|rate.*limit)" && [ $attempt -lt 6 ]; then
+                local delay=$((90 * attempt))
+                echo "    (rate-limited — sleeping ${delay}s before retry)"
+                sleep "$delay"
+                attempt=$((attempt + 1))
+                continue
+              fi
+              return 1
+            done
+          }
+
+          # Strict dep order. A crate appears after every crate it
+          # depends on. Adding a new crate? Slot it into the earliest
+          # layer that has all its dependencies already published.
+          for crate in \
+            inference-core \
+            inference-runtime \
+            inference-python-bridge \
+            inference-remote-core \
+            inference-runtime-openai \
+            inference-runtime-anthropic \
+            inference-runtime-gemini \
+            inference-runtime-litellm \
+            inference-runtime-vllm \
+            inference-runtime-tensorrt \
+            inference-runtime-ort \
+            inference-runtime-candle \
+            inference-runtime-cudarc \
+            inference-runtime-mistralrs \
+            inference-pipeline \
+            inference-testkit \
+            inference-cli \
+            inference; do
+            publish_one "$crate"
+          done
+
+  publish-crates-dry-run:
+    name: Publish to crates.io (dry run)
+    needs: verify
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Dry-run publish for the publishable subset
+        run: |
+          for c in inference-core inference-remote-core \
+                   inference-runtime-openai inference-runtime-anthropic \
+                   inference-runtime-gemini inference-runtime-litellm; do
+            echo "==> $c"
+            cargo publish -p "$c" --dry-run --allow-dirty || true
+          done
+
+  # Python wheel + PyPI jobs are scaffolded but disabled until
+  # `inference-py-bindings` ships a real surface. To re-enable, drop
+  # the `if: false` guard below and configure trusted publishing on
+  # PyPI (or set secrets.PYPI_API_TOKEN).
+  publish-pypi:
+    name: Publish wheels + sdist to PyPI (disabled)
+    needs: verify
+    if: false
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/rakka-inference
+    permissions:
+      id-token: write
+    steps:
+      - run: echo "PyPI publish is disabled until inference-py-bindings ships a real surface."
