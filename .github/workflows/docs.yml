@@ -39,7 +39,7 @@ jobs:
           <meta http-equiv="refresh" content="0; url=inference/index.html">
           <link rel="canonical" href="inference/index.html">
           EOF
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: target/doc
 
