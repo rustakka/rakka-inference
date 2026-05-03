@@ -25,7 +25,7 @@ members = [
 ]
 
 [workspace.package]
-version       = "0.2.5"
+version       = "0.2.6"
 edition       = "2021"
 rust-version  = "1.78"
 license       = "Apache-2.0"
@@ -130,23 +130,23 @@ mistralrs           = "0.8"
 # `rakka-inference-*` namespace via `package = "..."` aliasing. Local
 # Rust imports stay as `inference_X` because each crate sets
 # `[lib] name = "inference_X"` in its own Cargo.toml.
-inference-core              = { path = "crates/inference-core",              version = "0.2.5", package = "rakka-inference-core" }
-inference-runtime           = { path = "crates/inference-runtime",           version = "0.2.5", package = "rakka-inference-runtime" }
-inference-python-bridge     = { path = "crates/inference-python-bridge",     version = "0.2.5" }
-inference-remote-core       = { path = "crates/inference-remote-core",       version = "0.2.5", package = "rakka-inference-remote-core" }
-inference-runtime-vllm      = { path = "crates/inference-runtime-vllm",      version = "0.2.5" }
-inference-runtime-tensorrt  = { path = "crates/inference-runtime-tensorrt",  version = "0.2.5" }
-inference-runtime-ort       = { path = "crates/inference-runtime-ort",       version = "0.2.5" }
-inference-runtime-candle    = { path = "crates/inference-runtime-candle",    version = "0.2.5" }
-inference-runtime-cudarc    = { path = "crates/inference-runtime-cudarc",    version = "0.2.5" }
-inference-runtime-mistralrs = { path = "crates/inference-runtime-mistralrs", version = "0.2.5" }
-inference-runtime-openai    = { path = "crates/inference-runtime-openai",    version = "0.2.5", package = "rakka-inference-runtime-openai" }
-inference-runtime-anthropic = { path = "crates/inference-runtime-anthropic", version = "0.2.5", package = "rakka-inference-runtime-anthropic" }
-inference-runtime-gemini    = { path = "crates/inference-runtime-gemini",    version = "0.2.5", package = "rakka-inference-runtime-gemini" }
-inference-runtime-litellm   = { path = "crates/inference-runtime-litellm",   version = "0.2.5", package = "rakka-inference-runtime-litellm" }
-inference-pipeline          = { path = "crates/inference-pipeline",          version = "0.2.5" }
-inference-testkit           = { path = "crates/inference-testkit",           version = "0.2.5" }
-inference                   = { path = "crates/inference",                   version = "0.2.5" }
+inference-core              = { path = "crates/inference-core",              version = "0.2.6", package = "rakka-inference-core" }
+inference-runtime           = { path = "crates/inference-runtime",           version = "0.2.6", package = "rakka-inference-runtime" }
+inference-python-bridge     = { path = "crates/inference-python-bridge",     version = "0.2.6" }
+inference-remote-core       = { path = "crates/inference-remote-core",       version = "0.2.6", package = "rakka-inference-remote-core" }
+inference-runtime-vllm      = { path = "crates/inference-runtime-vllm",      version = "0.2.6" }
+inference-runtime-tensorrt  = { path = "crates/inference-runtime-tensorrt",  version = "0.2.6" }
+inference-runtime-ort       = { path = "crates/inference-runtime-ort",       version = "0.2.6" }
+inference-runtime-candle    = { path = "crates/inference-runtime-candle",    version = "0.2.6" }
+inference-runtime-cudarc    = { path = "crates/inference-runtime-cudarc",    version = "0.2.6" }
+inference-runtime-mistralrs = { path = "crates/inference-runtime-mistralrs", version = "0.2.6" }
+inference-runtime-openai    = { path = "crates/inference-runtime-openai",    version = "0.2.6", package = "rakka-inference-runtime-openai" }
+inference-runtime-anthropic = { path = "crates/inference-runtime-anthropic", version = "0.2.6", package = "rakka-inference-runtime-anthropic" }
+inference-runtime-gemini    = { path = "crates/inference-runtime-gemini",    version = "0.2.6", package = "rakka-inference-runtime-gemini" }
+inference-runtime-litellm   = { path = "crates/inference-runtime-litellm",   version = "0.2.6", package = "rakka-inference-runtime-litellm" }
+inference-pipeline          = { path = "crates/inference-pipeline",          version = "0.2.6" }
+inference-testkit           = { path = "crates/inference-testkit",           version = "0.2.6" }
+inference                   = { path = "crates/inference",                   version = "0.2.6" }
 
 [profile.release]
 opt-level     = 3

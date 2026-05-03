@@ -2660,7 +2660,7 @@ dependencies = [
 
 [[package]]
 name = "inference"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "inference-pipeline",
  "inference-runtime-candle",
@@ -2682,7 +2682,7 @@ dependencies = [
 
 [[package]]
 name = "inference-cli"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "clap",
@@ -2702,7 +2702,7 @@ dependencies = [
 
 [[package]]
 name = "inference-pipeline"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "async-trait",
  "futures",
@@ -2716,7 +2716,7 @@ dependencies = [
 
 [[package]]
 name = "inference-py-bindings"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "pyo3",
  "rakka-inference-core",
@@ -2725,7 +2725,7 @@ dependencies = [
 
 [[package]]
 name = "inference-python-bridge"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "parking_lot",
  "pyo3",
@@ -2735,7 +2735,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-candle"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "async-trait",
  "candle-core 0.8.4",
@@ -2749,7 +2749,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-cudarc"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "async-trait",
  "cudarc",
@@ -2761,7 +2761,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-mistralrs"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "async-trait",
  "mistralrs",
@@ -2772,7 +2772,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-ort"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "async-trait",
  "ort",
@@ -2783,7 +2783,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-tensorrt"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "async-trait",
  "rakka-inference-core",
@@ -2793,7 +2793,7 @@ dependencies = [
 
 [[package]]
 name = "inference-runtime-vllm"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "async-trait",
  "inference-python-bridge",
@@ -2804,7 +2804,7 @@ dependencies = [
 
 [[package]]
 name = "inference-testkit"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "async-trait",
  "futures",
@@ -4428,7 +4428,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-inference-core"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "async-trait",
  "bytes",
@@ -4443,7 +4443,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-inference-remote-core"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -4471,7 +4471,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-inference-runtime"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -4497,7 +4497,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-inference-runtime-anthropic"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -4518,7 +4518,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-inference-runtime-gemini"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -4539,7 +4539,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-inference-runtime-litellm"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -4554,7 +4554,7 @@ dependencies = [
 
 [[package]]
 name = "rakka-inference-runtime-openai"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -4906,7 +4906,7 @@ checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
 
 [[package]]
 name = "remote_only_demo"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "arc-swap",
@@ -7737,7 +7737,7 @@ checksum = "1ffae5123b2d3fc086436f8834ae3ab053a283cfac8fe0a0b8eaae044768a4c4"
 
 [[package]]
 name = "xtask"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "anyhow",
  "clap",
