@@ -246,6 +246,54 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
+name = "atomr-accel"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "atomr-accel-cuda",
+ "atomr-config",
+ "atomr-core",
+ "thiserror 1.0.69",
+ "tokio",
+]
+
+[[package]]
+name = "atomr-accel-cuda"
+version = "0.1.0"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "atomr-config",
+ "atomr-core",
+ "atomr-macros",
+ "bitflags 2.11.1",
+ "cudarc",
+ "futures",
+ "futures-util",
+ "lru",
+ "parking_lot",
+ "thiserror 1.0.69",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+]
+
+[[package]]
+name = "atomr-accel-patterns"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "atomr-accel-cuda",
+ "atomr-config",
+ "atomr-core",
+ "atomr-macros",
+ "parking_lot",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "atomr-cluster"
 version = "0.1.0"
 dependencies = [
@@ -324,12 +372,16 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
+ "atomr-accel",
+ "atomr-accel-patterns",
  "atomr-infer-core",
  "atomr-infer-pipeline",
  "atomr-infer-runtime",
  "atomr-infer-runtime-anthropic",
+ "atomr-infer-runtime-candle",
+ "atomr-infer-runtime-cudarc",
  "atomr-infer-runtime-gemini",
  "atomr-infer-runtime-litellm",
  "atomr-infer-runtime-mistralrs",
@@ -342,7 +394,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-cli"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "anyhow",
  "atomr-config",
@@ -362,7 +414,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-core"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "async-trait",
  "bytes",
@@ -377,9 +429,10 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-pipeline"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "async-trait",
+ "atomr-accel-patterns",
  "atomr-infer-core",
  "atomr-infer-runtime",
  "atomr-streams",
@@ -390,7 +443,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-py-bindings"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "atomr-infer-core",
  "pyo3",
@@ -399,7 +452,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-python-bridge"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "atomr-infer-core",
  "parking_lot",
@@ -409,7 +462,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-remote-core"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -437,10 +490,11 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "arc-swap",
  "async-trait",
+ "atomr-accel",
  "atomr-cluster-tools",
  "atomr-config",
  "atomr-core",
@@ -462,7 +516,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-anthropic"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -483,9 +537,10 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-candle"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "async-trait",
+ "atomr-accel",
  "atomr-infer-core",
  "atomr-infer-runtime",
  "candle-core 0.8.4",
@@ -496,9 +551,10 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-cudarc"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "async-trait",
+ "atomr-accel",
  "atomr-infer-core",
  "atomr-infer-runtime",
  "cudarc",
@@ -507,7 +563,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-gemini"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -528,7 +584,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-litellm"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -543,7 +599,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-mistralrs"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "async-trait",
  "atomr-infer-core",
@@ -554,7 +610,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-openai"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -578,7 +634,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-ort"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "async-trait",
  "atomr-infer-core",
@@ -589,7 +645,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-tensorrt"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "async-trait",
  "atomr-infer-core",
@@ -599,7 +655,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-vllm"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "async-trait",
  "atomr-infer-core",
@@ -610,7 +666,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-testkit"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "async-trait",
  "atomr-infer-core",
@@ -620,6 +676,15 @@ dependencies = [
  "serde_json",
  "tokio",
  "wiremock",
+]
+
+[[package]]
+name = "atomr-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
 ]
 
 [[package]]
@@ -3193,9 +3258,9 @@ dependencies = [
 
 [[package]]
 name = "js-sys"
-version = "0.3.97"
+version = "0.3.95"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1840c94c045fbcf8ba2812c95db44499f7c64910a912551aaaa541decebcacf"
+checksum = "2964e92d1d9dc3364cae4d718d93f227e3abb088e747d92e0395bfdedf1c12ca"
 dependencies = [
  "cfg-if",
  "futures-util",
@@ -3334,6 +3399,15 @@ dependencies = [
  "num-traits",
  "sparsevec",
  "vob",
+]
+
+[[package]]
+name = "lru"
+version = "0.12.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "234cf4f4a04dc1f57e24b96cc0cd600cf2af460d4161ac5ecdd0af8e1f3b2a38"
+dependencies = [
+ "hashbrown 0.15.5",
 ]
 
 [[package]]
@@ -4832,7 +4906,7 @@ checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
 
 [[package]]
 name = "remote_only_demo"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "anyhow",
  "arc-swap",
@@ -6285,6 +6359,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tokio-stream"
+version = "0.1.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "32da49809aab5c3bc678af03902d4ccddea2a87d028d86392a4b1560c6906c70"
+dependencies = [
+ "futures-core",
+ "pin-project-lite",
+ "tokio",
+]
+
+[[package]]
 name = "tokio-tungstenite"
 version = "0.28.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6894,9 +6979,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen"
-version = "0.2.120"
+version = "0.2.118"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df52b6d9b87e0c74c9edfa1eb2d9bf85e5d63515474513aa50fa181b3c4f5db1"
+checksum = "0bf938a0bacb0469e83c1e148908bd7d5a6010354cf4fb73279b7447422e3a89"
 dependencies = [
  "cfg-if",
  "once_cell",
@@ -6907,9 +6992,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-futures"
-version = "0.4.70"
+version = "0.4.68"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af934872acec734c2d80e6617bbb5ff4f12b052dd8e6332b0817bce889516084"
+checksum = "f371d383f2fb139252e0bfac3b81b265689bf45b6874af544ffa4c975ac1ebf8"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
@@ -6917,9 +7002,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro"
-version = "0.2.120"
+version = "0.2.118"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "78b1041f495fb322e64aca85f5756b2172e35cd459376e67f2a6c9dffcedb103"
+checksum = "eeff24f84126c0ec2db7a449f0c2ec963c6a49efe0698c4242929da037ca28ed"
 dependencies = [
  "quote",
  "wasm-bindgen-macro-support",
@@ -6927,9 +7012,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro-support"
-version = "0.2.120"
+version = "0.2.118"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9dcd0ff20416988a18ac686d4d4d0f6aae9ebf08a389ff5d29012b05af2a1b41"
+checksum = "9d08065faf983b2b80a79fd87d8254c409281cf7de75fc4b773019824196c904"
 dependencies = [
  "bumpalo",
  "proc-macro2",
@@ -6940,9 +7025,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-shared"
-version = "0.2.120"
+version = "0.2.118"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49757b3c82ebf16c57d69365a142940b384176c24df52a087fb748e2085359ea"
+checksum = "5fd04d9e306f1907bd13c6361b5c6bfc7b3b3c095ed3f8a9246390f8dbdee129"
 dependencies = [
  "unicode-ident",
 ]
@@ -7009,9 +7094,9 @@ dependencies = [
 
 [[package]]
 name = "web-sys"
-version = "0.3.97"
+version = "0.3.95"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2eadbac71025cd7b0834f20d1fe8472e8495821b4e9801eb0a60bd1f19827602"
+checksum = "4f2dfbb17949fa2088e5d39408c48368947b86f7834484e87b73de55bc14d97d"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
@@ -7652,7 +7737,7 @@ checksum = "1ffae5123b2d3fc086436f8834ae3ab053a283cfac8fe0a0b8eaae044768a4c4"
 
 [[package]]
 name = "xtask"
-version = "0.3.1"
+version = "0.4.0"
 dependencies = [
  "anyhow",
  "clap",

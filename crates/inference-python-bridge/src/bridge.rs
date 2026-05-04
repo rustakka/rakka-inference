@@ -8,11 +8,11 @@
 //!   from Python (vLLM's worker process, etc.). Currently a thin shell
 //!   around `pyo3::Python::with_gil` plus a dedicated runtime.
 //!
-//! TODO(rakka-accel F4): rakka-accel's lib.rs lists `PythonGpuBridge` as
+//! TODO(atomr-accel F4): atomr-accel's lib.rs lists `PythonGpuBridge` as
 //! a deferred phase. When upstream ships it, replace this body with
-//! `pub use rakka_accel::python::PythonGpuBridge;` plus a thin
+//! `pub use atomr_accel::python::PythonGpuBridge;` plus a thin
 //! `python_pinned_dispatcher` that delegates to
-//! `rakka_accel::cuda::dispatcher::GpuDispatcher::python_pinned()`. The
+//! `atomr_accel::cuda::dispatcher::GpuDispatcher::python_pinned()`. The
 //! public surface this module exposes (`PythonGpuBridge::with_python`,
 //! `python_pinned_dispatcher`) is intentionally narrow so that lift
 //! is mechanical.

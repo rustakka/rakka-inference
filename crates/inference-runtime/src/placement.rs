@@ -5,7 +5,7 @@
 //! (`RemoteNetwork { provider }`). This actor operates at the
 //! deployment → node level; once a node is chosen for a `LocalGpu`
 //! deployment, the *which-GPU-on-this-node* decision is delegated to
-//! the upstream `rakka_accel::cuda::placement::PlacementActor` (under the
+//! the upstream `atomr_accel::cuda::placement::PlacementActor` (under the
 //! `local-gpu` feature). Renamed from the doc's plain `PlacementActor`
 //! to make the abstraction-level distinction visible at the call site.
 //!
@@ -96,7 +96,7 @@ impl DeploymentPlacementActor {
                 for i in 0..deployment.replicas {
                     let node = constraints.gpu_nodes[(i as usize) % constraints.gpu_nodes.len()].clone();
                     // Per-node GPU choice is the upstream
-                    // `rakka_accel::cuda::placement::PlacementActor`'s job —
+                    // `atomr_accel::cuda::placement::PlacementActor`'s job —
                     // topology constraints (NVLink islands, MIG, P2P
                     // groups) live there. v0 hands a contiguous range
                     // here and lets the per-node placement actor refine

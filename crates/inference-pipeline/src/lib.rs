@@ -1,7 +1,7 @@
 //! # inference-pipeline
 //!
 //! `rakka-streams` integration for inference graphs (doc §9), plus a
-//! re-export shim over `rakka-accel-patterns` so callers get the
+//! re-export shim over `atomr-accel-patterns` so callers get the
 //! upstream universal-GPU blueprints (batching, cascade, replica pool,
 //! fair-share scheduler, hot-swap, MoE router, speculative decoder)
 //! without taking a second dependency.
@@ -30,7 +30,7 @@ pub fn request_source(rx: mpsc::UnboundedReceiver<ExecuteBatch>) -> Source<Execu
     Source::from_receiver(rx)
 }
 
-/// Re-export of the upstream `rakka-accel-patterns` crate so callers
+/// Re-export of the upstream `atomr-accel-patterns` crate so callers
 /// can write `atomr_infer_pipeline::patterns::DynamicBatchingServer`
 /// without separately adding it to their workspace deps.
 ///
@@ -49,9 +49,9 @@ pub fn request_source(rx: mpsc::UnboundedReceiver<ExecuteBatch>) -> Source<Execu
 /// - `patterns::speculative::SpeculativeDecoder` — draft + verifier
 ///   pair.
 /// - `patterns::moe::MoeRouter` — mixture-of-experts gating.
-#[cfg(any())] // atomr-accel-gated; disabled until atomr-accel renames
+#[cfg(feature = "cuda-patterns")]
 pub mod patterns {
-    pub use rakka_accel_patterns::*;
+    pub use atomr_accel_patterns::*;
 }
 
 /// Reference hybrid-graph descriptor. Pure metadata; the

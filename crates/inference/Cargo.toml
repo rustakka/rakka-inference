@@ -4,17 +4,17 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "Multi-runtime GPU + remote inference as a supervised actor system on rakka."
+description = "Multi-runtime GPU + remote inference as a supervised actor system on atomr."
 
 [features]
 default = []
 
-# Local runtimes — atomr-accel-dependent ones (`candle`, `cudarc`)
-# are intentionally absent in this release while atomr-accel completes
-# its rakka→atomr internal rename.
+# Local runtimes
 vllm      = ["dep:atomr-infer-runtime-vllm",      "atomr-infer-runtime-vllm/vllm"]
 tensorrt  = ["dep:atomr-infer-runtime-tensorrt",  "atomr-infer-runtime-tensorrt/tensorrt"]
 ort       = ["dep:atomr-infer-runtime-ort",       "atomr-infer-runtime-ort/ort"]
+candle    = ["dep:atomr-infer-runtime-candle",    "atomr-infer-runtime-candle/candle", "accel"]
+cudarc    = ["dep:atomr-infer-runtime-cudarc",    "atomr-infer-runtime-cudarc/cudarc", "accel"]
 mistralrs = ["dep:atomr-infer-runtime-mistralrs", "atomr-infer-runtime-mistralrs/mistralrs"]
 
 # Remote runtimes (no system deps; safe to enable on any host)
@@ -26,15 +26,24 @@ litellm   = ["dep:atomr-infer-runtime-litellm", "openai"]
 # Cross-cutting
 pipeline      = ["dep:atomr-infer-pipeline"]
 testkit       = ["dep:atomr-infer-testkit"]
+# Pulls in atomr-accel (with the CUDA backend re-exported at
+# `atomr_accel::cuda`) and the atomr-accel-patterns blueprints so
+# callers can reach `atomr_infer::accel::*` and
+# `atomr_infer::accel_patterns::*` directly. Implied by `candle` /
+# `cudarc`. Off by default — `remote-only` builds skip these and
+# therefore compile no GPU deps at all.
+accel          = ["dep:atomr-accel", "atomr-accel/cuda", "atomr-infer-runtime/local-gpu"]
+accel-patterns = ["dep:atomr-accel-patterns", "pipeline", "atomr-infer-pipeline/cuda-patterns"]
 
 # Aggregates per doc §10.5
-all-native      = ["tensorrt", "ort", "mistralrs"]
+all-native      = ["tensorrt", "ort", "candle", "cudarc", "mistralrs"]
 all-python      = ["vllm"]
 all-local       = ["all-native", "all-python"]
 all-remote      = ["openai", "anthropic", "gemini", "litellm"]
-all-runtimes    = ["all-local", "all-remote"]
+all-runtimes    = ["all-local", "all-remote", "accel-patterns"]
 default-prod    = ["vllm", "tensorrt", "ort", "openai", "anthropic", "pipeline"]
-# remote-only is the canonical zero-system-dep build.
+# remote-only deliberately excludes `accel` / `accel-patterns` so the
+# resulting binary pulls no GPU deps whatsoever.
 remote-only     = ["all-remote", "pipeline"]
 
 [dependencies]
@@ -44,6 +53,8 @@ atomr-infer-runtime = { workspace = true }
 atomr-infer-runtime-vllm      = { workspace = true, optional = true }
 atomr-infer-runtime-tensorrt  = { workspace = true, optional = true }
 atomr-infer-runtime-ort       = { workspace = true, optional = true }
+atomr-infer-runtime-candle    = { workspace = true, optional = true }
+atomr-infer-runtime-cudarc    = { workspace = true, optional = true }
 atomr-infer-runtime-mistralrs = { workspace = true, optional = true }
 
 atomr-infer-runtime-openai    = { workspace = true, optional = true }
@@ -53,3 +64,7 @@ atomr-infer-runtime-litellm   = { workspace = true, optional = true }
 
 atomr-infer-pipeline          = { workspace = true, optional = true }
 atomr-infer-testkit           = { workspace = true, optional = true }
+
+# Upstream atomr-accel re-exports (gated on `accel` / `accel-patterns`).
+atomr-accel          = { workspace = true, optional = true }
+atomr-accel-patterns = { workspace = true, optional = true }

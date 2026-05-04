@@ -7,7 +7,7 @@ license.workspace = true
 
 [features]
 default = []
-# Pulls in `candle-*` crates plus rakka-accel's GpuDispatcher /
+# Pulls in `candle-*` crates plus atomr-accel's GpuDispatcher /
 # PerActorAllocator substrate so the runner's thread-pinning and
 # stream allocation reuse the upstream primitives instead of rolling
 # their own.
@@ -15,7 +15,8 @@ candle  = [
   "dep:candle-core",
   "dep:candle-nn",
   "dep:candle-transformers",
-  ]
+  "dep:atomr-accel",
+]
 
 [dependencies]
 atomr-infer-core      = { workspace = true }
@@ -25,3 +26,4 @@ serde               = { workspace = true }
 candle-core         = { workspace = true, optional = true }
 candle-nn           = { workspace = true, optional = true }
 candle-transformers = { workspace = true, optional = true }
+atomr-accel         = { workspace = true, optional = true }

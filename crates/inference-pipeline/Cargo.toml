@@ -7,19 +7,21 @@ license.workspace = true
 
 [features]
 default = []
-# Pulls in `rakka-accel-patterns` so callers get DynamicBatchingServer,
+# Pulls in `atomr-accel-patterns` so callers get DynamicBatchingServer,
 # InferenceCascade, ModelReplicaPool, FairShareScheduler,
 # ModelHotSwapServer, SpeculativeDecoder, MoeRouter directly. Off by
-# default so `inference --features remote-only` doesn't pull GPU deps.
-cuda-patterns = []
+# default so `atomr-infer --features remote-only` doesn't pull GPU deps.
+cuda-patterns = ["dep:atomr-accel-patterns"]
 
 [dependencies]
 atomr-infer-core    = { workspace = true }
 atomr-infer-runtime = { workspace = true }
-atomr-streams     = { workspace = true }
+atomr-streams       = { workspace = true }
 
 # Upstream pattern primitives — exactly the §9 building blocks. Keep
 # behind the feature gate so remote-only builds skip cudarc.
+atomr-accel-patterns = { workspace = true, optional = true }
+
 tokio       = { workspace = true }
 async-trait = { workspace = true }
 futures     = { workspace = true }

@@ -18,11 +18,11 @@ name = "atomr_infer_runtime"
 
 [features]
 default = []
-# `local-gpu` is intentionally absent from this release. atomr-accel
-# (the upstream substrate for two-tier GPU supervision and the
-# per-actor stream allocator) is mid-rakka→atomr-rename and not yet
-# resolvable as a workspace dep. Re-add `local-gpu = ["dep:atomr-accel",
-# "atomr-accel/cuda"]` once atomr-accel ships its renamed crates.
+# Pulls in atomr-accel for the local-GPU two-tier supervision pattern
+# and the per-actor stream allocator. Off by default so a pure-remote
+# inference build (`atomr-infer --features remote-only`) compiles no
+# GPU dependencies whatsoever.
+local-gpu = ["dep:atomr-accel", "atomr-accel/cuda"]
 
 [dependencies]
 atomr-infer-core = { workspace = true }
@@ -33,6 +33,11 @@ atomr-core             = { workspace = true }
 atomr-config           = { workspace = true }
 atomr-cluster-tools    = { workspace = true }
 atomr-distributed-data = { workspace = true }
+
+# atomr-accel is the upstream substrate for two-tier supervision and
+# GPU dispatch. Optional — only present when the `local-gpu` feature
+# is enabled.
+atomr-accel = { workspace = true, optional = true }
 
 # HTTP gateway
 axum     = { workspace = true }

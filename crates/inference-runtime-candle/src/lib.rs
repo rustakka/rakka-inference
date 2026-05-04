@@ -9,8 +9,8 @@
 //! enable `--features candle` to wire in the real model runtime.
 //!
 //! When the feature is on, the runner uses
-//! `rakka_accel::cuda::dispatcher::GpuDispatcher` for thread pinning and
-//! `rakka_accel::cuda::stream::PerActorAllocator` for per-request stream
+//! `atomr_accel::cuda::dispatcher::GpuDispatcher` for thread pinning and
+//! `atomr_accel::cuda::stream::PerActorAllocator` for per-request stream
 //! allocation — both are upstream substrate, not redefined here.
 
 #![forbid(unsafe_code)]
@@ -77,16 +77,16 @@ impl ModelRunner for CandleRunner {
         #[cfg(feature = "candle")]
         {
             // Real wiring lands in Phase 2b of the doc roadmap. Shape:
-            //   1. Pin to a thread via `rakka_accel::cuda::dispatcher::GpuDispatcher`.
-            //   2. Allocate a stream from `rakka_accel::cuda::stream::PerActorAllocator`.
+            //   1. Pin to a thread via `atomr_accel::cuda::dispatcher::GpuDispatcher`.
+            //   2. Allocate a stream from `atomr_accel::cuda::stream::PerActorAllocator`.
             //   3. Run forward pass with `candle_transformers::models::*`.
             //   4. Stream de-tokenized text out as `TokenChunk`s.
             // The ModelRunner trait is satisfied; the body is a smoke
             // value until the model-specific code lands.
-            let _ = (); // ensure rakka_accel is referenced once the body lands
+            let _ = (); // ensure atomr_accel is referenced once the body lands
             return Err(InferenceError::Internal(
                 "candle runner: forward pass pending — wire via \
-                 rakka_accel::cuda::dispatcher::GpuDispatcher (doc §13 Phase 2b)"
+                 atomr_accel::cuda::dispatcher::GpuDispatcher (doc §13 Phase 2b)"
                     .into(),
             ));
         }
