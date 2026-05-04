@@ -59,11 +59,11 @@ fn print_help() {
 
 fn build_matrix() -> Result<()> {
     cargo(&["build", "--workspace"])?;
-    cargo(&["build", "-p", "inference", "--features", "remote-only"])?;
+    cargo(&["build", "-p", "atomr-infer", "--features", "remote-only"])?;
     cargo(&[
         "build",
         "-p",
-        "inference",
+        "atomr-infer",
         "--features",
         "candle,openai,anthropic,pipeline",
     ])?;
@@ -113,11 +113,11 @@ fn verify() -> Result<()> {
             &["clippy", "--workspace", "--all-targets", "--", "-D", "warnings"],
         ),
         (
-            "cargo build -p inference --no-default-features --features remote-only",
+            "cargo build -p atomr-infer --no-default-features --features remote-only",
             &[
                 "build",
                 "-p",
-                "inference",
+                "atomr-infer",
                 "--no-default-features",
                 "--features",
                 "remote-only",
@@ -143,7 +143,7 @@ fn verify() -> Result<()> {
         .args([
             "tree",
             "-p",
-            "inference",
+            "atomr-infer",
             "--no-default-features",
             "--features",
             "remote-only",
@@ -364,7 +364,7 @@ fn release_checklist() -> Result<()> {
         ("inference-testkit", "depends on rakka-testkit"),
         ("inference-cli", "depends on rakka + inference-runtime"),
         (
-            "inference",
+            "atomr-infer",
             "rollup; promote after every member it re-exports is publishable",
         ),
     ];
