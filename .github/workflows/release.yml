@@ -208,7 +208,7 @@ jobs:
             echo
             echo
             echo "### Crates"
-            grep -E "inference[-a-z]* = \{ path" Cargo.toml | sed 's/^/- /'
+            grep -E "atomr-infer[-a-z]* = \{ path" Cargo.toml | sed 's/^/- /' || true
             echo
             echo "### Binaries"
             ls ../artifacts | grep "atomr-infer-binaries-" | sed 's/^/- /' || true
