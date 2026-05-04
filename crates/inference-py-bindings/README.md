@@ -1,4 +1,4 @@
-# inference-py-bindings
+# atomr-infer-py-bindings
 
 > PyO3 bindings — declare `Deployment`s and connect to a `Cluster`
 > from Python.
@@ -7,7 +7,7 @@
 
 ```sh
 # Compile the cdylib (importable as a Python extension module).
-cargo build -p inference-py-bindings --features python
+cargo build -p atomr-infer-py-bindings --features python
 # Or, for distribution:
 maturin develop --features python
 ```

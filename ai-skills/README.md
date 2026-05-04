@@ -13,11 +13,11 @@ does not entangle this repo's internal development workflow.
 
 | Skill | Use when… |
 |---|---|
-| `atomr-infer-quickstart` | Standing up your first deployment — `Deployment` value object, `runtime` field, `rakka serve --config`, the rollup feature flags |
+| `atomr-infer-quickstart` | Standing up your first deployment — `Deployment` value object, `runtime` field, `atomr-infer serve --config`, the rollup feature flags |
 | `atomr-infer-runtimes` | Choosing a backend — local Rust-native (Candle / cudarc / mistralrs), Python (vLLM), FFI (TensorRT / ORT), or remote (OpenAI / Anthropic / Gemini / LiteLLM) |
 | `atomr-infer-remote-providers` | Wiring a remote provider — credentials, rate limits, circuit breakers, retries, cost estimation, fallback chains |
 | `atomr-infer-pipelines` | Composing multi-runtime pipelines — `DynamicBatchingServer`, `InferenceCascade`, hybrid local→remote escalation, fallback on `RateLimitExceeded` / `CircuitOpen` |
-| `atomr-infer-deployment` | Deploying to a cluster — feature-flag matrix, the `remote-only` invariant, `rakka serve --config`, the project-file TOML schema, hot-swap & credential rotation |
+| `atomr-infer-deployment` | Deploying to a cluster — feature-flag matrix, the `remote-only` invariant, `atomr-infer serve --config`, the project-file TOML schema, hot-swap & credential rotation |
 | `atomr-infer-troubleshooting` | Debugging — typed `InferenceError` triage, 429 storms, circuit-breaker state, content-filter refusals, sticky CUDA-context recovery |
 | `atomr-infer-extending` | Adding a new backend — implementing `ModelRunner`, plugging into the rollup, where to slot a new crate in publish dep-order |
 
@@ -93,7 +93,7 @@ skills from `AGENTS.md` and let the model pull them in on demand:
 ## atomr-infer skills
 When working on atomr-infer, consult the matching skill in
 `ai-skills/skills/<name>/SKILL.md`:
-- first deployment / Deployment object / rakka serve  → atomr-infer-quickstart
+- first deployment / Deployment object / atomr-infer serve  → atomr-infer-quickstart
 - choosing a backend / local vs remote / FFI vs API   → atomr-infer-runtimes
 - API keys / rate limits / circuit breakers / costs   → atomr-infer-remote-providers
 - batching / cascade / hybrid local→remote / fallback → atomr-infer-pipelines

@@ -1,4 +1,4 @@
-# inference-runtime-tensorrt
+# atomr-infer-runtime-tensorrt
 
 > NVIDIA TensorRT runtime — pre-compiled `nvinfer` plans driven via
 > FFI. Doc §2.2.
@@ -7,8 +7,8 @@
 
 | Build                                                            | Result                                                           |
 |------------------------------------------------------------------|------------------------------------------------------------------|
-| `cargo build -p inference-runtime-tensorrt` (default)            | Stub — no `extern "C"` block, no link to `libnvinfer.so`.        |
-| `cargo build -p inference-runtime-tensorrt --features tensorrt`  | Real path: opens the FFI surface, requires `libnvinfer.so` at link time. |
+| `cargo build -p atomr-infer-runtime-tensorrt` (default)            | Stub — no `extern "C"` block, no link to `libnvinfer.so`.        |
+| `cargo build -p atomr-infer-runtime-tensorrt --features tensorrt`  | Real path: opens the FFI surface, requires `libnvinfer.so` at link time. |
 
 The default-stub-when-feature-off pattern lets CI on machines without
 TensorRT installed still run `cargo check --workspace`.
@@ -33,7 +33,7 @@ engine is opaque (a serialised `ICudaEngine`) and uses one
 your max-batch-size + max-concurrent budget.
 
 The `cudarc` driver / context lifecycle is handled by
-`rakka_accel::cuda::device::DeviceActor` (when the rollup's `cuda` feature is
+`atomr_accel::cuda::device::DeviceActor` (when the rollup's `cuda` feature is
 on), so the TensorRT runner doesn't manage a CUDA context itself —
 it lives inside the two-tier supervision tree just like any other
 local runtime.

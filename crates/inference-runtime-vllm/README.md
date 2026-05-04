@@ -1,4 +1,4 @@
-# inference-runtime-vllm
+# atomr-infer-runtime-vllm
 
 > vLLM (Python) runtime — the canonical local LLM backend per
 > architecture v4 §2.1.
@@ -7,8 +7,8 @@
 
 | Build                                                                   | Result                                            |
 |-------------------------------------------------------------------------|---------------------------------------------------|
-| `cargo build -p inference-runtime-vllm` (default)                       | Stub — runner returns `InferenceError::Internal("vllm feature disabled at build time")`. Useful when `Cargo.toml` references the crate via the rollup but the host has no Python venv. |
-| `cargo build -p inference-runtime-vllm --features vllm`                 | Pulls `inference-python-bridge/python` (PyO3 + tokio + parking_lot) and wires the runner over vLLM's `EngineCore` via the `PythonGpuBridge`. Phase-2a wiring lands as the surface stabilises upstream. |
+| `cargo build -p atomr-infer-runtime-vllm` (default)                       | Stub — runner returns `InferenceError::Internal("vllm feature disabled at build time")`. Useful when `Cargo.toml` references the crate via the rollup but the host has no Python venv. |
+| `cargo build -p atomr-infer-runtime-vllm --features vllm`                 | Pulls `atomr-infer-python-bridge/python` (PyO3 + tokio + parking_lot) and wires the runner over vLLM's `EngineCore` via the `PythonGpuBridge`. Phase-2a wiring lands as the surface stabilises upstream. |
 
 ## Why a stub by default
 
@@ -43,6 +43,6 @@ default).
 ## Roadmap
 
 Per the architecture doc's §13 Phase 2a, the vLLM runner is wired
-through `inference-python-bridge` once that bridge gets re-exported
+through `atomr-infer-python-bridge` once that bridge gets re-exported
 from `rakka-accel` (planned F4). The current local `PythonGpuBridge`
 implementation is a drop-in placeholder; the lift is mechanical.

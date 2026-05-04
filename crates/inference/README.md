@@ -7,10 +7,10 @@
 
 Adding `inference = { features = [...] }` is a single statement of
 intent. The Cargo feature graph computes the actual dependency graph
-for you: enable `openai` and you pull `inference-runtime-openai` plus
+for you: enable `openai` and you pull `atomr-infer-runtime-openai` plus
 its `reqwest` / `eventsource-stream` deps; enable `candle` and you
 additionally pull `rakka-accel`, `cudarc`, `candle-*`. Disable
-everything and you compile only `inference-core` + `inference-runtime`.
+everything and you compile only `atomr-infer-core` + `atomr-infer-runtime`.
 
 ## The shape that matters: `remote-only`
 
@@ -43,7 +43,7 @@ full grid. Headlines:
   Cascade, ReplicaPool, FairShare, HotSwap, Speculative, MoE).
 - `cuda` — direct `rakka-accel` re-export, reachable as
   `inference::cuda::*`.
-- `testkit` — `inference-testkit` mocks.
+- `testkit` — `atomr-infer-testkit` mocks.
 
 Aggregates: `all-native`, `all-python`, `all-local`, `all-remote`,
 `all-runtimes`, `default-prod`, `remote-only`.
@@ -62,8 +62,8 @@ use inference::prelude::*;
 
 ## Re-exports
 
-| `inference::core`            | All of `inference-core`                                       |
-| `inference::runtime`         | All of `inference-runtime`                                    |
+| `inference::core`            | All of `atomr-infer-core`                                       |
+| `inference::runtime`         | All of `atomr-infer-runtime`                                    |
 | `inference::runtime_openai`  | …if `features = ["openai"]`                                   |
 | `inference::runtime_anthropic` | …if `features = ["anthropic"]`                              |
 | `inference::runtime_gemini`  | …if `features = ["gemini"]`                                   |
@@ -76,5 +76,5 @@ use inference::prelude::*;
 | `inference::runtime_mistralrs` | …if `features = ["mistralrs"]`                              |
 | `inference::pipeline`        | …if `features = ["pipeline"]`                                 |
 | `inference::testkit`         | …if `features = ["testkit"]`                                  |
-| `inference::cuda`            | re-export of `rakka_accel` if `features = ["cuda"]`            |
-| `inference::cuda_patterns`   | re-export of `rakka_accel_patterns` if `features = ["cuda-patterns"]` |
+| `inference::cuda`            | re-export of `atomr_accel` if `features = ["cuda"]`            |
+| `inference::cuda_patterns`   | re-export of `atomr_accel_patterns` if `features = ["cuda-patterns"]` |

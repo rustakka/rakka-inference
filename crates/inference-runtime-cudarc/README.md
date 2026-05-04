@@ -1,4 +1,4 @@
-# inference-runtime-cudarc
+# atomr-infer-runtime-cudarc
 
 > Direct CUDA kernel dispatch via `cudarc` and `rakka-accel`'s kernel
 > actors. The escape hatch for novel architectures, research code, and
@@ -10,14 +10,14 @@
   runtime.
 - Your model isn't supported by any framework yet (research code).
 - You need direct access to cuBLAS / cuDNN / cuFFT actors at the
-  inference-runtime level.
+  atomr-infer-runtime level.
 
 ## Build profiles
 
 | Build                                                          | Result                                            |
 |----------------------------------------------------------------|---------------------------------------------------|
-| `cargo build -p inference-runtime-cudarc` (default)            | Stub.                                             |
-| `cargo build -p inference-runtime-cudarc --features cudarc`    | Pulls `cudarc` + `rakka-accel`.                    |
+| `cargo build -p atomr-infer-runtime-cudarc` (default)            | Stub.                                             |
+| `cargo build -p atomr-infer-runtime-cudarc --features cudarc`    | Pulls `cudarc` + `rakka-accel`.                    |
 
 ## What it gives you
 
@@ -31,8 +31,8 @@ let cfg = CudarcConfig {
 ```
 
 The runner doesn't manage a CUDA context itself — that lives in
-`rakka_accel::cuda::device::DeviceActor`. The runner simply posts typed
-kernel messages (e.g. `rakka_accel::cuda::kernel::BlasMsg::Sgemm`) to the
+`atomr_accel::cuda::device::DeviceActor`. The runner simply posts typed
+kernel messages (e.g. `atomr_accel::cuda::kernel::BlasMsg::Sgemm`) to the
 appropriate child actor and lifts replies into `TokenChunk`s.
 
 A canonical hand-roll:
@@ -40,10 +40,10 @@ A canonical hand-roll:
 ```rust
 // Inside the runner's execute() body, gated on `feature = "cudarc"`:
 //
-// 1. Pin to a thread via rakka_accel::cuda::dispatcher::GpuDispatcher.
-// 2. Allocate a stream from rakka_accel::cuda::stream::PerActorAllocator.
+// 1. Pin to a thread via atomr_accel::cuda::dispatcher::GpuDispatcher.
+// 2. Allocate a stream from atomr_accel::cuda::stream::PerActorAllocator.
 // 3. Launch your kernel via cudarc::driver::CudaSlice + cudarc::nvrtc.
-// 4. Sync via rakka_accel::cuda::completion::HostFnCompletion (sub-microsecond).
+// 4. Sync via atomr_accel::cuda::completion::HostFnCompletion (sub-microsecond).
 // 5. Stream tokenised output as TokenChunks.
 ```
 

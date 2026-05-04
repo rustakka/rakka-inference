@@ -1,4 +1,4 @@
-# inference-pipeline
+# atomr-infer-pipeline
 
 > Streams DSL adapter + a re-export shim over
 > [`rakka-accel-patterns`](../../../rakka-accel/crates/rakka-accel-patterns/).
@@ -18,8 +18,8 @@ as the backend, so we don't reimplement them — we just plug a
 
 | Build                                                            | Result                                            |
 |------------------------------------------------------------------|---------------------------------------------------|
-| `cargo build -p inference-pipeline` (default)                    | `Source` adapter + `HybridGraph` descriptor only — no `cudarc` deps. |
-| `cargo build -p inference-pipeline --features cuda-patterns`     | Adds `inference_pipeline::patterns::*` re-exports of all upstream blueprints. |
+| `cargo build -p atomr-infer-pipeline` (default)                    | `Source` adapter + `HybridGraph` descriptor only — no `cudarc` deps. |
+| `cargo build -p atomr-infer-pipeline --features cuda-patterns`     | Adds `inference_pipeline::patterns::*` re-exports of all upstream blueprints. |
 
 ## What you get with `cuda-patterns`
 

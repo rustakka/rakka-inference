@@ -1,4 +1,4 @@
-# inference-core
+# atomr-infer-core
 
 > Foundation types for the atomr-infer workspace. Zero actor / GPU
 > / HTTP dependencies — pure types that every other layer plugs into.
@@ -43,7 +43,7 @@ impl ModelRunner for MyCustomRunner {
 
 ## Dependency budget
 
-`inference-core` depends only on:
+`atomr-infer-core` depends only on:
 
 - `serde` / `serde_json` / `thiserror` / `bytes` — wire types
 - `secrecy` — typed secrets
@@ -53,6 +53,6 @@ impl ModelRunner for MyCustomRunner {
 - `url` — for endpoint validation
 
 **No** `tokio`, **no** `rakka`, **no** `rakka-accel`, **no** `pyo3`,
-**no** `reqwest`. This is what makes `cargo build -p inference
+**no** `reqwest`. This is what makes `cargo build -p atomr-infer
 --features remote-only` produce a binary with zero GPU deps — the
 foundation layer simply doesn't carry any.

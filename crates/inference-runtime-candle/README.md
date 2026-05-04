@@ -1,4 +1,4 @@
-# inference-runtime-candle
+# atomr-infer-runtime-candle
 
 > Pure-Rust transformer inference via the
 > [`candle`](https://github.com/huggingface/candle) family of crates.
@@ -15,8 +15,8 @@
 
 | Build                                                          | Result                                            |
 |----------------------------------------------------------------|---------------------------------------------------|
-| `cargo build -p inference-runtime-candle` (default)            | Stub.                                             |
-| `cargo build -p inference-runtime-candle --features candle`    | Pulls `candle-core`, `candle-nn`, `candle-transformers`, and `rakka-accel` for `GpuDispatcher` + `PerActorAllocator`. |
+| `cargo build -p atomr-infer-runtime-candle` (default)            | Stub.                                             |
+| `cargo build -p atomr-infer-runtime-candle --features candle`    | Pulls `candle-core`, `candle-nn`, `candle-transformers`, and `rakka-accel` for `GpuDispatcher` + `PerActorAllocator`. |
 
 ## Configuration
 
@@ -34,9 +34,9 @@ let cfg = CandleConfig {
 
 The runner uses upstream substrate, not local re-implementations:
 
-- `rakka_accel::cuda::dispatcher::GpuDispatcher` for thread pinning
-- `rakka_accel::cuda::stream::PerActorAllocator` for per-request stream allocation
-- `rakka_accel::cuda::device::DeviceActor` two-tier supervision (via the
+- `atomr_accel::cuda::dispatcher::GpuDispatcher` for thread pinning
+- `atomr_accel::cuda::stream::PerActorAllocator` for per-request stream allocation
+- `atomr_accel::cuda::device::DeviceActor` two-tier supervision (via the
   rollup's `cuda` feature)
 
 The Candle-specific bit is the model loader and the forward-pass

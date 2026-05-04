@@ -1,7 +1,7 @@
-# inference-runtime-litellm
+# atomr-infer-runtime-litellm
 
 > Thin LiteLLM-proxy adapter on top of
-> [`inference-runtime-openai`](../inference-runtime-openai/).
+> [`atomr-infer-runtime-openai`](../atomr-infer-runtime-openai/).
 > ~110 LOC.
 
 LiteLLM exposes an OpenAI-compatible HTTP surface fronting any backend
@@ -32,7 +32,7 @@ let openai_cfg = cfg.into_openai(/* matching openai SecretRef */);
 let runner = LiteLlmRunner::new(openai_cfg, session_snapshot)?;
 ```
 
-## When to choose this over `inference-runtime-openai`
+## When to choose this over `atomr-infer-runtime-openai`
 
 - Your team already runs LiteLLM as the central provider gateway and
   wants observability tagged with the proxy hop.

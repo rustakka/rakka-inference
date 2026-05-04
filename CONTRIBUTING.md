@@ -17,7 +17,7 @@ ready to ship?". It runs:
 1. `cargo build --workspace`
 2. `cargo test --workspace --quiet`
 3. `cargo clippy --workspace --all-targets -- -D warnings`
-4. `cargo build -p inference --no-default-features --features remote-only`
+4. `cargo build -p atomr-infer --no-default-features --features remote-only`
 5. `cargo xtask audit --check` (vs `docs/reports/audit-baseline.json`)
 6. The **remote-only invariant** — the dep tree of an `inference
    --features remote-only` build must contain zero `cudarc`,
@@ -78,7 +78,7 @@ invariant keeps holding.
 ```text
 build               cargo build across the documented feature matrix
 test                cargo test across the documented feature matrix
-remote-only         build inference-cli with no GPU/Python deps
+remote-only         build atomr-infer-cli with no GPU/Python deps
 verify              1.0-rc gate (build + test + clippy + audit + remote-only)
 audit [--check] [--json <out>]
                     count anti-pattern sentinels per crate
@@ -102,8 +102,8 @@ git commit -m "chore(audit): refresh baseline after <reason>"
 
 ## Adding a new runtime backend
 
-1. Write a crate that depends only on `inference-core` (and
-   `inference-remote-core` if you're adding a remote provider, or
+1. Write a crate that depends only on `atomr-infer-core` (and
+   `atomr-infer-remote-core` if you're adding a remote provider, or
    `rakka-accel` if you're adding a local GPU runtime).
 2. Implement `inference_core::ModelRunner`.
 3. Add the crate to `Cargo.toml` and to the rollup
@@ -113,7 +113,7 @@ git commit -m "chore(audit): refresh baseline after <reason>"
    ones (value-first opening, build profiles table, code sample).
 6. Land via `feat:` commit.
 
-The `inference-core` README has a copy-paste skeleton.
+The `atomr-infer-core` README has a copy-paste skeleton.
 
 ## Code style
 
@@ -123,7 +123,7 @@ The `inference-core` README has a copy-paste skeleton.
 - No `unwrap()` in non-test code; use `?` or surface a typed error.
 - No `panic!`/`todo!`/`unimplemented!` in non-test code; prefer a
   documented `InferenceError::Internal("...")` so callers see why.
-- Keep `inference-core` free of `tokio` / `rakka` / `rakka-accel` /
+- Keep `atomr-infer-core` free of `tokio` / `rakka` / `rakka-accel` /
   `pyo3` / HTTP clients. The dep budget is what makes
   `remote-only` work.
 
@@ -131,8 +131,8 @@ The `inference-core` README has a copy-paste skeleton.
 
 Pull requests run the full CI matrix and `cargo-semver-checks` on
 the publishable subset. If you're touching a public API on a
-publishable crate (`inference-core`, `inference-remote-core`,
-`inference-runtime-{openai,anthropic,gemini,litellm}`), the
+publishable crate (`atomr-infer-core`, `atomr-infer-remote-core`,
+`atomr-infer-runtime-{openai,anthropic,gemini,litellm}`), the
 semver-checks output appears as a PR comment. At `0.x` it's
 warn-only; once we hit `1.0`, breaking changes will hard-fail.
 

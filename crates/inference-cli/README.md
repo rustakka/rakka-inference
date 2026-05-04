@@ -1,12 +1,12 @@
-# inference-cli
+# atomr-infer-cli
 
-> The `rakka serve` binary. Boots an actor system, applies every
+> The `atomr-infer serve` binary. Boots an actor system, applies every
 > `[[deployment]]` in your project file, mounts the gateway.
 
 ## Quick start
 
 ```sh
-cargo run -p inference-cli --features all-remote -- \
+cargo run -p atomr-infer-cli --features all-remote -- \
     serve --config examples/remote_only_demo/demo.toml
 ```
 
@@ -16,7 +16,7 @@ cargo run -p inference-cli --features all-remote -- \
 
 | Subcommand                         | What it does                                                                  |
 |------------------------------------|-------------------------------------------------------------------------------|
-| `rakka serve --config <path>`      | Parse the project file, build the actor system, register every deployment, mount the gateway, wait for `Ctrl+C`. |
+| `atomr-infer serve --config <path>`      | Parse the project file, build the actor system, register every deployment, mount the gateway, wait for `Ctrl+C`. |
 | `rakka status --config <path>`     | Print the deployments in the project file (validate without running).        |
 | `rakka cost-report`                | Per-deployment cost — talks to a running `MetricsActor`. *(Phase 6 stub.)* |
 | `rakka rotate-credentials <name>`  | Triggers `RemoteSessionActor::rebuild` on the named deployment. *(Phase 6 stub.)* |
@@ -50,6 +50,6 @@ replicas = 1
 
 | Build                                                                                  | Use case                                          |
 |----------------------------------------------------------------------------------------|---------------------------------------------------|
-| `cargo build -p inference-cli --no-default-features --features remote-only`            | Pure-remote router; no GPU deps in the binary.    |
-| `cargo build -p inference-cli --features all-remote`                                   | All four remote providers + pipeline.             |
-| `cargo build -p inference-cli --features default-prod`                                 | The doc's recommended production preset.          |
+| `cargo build -p atomr-infer-cli --no-default-features --features remote-only`            | Pure-remote router; no GPU deps in the binary.    |
+| `cargo build -p atomr-infer-cli --features all-remote`                                   | All four remote providers + pipeline.             |
+| `cargo build -p atomr-infer-cli --features default-prod`                                 | The doc's recommended production preset.          |

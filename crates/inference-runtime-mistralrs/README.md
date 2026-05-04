@@ -1,4 +1,4 @@
-# inference-runtime-mistralrs
+# atomr-infer-runtime-mistralrs
 
 > Thin wrapper over [`mistralrs`](https://github.com/EricLBuehler/mistral.rs).
 
@@ -17,8 +17,8 @@ land here automatically.
 
 | Build                                                                | Result                            |
 |----------------------------------------------------------------------|-----------------------------------|
-| `cargo build -p inference-runtime-mistralrs` (default)               | Stub.                             |
-| `cargo build -p inference-runtime-mistralrs --features mistralrs`    | Pulls the `mistralrs` crate.      |
+| `cargo build -p atomr-infer-runtime-mistralrs` (default)               | Stub.                             |
+| `cargo build -p atomr-infer-runtime-mistralrs --features mistralrs`    | Pulls the `mistralrs` crate.      |
 
 ## Configuration
 

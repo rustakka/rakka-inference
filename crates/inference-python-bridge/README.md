@@ -1,4 +1,4 @@
-# inference-python-bridge
+# atomr-infer-python-bridge
 
 > Bridge between Python-resident GPU runtimes (vLLM, XTTS, Bark, …)
 > and the atomr-infer actor system.
@@ -7,8 +7,8 @@
 
 | Build                                                                  | Result                                                  |
 |------------------------------------------------------------------------|---------------------------------------------------------|
-| `cargo build -p inference-python-bridge` (default)                     | Empty stub — no PyO3, no Python venv needed.            |
-| `cargo build -p inference-python-bridge --features python`             | Real `PythonGpuBridge` + `python_pinned_dispatcher()`.  |
+| `cargo build -p atomr-infer-python-bridge` (default)                     | Empty stub — no PyO3, no Python venv needed.            |
+| `cargo build -p atomr-infer-python-bridge --features python`             | Real `PythonGpuBridge` + `python_pinned_dispatcher()`.  |
 
 ## What it provides (`features = ["python"]`)
 
@@ -30,7 +30,7 @@ re-export:
 
 ```rust
 // after F4 lands:
-pub use rakka_accel::python::PythonGpuBridge;
+pub use atomr_accel::python::PythonGpuBridge;
 ```
 
 The public surface here is intentionally narrow so that lift is

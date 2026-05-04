@@ -21,9 +21,9 @@ actual dependency graph for you.
 | The full v3-ish production preset                  | `default-prod`                                 |
 | Everything                                         | `all-runtimes`                                 |
 | Mocking + wiremock for tests                       | `testkit` (alongside the runtimes you mock)    |
-| Reach into `rakka_accel::*` directly                | `cuda` (re-exports as `inference::cuda`)       |
+| Reach into `atomr_accel::*` directly                | `cuda` (re-exports as `inference::cuda`)       |
 | Use `DynamicBatchingServer` / `InferenceCascade`   | `cuda-patterns` (re-exports as `inference::cuda_patterns`) |
-| Embed in Python                                    | `inference-py-bindings/python` on the bindings crate |
+| Embed in Python                                    | `atomr-infer-py-bindings/python` on the bindings crate |
 
 ---
 
@@ -31,24 +31,24 @@ actual dependency graph for you.
 
 | Feature              | Adds crate(s)                                  | System / heavy deps   | Notes |
 |----------------------|------------------------------------------------|-----------------------|-------|
-| `openai`             | `inference-runtime-openai`                     | `reqwest`, `hyper`    | Includes the Azure variant. |
-| `anthropic`          | `inference-runtime-anthropic`                  | `reqwest`, `hyper`    | Tool-use + base64 vision. |
-| `gemini`             | `inference-runtime-gemini`                     | `reqwest`, `hyper`    | AI Studio + Vertex; OAuth2 via pluggable `CredentialProvider`. |
-| `litellm`            | `inference-runtime-litellm`                    | (re-uses `openai`)    | LiteLLM proxy with proxy-friendly defaults. |
-| `vllm`               | `inference-runtime-vllm`                       | **`pyo3`**, `python`  | Pulls `inference-python-bridge/python`. |
-| `tensorrt`           | `inference-runtime-tensorrt`                   | `libnvinfer.so` (link-time) | Default-features-off compiles a stub. |
-| `ort`                | `inference-runtime-ort`                        | `ort`                 | ONNX Runtime via the `ort` crate. |
-| `candle`             | `inference-runtime-candle` + `cuda`            | `candle-*`, `cudarc`  | Pure-Rust transformer inference. |
-| `cudarc`             | `inference-runtime-cudarc` + `cuda`            | `cudarc`              | Direct kernel dispatch via `rakka_accel::cuda::kernel::*`. |
-| `mistralrs`          | `inference-runtime-mistralrs`                  | `mistralrs`           | Rust-native LLM runtime. |
-| `pipeline`           | `inference-pipeline`                           | `rakka-streams`       | Streams DSL adapter. |
-| `cuda`               | `rakka-accel` re-export, `inference-runtime/local-gpu` | `cudarc`         | Use only if you want `inference::cuda::*` reachable. |
+| `openai`             | `atomr-infer-runtime-openai`                     | `reqwest`, `hyper`    | Includes the Azure variant. |
+| `anthropic`          | `atomr-infer-runtime-anthropic`                  | `reqwest`, `hyper`    | Tool-use + base64 vision. |
+| `gemini`             | `atomr-infer-runtime-gemini`                     | `reqwest`, `hyper`    | AI Studio + Vertex; OAuth2 via pluggable `CredentialProvider`. |
+| `litellm`            | `atomr-infer-runtime-litellm`                    | (re-uses `openai`)    | LiteLLM proxy with proxy-friendly defaults. |
+| `vllm`               | `atomr-infer-runtime-vllm`                       | **`pyo3`**, `python`  | Pulls `atomr-infer-python-bridge/python`. |
+| `tensorrt`           | `atomr-infer-runtime-tensorrt`                   | `libnvinfer.so` (link-time) | Default-features-off compiles a stub. |
+| `ort`                | `atomr-infer-runtime-ort`                        | `ort`                 | ONNX Runtime via the `ort` crate. |
+| `candle`             | `atomr-infer-runtime-candle` + `cuda`            | `candle-*`, `cudarc`  | Pure-Rust transformer inference. |
+| `cudarc`             | `atomr-infer-runtime-cudarc` + `cuda`            | `cudarc`              | Direct kernel dispatch via `atomr_accel::cuda::kernel::*`. |
+| `mistralrs`          | `atomr-infer-runtime-mistralrs`                  | `mistralrs`           | Rust-native LLM runtime. |
+| `pipeline`           | `atomr-infer-pipeline`                           | `rakka-streams`       | Streams DSL adapter. |
+| `cuda`               | `rakka-accel` re-export, `atomr-infer-runtime/local-gpu` | `cudarc`         | Use only if you want `inference::cuda::*` reachable. |
 | `cuda-patterns`      | `rakka-accel-patterns` re-export, `pipeline`    | `cudarc`              | `DynamicBatchingServer`, `InferenceCascade`, `ModelReplicaPool`, `FairShareScheduler`, `ModelHotSwapServer`, `SpeculativeDecoder`, `MoeRouter`. |
-| `testkit`            | `inference-testkit`                            | `wiremock`            | `MockRunner`, OpenAI/Anthropic/Gemini wiremock fixtures. |
+| `testkit`            | `atomr-infer-testkit`                            | `wiremock`            | `MockRunner`, OpenAI/Anthropic/Gemini wiremock fixtures. |
 
 The `candle` and `cudarc` features automatically imply `cuda` because
-their bodies use `rakka_accel::cuda::dispatcher::GpuDispatcher` and
-`rakka_accel::cuda::kernel::*` for thread pinning and kernel dispatch.
+their bodies use `atomr_accel::cuda::dispatcher::GpuDispatcher` and
+`atomr_accel::cuda::kernel::*` for thread pinning and kernel dispatch.
 
 ---
 
@@ -68,7 +68,7 @@ their bodies use `rakka_accel::cuda::dispatcher::GpuDispatcher` and
 
 ## The remote-only invariant
 
-> `cargo build -p inference --no-default-features --features remote-only`
+> `cargo build -p atomr-infer --no-default-features --features remote-only`
 > compiles **zero** GPU dependencies.
 
 This is enforced by the feature graph:
@@ -92,7 +92,7 @@ feature gate guarantees the dep graph reflects intent.
 Some crates expose their own gates so they can be consumed
 **independently** without going through the rollup:
 
-### `inference-runtime`
+### `atomr-infer-runtime`
 
 | Feature      | Adds                                            |
 |--------------|-------------------------------------------------|
@@ -101,7 +101,7 @@ Some crates expose their own gates so they can be consumed
 Default builds compile without rakka-accel; useful when you're embedding
 the runtime-agnostic actors into a remote-only service.
 
-### `inference-pipeline`
+### `atomr-infer-pipeline`
 
 | Feature           | Adds                            |
 |-------------------|---------------------------------|
@@ -111,7 +111,7 @@ Without the feature you still get `request_source`, `HybridGraph`, and
 the `rakka-streams` `Source` adapter — useful for remote-only
 pipelines.
 
-### `inference-python-bridge`
+### `atomr-infer-python-bridge`
 
 | Feature   | Adds                              |
 |-----------|-----------------------------------|
@@ -119,13 +119,13 @@ pipelines.
 
 Off by default so the workspace builds without a Python venv.
 
-### `inference-py-bindings`
+### `atomr-infer-py-bindings`
 
 | Feature   | Adds                                       |
 |-----------|--------------------------------------------|
 | `python`  | `pyo3` + `tracing`; builds the `cdylib`    |
 
-### Per-runtime crates (`inference-runtime-*`)
+### Per-runtime crates (`atomr-infer-runtime-*`)
 
 Each carries one feature whose name matches the runtime
 (`vllm`, `tensorrt`, `ort`, `candle`, `cudarc`, `mistralrs`). Without
@@ -178,6 +178,6 @@ The contract is small: implement `inference_core::ModelRunner`,
 provide a `RuntimeConfig`-shaped struct, and add a feature flag in the
 rollup to wire it in. The 18-crate layout is *additive*: a third-party
 runtime (Bedrock, Cohere, internal proxy, custom CUDA kernel package)
-ships as a sibling crate that depends on `inference-core` and
-`inference-remote-core` (for remote) or `inference-core` +
+ships as a sibling crate that depends on `atomr-infer-core` and
+`atomr-infer-remote-core` (for remote) or `atomr-infer-core` +
 `rakka-accel` (for local), without forking the workspace.

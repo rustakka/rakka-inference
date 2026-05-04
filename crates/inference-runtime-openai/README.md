@@ -1,7 +1,7 @@
-# inference-runtime-openai
+# atomr-infer-runtime-openai
 
 > OpenAI Chat Completions + Azure OpenAI runtime. ~600 LOC; everything
-> heavy is in [`inference-remote-core`](../inference-remote-core/).
+> heavy is in [`atomr-infer-remote-core`](../atomr-infer-remote-core/).
 
 ## Highlights
 

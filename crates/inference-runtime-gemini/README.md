@@ -1,4 +1,4 @@
-# inference-runtime-gemini
+# atomr-infer-runtime-gemini
 
 > Google Gemini runtime — both **AI Studio** (API key in query string)
 > and **Vertex AI** (OAuth2 access token via the operator's preferred

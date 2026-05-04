@@ -1,7 +1,7 @@
-# inference-runtime-anthropic
+# atomr-infer-runtime-anthropic
 
 > Anthropic Messages API runtime. Same shape as
-> [`inference-runtime-openai`](../inference-runtime-openai/);
+> [`atomr-infer-runtime-openai`](../atomr-infer-runtime-openai/);
 > per-provider differences live in `wire.rs` and `error.rs`.
 
 ## What's different from OpenAI

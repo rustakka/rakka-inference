@@ -78,7 +78,7 @@ Five jobs, in order:
    - `cargo build --workspace`
    - `cargo test --workspace --quiet`
    - `cargo clippy --workspace --all-targets -- -D warnings`
-   - `cargo build -p inference --features remote-only`
+   - `cargo build -p atomr-infer --features remote-only`
    - `cargo xtask audit --check`
    - **the remote-only invariant**: `cargo tree -p inference
      --features remote-only` must contain zero `cudarc` /
@@ -86,7 +86,7 @@ Five jobs, in order:
      architectural invariant — pull-requests that violate it fail
      CI before they reach a tag.
 
-2. **build-binaries** — cross-platform `rakka` (the `inference-cli`
+2. **build-binaries** — cross-platform `rakka` (the `atomr-infer-cli`
    binary) builds for:
    - `x86_64-unknown-linux-gnu`
    - `aarch64-unknown-linux-gnu` (via `cross`)
@@ -144,12 +144,12 @@ this:
 - **Default allowlist** (in `release.yml`'s `DEFAULT_PUBLISH_ALLOWLIST`
   env var):
   ```
-  inference-core
-  inference-remote-core
-  inference-runtime-openai
-  inference-runtime-anthropic
-  inference-runtime-gemini
-  inference-runtime-litellm
+  atomr-infer-core
+  atomr-infer-remote-core
+  atomr-infer-runtime-openai
+  atomr-infer-runtime-anthropic
+  atomr-infer-runtime-gemini
+  atomr-infer-runtime-litellm
   ```
   These six crates have no `rakka` / `rakka-accel` dependency in
   their published surface and can ship today.
@@ -268,23 +268,23 @@ The publish loop in `release.yml` walks crates in this order. A crate
 appears after every crate it depends on:
 
 ```
-inference-core                   ← leaf
-inference-runtime                ← rakka-* + inference-core
-inference-python-bridge          ← inference-core (pyo3 optional)
-inference-remote-core            ← inference-core + inference-runtime
-inference-runtime-openai         ← + inference-remote-core
-inference-runtime-anthropic
-inference-runtime-gemini
-inference-runtime-litellm        ← + inference-runtime-openai
-inference-runtime-vllm           ← + inference-python-bridge
-inference-runtime-tensorrt
-inference-runtime-ort
-inference-runtime-candle
-inference-runtime-cudarc
-inference-runtime-mistralrs
-inference-pipeline               ← rakka-streams + inference-runtime
-inference-testkit                ← rakka-testkit + remote-core
-inference-cli                    ← rakka + inference-runtime
+atomr-infer-core                   ← leaf
+atomr-infer-runtime                ← rakka-* + atomr-infer-core
+atomr-infer-python-bridge          ← atomr-infer-core (pyo3 optional)
+atomr-infer-remote-core            ← atomr-infer-core + atomr-infer-runtime
+atomr-infer-runtime-openai         ← + atomr-infer-remote-core
+atomr-infer-runtime-anthropic
+atomr-infer-runtime-gemini
+atomr-infer-runtime-litellm        ← + atomr-infer-runtime-openai
+atomr-infer-runtime-vllm           ← + atomr-infer-python-bridge
+atomr-infer-runtime-tensorrt
+atomr-infer-runtime-ort
+atomr-infer-runtime-candle
+atomr-infer-runtime-cudarc
+atomr-infer-runtime-mistralrs
+atomr-infer-pipeline               ← rakka-streams + atomr-infer-runtime
+atomr-infer-testkit                ← rakka-testkit + remote-core
+atomr-infer-cli                    ← rakka + atomr-infer-runtime
 inference                        ← rollup; everything above
 ```
 

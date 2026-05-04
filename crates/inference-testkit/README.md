@@ -1,4 +1,4 @@
-# inference-testkit
+# atomr-infer-testkit
 
 > Mocks and harnesses for testing `atomr-infer`. The crate the
 > demo and your tests use to exercise gateway → request → engine

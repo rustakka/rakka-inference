@@ -1,4 +1,4 @@
-# inference-runtime-ort
+# atomr-infer-runtime-ort
 
 > ONNX Runtime backend via the [`ort`](https://crates.io/crates/ort)
 > crate. Targets pre-compiled ONNX graphs.
@@ -15,8 +15,8 @@
 
 | Build                                                       | Result                                                  |
 |-------------------------------------------------------------|---------------------------------------------------------|
-| `cargo build -p inference-runtime-ort` (default)            | Stub — `ort` not in dep graph.                          |
-| `cargo build -p inference-runtime-ort --features ort`       | Real path with `ort` crate (CUDA EP available).         |
+| `cargo build -p atomr-infer-runtime-ort` (default)            | Stub — `ort` not in dep graph.                          |
+| `cargo build -p atomr-infer-runtime-ort --features ort`       | Real path with `ort` crate (CUDA EP available).         |
 
 ## Configuration
 
@@ -33,5 +33,5 @@ let cfg = OrtConfig {
 
 When `execution_provider == Cuda`, the runner binds the ORT session to
 a `cudarc` stream allocated by
-`rakka_accel::cuda::stream::PerActorAllocator`. That keeps GPU contention
+`atomr_accel::cuda::stream::PerActorAllocator`. That keeps GPU contention
 predictable when the same node also runs a vLLM or Candle deployment.

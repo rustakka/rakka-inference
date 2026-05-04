@@ -1,4 +1,4 @@
-# inference-remote-core
+# atomr-infer-remote-core
 
 > Shared infrastructure for *every* remote-network runtime. The seam
 > where HTTP/2 connection pooling meets the actor system; where rate
@@ -72,7 +72,7 @@ the rate limiter and the per-provider error classifier.
 ## Building a new provider on top
 
 ```rust
-// crates/inference-runtime-bedrock/src/runner.rs (sketch)
+// crates/atomr-infer-runtime-bedrock/src/runner.rs (sketch)
 use inference_core::runner::ModelRunner;
 use inference_remote_core::sse::decode_sse_stream;
 use inference_remote_core::session::SessionSnapshot;
@@ -106,5 +106,5 @@ Pure HTTP / async — no GPU, no Python:
 
 Importantly, `rakka-accel` is **not** a dependency. This crate is the
 linchpin of the remote-only invariant: a build with `--features
-remote-only` reaches `inference-remote-core` and stops — no `cudarc`,
+remote-only` reaches `atomr-infer-remote-core` and stops — no `cudarc`,
 no `pyo3`, no GPU code anywhere in the dep graph.
