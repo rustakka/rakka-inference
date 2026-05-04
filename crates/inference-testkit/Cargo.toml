@@ -1,14 +1,14 @@
 [package]
-name = "inference-testkit"
+name = "atomr-infer-testkit"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 
 [dependencies]
-inference-core        = { workspace = true }
-inference-runtime     = { workspace = true }
-inference-remote-core = { workspace = true }
+atomr-infer-core        = { workspace = true }
+atomr-infer-runtime     = { workspace = true }
+atomr-infer-remote-core = { workspace = true }
 
 async-trait = { workspace = true }
 futures     = { workspace = true }

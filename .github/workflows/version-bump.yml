@@ -44,24 +44,24 @@ jobs:
     # don't loop.
     if: github.event_name == 'workflow_dispatch' || !startsWith(github.event.head_commit.message, 'chore(release):')
     steps:
-      - name: Checkout sibling rakka
+      - name: Checkout sibling atomr
         uses: actions/checkout@v4
-        with: { repository: rustakka/rakka, path: rakka }
-      - name: Checkout sibling rakka-accel
+        with: { repository: rustakka/atomr, path: atomr }
+      - name: Checkout sibling atomr-accel
         uses: actions/checkout@v4
-        with: { repository: rustakka/rakka-accel, path: rakka-accel }
-      - name: Checkout rakka-inference
+        with: { repository: rustakka/atomr-accel, path: atomr-accel }
+      - name: Checkout atomr-infer
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          path: rakka-inference
+          path: atomr-infer
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-        with: { workspaces: rakka-inference }
+        with: { workspaces: atomr-infer }
 
       - name: Decide bump kind from Conventional Commits
         id: decide
-        working-directory: rakka-inference
+        working-directory: atomr-infer
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
           FORCE: ${{ github.event.inputs.force }}
@@ -106,7 +106,7 @@ jobs:
       - name: Bump version + refresh Cargo.lock
         if: steps.decide.outputs.kind != 'skip'
         id: bump
-        working-directory: rakka-inference
+        working-directory: atomr-infer
         run: |
           set -euo pipefail
           kind="${{ steps.decide.outputs.kind }}"
@@ -132,16 +132,16 @@ jobs:
 
       - name: Commit + tag
         if: steps.decide.outputs.kind != 'skip' && github.event.inputs.dry_run != 'true'
-        working-directory: rakka-inference
+        working-directory: atomr-infer
         env:
           NEW_VERSION: ${{ steps.bump.outputs.version }}
         run: |
           set -euo pipefail
-          git config user.name "rakka-inference-release-bot"
+          git config user.name "atomr-infer-release-bot"
           git config user.email "release-bot@users.noreply.github.com"
           git add Cargo.toml Cargo.lock 2>/dev/null || true
           git commit -m "chore(release): v${NEW_VERSION}"
-          git tag -a "v${NEW_VERSION}" -m "rakka-inference v${NEW_VERSION}"
+          git tag -a "v${NEW_VERSION}" -m "atomr-infer v${NEW_VERSION}"
           git push origin HEAD --follow-tags
 
       - name: Summary

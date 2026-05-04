@@ -1,5 +1,5 @@
 [package]
-name = "inference-cli"
+name = "atomr-infer-cli"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -10,20 +10,20 @@ default     = []
 # Mirrors the rollup's remote-only aggregate so `cargo build -p
 # inference-cli --no-default-features --features remote-only` produces
 # a binary that compiles no GPU dependencies.
-remote-only = ["inference/remote-only"]
-all-remote  = ["inference/all-remote", "inference/pipeline"]
-default-prod = ["inference/default-prod"]
+remote-only = ["atomr-infer/remote-only"]
+all-remote  = ["atomr-infer/all-remote", "atomr-infer/pipeline"]
+default-prod = ["atomr-infer/default-prod"]
 
 [dependencies]
-inference         = { workspace = true }
-inference-core    = { workspace = true }
-inference-runtime = { workspace = true }
+atomr-infer         = { workspace = true }
+atomr-infer-core    = { workspace = true }
+atomr-infer-runtime = { workspace = true }
 
 # The umbrella `rakka` crate is intentionally not pulled in — the CLI
 # uses the sub-crates directly so it publishes to crates.io
 # independent of the umbrella's release cadence.
-rakka-core       = { workspace = true }
-rakka-config     = { workspace = true }
+atomr-core       = { workspace = true }
+atomr-config     = { workspace = true }
 
 clap               = { workspace = true }
 tokio              = { workspace = true }
@@ -36,5 +36,5 @@ anyhow             = { workspace = true }
 thiserror          = { workspace = true }
 
 [[bin]]
-name = "rakka"
+name = "atomr-infer"
 path = "src/main.rs"

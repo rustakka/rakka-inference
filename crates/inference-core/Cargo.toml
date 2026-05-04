@@ -1,9 +1,9 @@
 [package]
 # `inference-core` is squatted on crates.io by an unrelated project; we
-# publish under the `rakka-inference-*` namespace and keep the Rust
+# publish under the `atomr-infer-*` namespace and keep the Rust
 # import name as `inference_core` via [lib] below so source code in
 # both this workspace and consumer crates stays unchanged.
-name                   = "rakka-inference-core"
+name = "atomr-infer-core"
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true
@@ -14,12 +14,11 @@ authors.workspace      = true
 keywords.workspace     = true
 categories.workspace   = true
 readme                 = "README.md"
-documentation          = "https://docs.rs/rakka-inference-core"
-description            = "Foundation crate for rakka-inference — typed errors, deployment value object, ModelRunner trait, batch primitives."
+documentation          = "https://docs.rs/atomr-infer-core"
+description            = "Foundation crate for atomr-infer — typed errors, deployment value object, ModelRunner trait, batch primitives."
 
 [lib]
-name = "inference_core"
-
+name = "atomr_infer_core"
 # Per architecture doc §10.4 the foundation crate's allowed deps are
 # serde / thiserror / bytes / secrecy. The doc's §5.4 trait body for
 # `ModelRunner` is written `#[async_trait]`; rather than invent a

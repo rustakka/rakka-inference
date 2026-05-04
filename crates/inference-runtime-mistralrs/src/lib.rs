@@ -8,10 +8,10 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
-use inference_core::batch::ExecuteBatch;
-use inference_core::error::{InferenceError, InferenceResult};
-use inference_core::runner::{ModelRunner, RunHandle, SessionRebuildCause};
-use inference_core::runtime::{RuntimeKind, TransportKind};
+use atomr_infer_core::batch::ExecuteBatch;
+use atomr_infer_core::error::{InferenceError, InferenceResult};
+use atomr_infer_core::runner::{ModelRunner, RunHandle, SessionRebuildCause};
+use atomr_infer_core::runtime::{RuntimeKind, TransportKind};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MistralRsConfig {

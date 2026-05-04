@@ -4,7 +4,7 @@ use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 
-use inference_core::deployment::Deployment;
+use atomr_infer_core::deployment::Deployment;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProjectFile {

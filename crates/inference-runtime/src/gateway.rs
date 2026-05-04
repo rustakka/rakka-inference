@@ -12,17 +12,17 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use atomr_core::actor::{Actor, ActorRef, Context};
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use axum::routing::{get, post};
 use axum::{Json, Router};
-use rakka_core::actor::{Actor, ActorRef, Context};
 use serde::{Deserialize, Serialize};
 use tokio::net::TcpListener;
 use tokio::sync::oneshot;
 
-use inference_core::batch::{ExecuteBatch, Message, MessageContent, Role, SamplingParams};
+use atomr_infer_core::batch::{ExecuteBatch, Message, MessageContent, Role, SamplingParams};
 
 use crate::dp_coordinator::DpCoordinatorMsg;
 
@@ -147,11 +147,11 @@ impl Actor for ApiGatewayActor {
 
 /// Convenience to start the gateway as a top-level actor.
 pub fn spawn_gateway(
-    sys: &rakka_core::actor::ActorSystem,
+    sys: &atomr_core::actor::ActorSystem,
     config: GatewayConfig,
     coordinator: ActorRef<DpCoordinatorMsg>,
-) -> Result<ActorRef<ApiGatewayMsg>, rakka_core::actor::ActorSystemError> {
-    use rakka_core::actor::Props;
+) -> Result<ActorRef<ApiGatewayMsg>, atomr_core::actor::ActorSystemError> {
+    use atomr_core::actor::Props;
     let coord = Arc::new(coordinator);
     let cfg = Arc::new(config);
     let props = Props::create(move || ApiGatewayActor::new((*cfg).clone(), (*coord).clone()));

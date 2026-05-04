@@ -1,11 +1,11 @@
 ---
-name: rakka-inference-runtimes
-description: Use when choosing a backend for a model deployment in rakka-inference, configuring `RuntimeConfig`, deciding between local Rust-native (Candle / cudarc / mistralrs) vs Python (vLLM) vs FFI (TensorRT / ORT) vs remote (OpenAI / Anthropic / Gemini / LiteLLM). Triggers on writing a `Deployment.runtime = ...` field, choosing a feature flag, asking "what's the right backend for X model".
+name: atomr-infer-runtimes
+description: Use when choosing a backend for a model deployment in atomr-infer, configuring `RuntimeConfig`, deciding between local Rust-native (Candle / cudarc / mistralrs) vs Python (vLLM) vs FFI (TensorRT / ORT) vs remote (OpenAI / Anthropic / Gemini / LiteLLM). Triggers on writing a `Deployment.runtime = ...` field, choosing a feature flag, asking "what's the right backend for X model".
 ---
 
 # Choosing and configuring runtimes
 
-`rakka-inference` ships ten runtime backends. The trait that unifies
+`atomr-infer` ships ten runtime backends. The trait that unifies
 them is `inference_core::ModelRunner`; the difference between them is
 *what they do* in `execute()` — local kernels, Python interpreter
 calls, or HTTP/2 to a managed API.
@@ -33,7 +33,7 @@ Is it a remote API?
 ├── Anthropic / Claude              ───► anthropic
 ├── Google / Gemini / Vertex        ───► gemini
 ├── LiteLLM proxy in front          ───► litellm
-└── Custom HTTP provider            ───► implement on inference-remote-core (see rakka-inference-extending)
+└── Custom HTTP provider            ───► implement on inference-remote-core (see atomr-infer-extending)
 
 Is it a local model on owned hardware?
 ├── Production LLM, willing to run Python  ───► vllm
@@ -152,18 +152,18 @@ on_capacity_exhausted = "queue"
 ## Canonical references
 
 - Per-crate READMEs:
-  [openai](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-openai/README.md),
-  [anthropic](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-anthropic/README.md),
-  [gemini](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-gemini/README.md),
-  [litellm](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-litellm/README.md),
-  [candle](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-candle/README.md),
-  [cudarc](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-cudarc/README.md),
-  [vllm](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-vllm/README.md),
-  [tensorrt](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-tensorrt/README.md),
-  [ort](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-ort/README.md),
-  [mistralrs](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-mistralrs/README.md)
-- [Architecture doc §3](https://github.com/rustakka/rakka-inference/blob/main/docs/rustakka-inference-architecture-v4.md) — backend taxonomy
-- [`inference-core::registry`](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-core/src/registry.rs) — the `infer_runtime(model)` table
+  [openai](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-openai/README.md),
+  [anthropic](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-anthropic/README.md),
+  [gemini](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-gemini/README.md),
+  [litellm](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-litellm/README.md),
+  [candle](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-candle/README.md),
+  [cudarc](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-cudarc/README.md),
+  [vllm](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-vllm/README.md),
+  [tensorrt](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-tensorrt/README.md),
+  [ort](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-ort/README.md),
+  [mistralrs](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-mistralrs/README.md)
+- [Architecture doc §3](https://github.com/rustakka/atomr-infer/blob/main/docs/rustakka-inference-architecture-v4.md) — backend taxonomy
+- [`inference-core::registry`](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-core/src/registry.rs) — the `infer_runtime(model)` table
 
 ## Common mistakes
 

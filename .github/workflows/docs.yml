@@ -26,23 +26,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout sibling rakka
+      - name: Checkout sibling atomr
         uses: actions/checkout@v4
-        with: { repository: rustakka/rakka, path: rakka }
-      - name: Checkout sibling rakka-accel
+        with: { repository: rustakka/atomr, path: atomr }
+      - name: Checkout sibling atomr-accel
         uses: actions/checkout@v4
-        with: { repository: rustakka/rakka-accel, path: rakka-accel }
-      - name: Checkout rakka-inference
+        with: { repository: rustakka/atomr-accel, path: atomr-accel }
+      - name: Checkout atomr-infer
         uses: actions/checkout@v4
-        with: { path: rakka-inference }
+        with: { path: atomr-infer }
       - uses: dtolnay/rust-toolchain@nightly
       - uses: Swatinem/rust-cache@v2
-        with: { workspaces: rakka-inference }
+        with: { workspaces: atomr-infer }
       - name: cargo doc --workspace --no-deps
         run: cargo doc --workspace --no-deps
-        working-directory: rakka-inference
+        working-directory: atomr-infer
       - name: Generate index.html landing page
-        working-directory: rakka-inference
+        working-directory: atomr-infer
         run: |
           mkdir -p target/doc
           cat > target/doc/index.html <<'EOF'
@@ -52,7 +52,7 @@ jobs:
           EOF
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: rakka-inference/target/doc
+          path: atomr-infer/target/doc
 
   deploy:
     needs: build

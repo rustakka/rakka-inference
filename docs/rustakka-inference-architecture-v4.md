@@ -1,7 +1,7 @@
 # `rustakka-inference`: Multi-Runtime GPU and Remote Inference as a Supervised Actor System
 
 **Status:** Draft / RFC v4
-**Scope:** Architectural design for hosting heterogeneous inference workloads — local GPU runtimes (autoregressive LLMs, diffusion, TTS, STT, embeddings, vision) **and remote inference providers** (OpenAI, Anthropic, Google Gemini, LiteLLM proxy) — as actors within the [rakka](https://github.com/rustakka/rakka) runtime. vLLM is the canonical backend for local LLM workloads; Rust-native runtimes (TensorRT, ONNX Runtime, Candle, cudarc) are first-class for non-LLM local workloads; remote provider runtimes are first-class for offloading inference to managed APIs.
+**Scope:** Architectural design for hosting heterogeneous inference workloads — local GPU runtimes (autoregressive LLMs, diffusion, TTS, STT, embeddings, vision) **and remote inference providers** (OpenAI, Anthropic, Google Gemini, LiteLLM proxy) — as actors within the [rakka](https://github.com/rustakka/atomr) runtime. vLLM is the canonical backend for local LLM workloads; Rust-native runtimes (TensorRT, ONNX Runtime, Candle, cudarc) are first-class for non-LLM local workloads; remote provider runtimes are first-class for offloading inference to managed APIs.
 **Companion document:** [`rustakka-cuda-architecture.md`](./rustakka-cuda-architecture.md). This doc references its sections as `CUDA §N`.
 **Supersedes:**
 - v1 (`rustakka-vllm-architecture.md`)
@@ -676,7 +676,7 @@ spec:
     spec:
       containers:
       - name: engine
-        image: rakka-inference:1.0
+        image: atomr-infer:1.0
         command: ["rakka", "serve", "--config", "/etc/gpt-4o.toml"]
         env:
         - { name: RAKKA_RUNTIME, value: "openai" }

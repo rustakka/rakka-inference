@@ -1,5 +1,5 @@
 [package]
-name = "inference-python-bridge"
+name = "atomr-infer-python-bridge"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -10,7 +10,7 @@ default = []
 python  = ["dep:pyo3", "dep:tokio", "dep:parking_lot"]
 
 [dependencies]
-inference-core = { workspace = true }
+atomr-infer-core = { workspace = true }
 pyo3           = { workspace = true, optional = true }
 tokio          = { workspace = true, optional = true }
 parking_lot    = { workspace = true, optional = true }

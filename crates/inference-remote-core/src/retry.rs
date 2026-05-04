@@ -6,8 +6,8 @@
 
 use std::time::Duration;
 
-use inference_core::deployment::RetryPolicy;
-use inference_core::error::InferenceError;
+use atomr_infer_core::deployment::RetryPolicy;
+use atomr_infer_core::error::InferenceError;
 
 use crate::backoff::{compute_backoff, BackoffPolicy};
 
@@ -74,7 +74,7 @@ impl RetryEngine {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use inference_core::runtime::{JitterKind, ProviderKind};
+    use atomr_infer_core::runtime::{JitterKind, ProviderKind};
 
     fn policy() -> RetryPolicy {
         RetryPolicy {

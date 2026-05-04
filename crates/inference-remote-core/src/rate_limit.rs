@@ -3,7 +3,7 @@
 //! Two flavours, selected per `RateLimits::strict`:
 //!
 //! - [`RateLimiterActor`] — approximate, distributed via
-//!   `rakka_distributed_data::counters::GCounter`. Each node keeps a
+//!   `atomr_distributed_data::counters::GCounter`. Each node keeps a
 //!   local per-window view; over-spend is bounded by sync interval and
 //!   per-node budget. Default for high-throughput deployments.
 //! - [`StrictRateLimiterActor`] — runs as a cluster singleton; every
@@ -14,13 +14,13 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use async_trait::async_trait;
+use atomr_core::actor::{Actor, Context};
+use atomr_distributed_data::{DeltaCrdt, GCounter};
 use parking_lot::Mutex;
-use rakka_core::actor::{Actor, Context};
-use rakka_distributed_data::{DeltaCrdt, GCounter};
 use tokio::sync::oneshot;
 
-use inference_core::deployment::RateLimits;
-use inference_core::error::InferenceError;
+use atomr_infer_core::deployment::RateLimits;
+use atomr_infer_core::error::InferenceError;
 
 /// Permit returned to a worker. Holding the permit until the request
 /// completes is the convention; `Drop` is a no-op because spend is
@@ -88,7 +88,7 @@ impl RateLimiterActor {
     }
 
     /// Apply a CRDT delta from another node. Wired through
-    /// `rakka_distributed_data::Replicator` in production.
+    /// `atomr_distributed_data::Replicator` in production.
     pub fn merge_remote_delta_requests(&mut self, delta: &<GCounter as DeltaCrdt>::Delta) {
         self.requests_counter.merge_delta(delta);
     }
@@ -171,7 +171,7 @@ impl Actor for RateLimiterActor {
 /// Strict variant — run as a cluster singleton. The actor structure is
 /// identical to the approximate one; the different default is
 /// expressed at deploy time by registering it through
-/// `rakka_cluster_tools::ClusterSingletonManager` rather than as a
+/// `atomr_cluster_tools::ClusterSingletonManager` rather than as a
 /// per-node actor.
 pub struct StrictRateLimiterActor {
     inner: RateLimiterActor,

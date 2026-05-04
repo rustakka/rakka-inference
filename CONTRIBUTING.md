@@ -1,4 +1,4 @@
-# Contributing to rakka-inference
+# Contributing to atomr-infer
 
 Welcome. This guide covers what we expect of contributors and how the
 release pipeline reacts to your work.
@@ -7,7 +7,7 @@ release pipeline reacts to your work.
 
 ```sh
 git clone <fork>
-cd rakka-inference
+cd atomr-infer
 cargo xtask verify         # runs the same gate as CI
 ```
 

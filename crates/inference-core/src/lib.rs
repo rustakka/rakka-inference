@@ -1,6 +1,6 @@
 //! # inference-core
 //!
-//! Foundation types for the rakka-inference workspace. Per architecture
+//! Foundation types for the atomr-infer workspace. Per architecture
 //! doc v4 §10.4 this crate has no actor-system dependencies — only
 //! serde / thiserror / bytes / secrecy (plus the documented `async-trait`
 //! exception for the `ModelRunner` trait).

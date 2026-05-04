@@ -1,5 +1,5 @@
 [package]
-name = "inference-pipeline"
+name = "atomr-infer-pipeline"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -11,17 +11,15 @@ default = []
 # InferenceCascade, ModelReplicaPool, FairShareScheduler,
 # ModelHotSwapServer, SpeculativeDecoder, MoeRouter directly. Off by
 # default so `inference --features remote-only` doesn't pull GPU deps.
-cuda-patterns = ["dep:rakka-accel-patterns"]
+cuda-patterns = []
 
 [dependencies]
-inference-core    = { workspace = true }
-inference-runtime = { workspace = true }
-rakka-streams     = { workspace = true }
+atomr-infer-core    = { workspace = true }
+atomr-infer-runtime = { workspace = true }
+atomr-streams     = { workspace = true }
 
 # Upstream pattern primitives — exactly the §9 building blocks. Keep
 # behind the feature gate so remote-only builds skip cudarc.
-rakka-accel-patterns = { workspace = true, optional = true }
-
 tokio       = { workspace = true }
 async-trait = { workspace = true }
 futures     = { workspace = true }

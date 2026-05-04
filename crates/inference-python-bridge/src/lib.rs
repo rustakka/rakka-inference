@@ -30,8 +30,8 @@ pub use bridge::{python_pinned_dispatcher, PythonGpuBridge};
 /// to a build-time `unimplemented!()` — operators see a clear
 /// "vllm feature disabled at build time" error in their logs.
 #[cfg(not(feature = "python"))]
-pub fn feature_disabled<T>() -> Result<T, inference_core::error::InferenceError> {
-    Err(inference_core::error::InferenceError::Internal(
+pub fn feature_disabled<T>() -> Result<T, atomr_infer_core::error::InferenceError> {
+    Err(atomr_infer_core::error::InferenceError::Internal(
         "python feature disabled at build time — rebuild with --features python".into(),
     ))
 }

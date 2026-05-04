@@ -22,14 +22,14 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use inference_core::batch::ExecuteBatch;
-use inference_core::deployment::{RateLimits, RetryPolicy, Timeouts};
-use inference_core::error::InferenceResult;
-use inference_core::runner::{ModelRunner, RunHandle, SessionRebuildCause};
-use inference_core::runtime::{CircuitBreakerConfig, ProviderKind, RuntimeKind, TransportKind};
+use atomr_infer_core::batch::ExecuteBatch;
+use atomr_infer_core::deployment::{RateLimits, RetryPolicy, Timeouts};
+use atomr_infer_core::error::InferenceResult;
+use atomr_infer_core::runner::{ModelRunner, RunHandle, SessionRebuildCause};
+use atomr_infer_core::runtime::{CircuitBreakerConfig, ProviderKind, RuntimeKind, TransportKind};
 
-use inference_remote_core::session::SessionSnapshot;
-use inference_runtime_openai::{OpenAiConfig, OpenAiRunner, OpenAiVariant};
+use atomr_infer_remote_core::session::SessionSnapshot;
+use atomr_infer_runtime_openai::{OpenAiConfig, OpenAiRunner, OpenAiVariant};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LiteLlmConfig {
@@ -63,7 +63,7 @@ fn default_retry() -> RetryPolicy {
 }
 
 impl LiteLlmConfig {
-    pub fn into_openai(self, openai_secret: inference_runtime_openai::config::SecretRef) -> OpenAiConfig {
+    pub fn into_openai(self, openai_secret: atomr_infer_runtime_openai::config::SecretRef) -> OpenAiConfig {
         OpenAiConfig {
             variant: OpenAiVariant::Direct {
                 endpoint: self.endpoint,

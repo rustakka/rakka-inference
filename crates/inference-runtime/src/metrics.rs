@@ -8,10 +8,10 @@
 use std::collections::HashMap;
 
 use async_trait::async_trait;
-use rakka_core::actor::{Actor, Context};
+use atomr_core::actor::{Actor, Context};
 use tokio::sync::oneshot;
 
-use inference_core::tokens::TokenUsage;
+use atomr_infer_core::tokens::TokenUsage;
 
 #[derive(Debug, Clone, Default)]
 pub struct DeploymentMetrics {

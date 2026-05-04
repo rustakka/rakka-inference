@@ -1,13 +1,13 @@
 ---
-name: rakka-inference-pipelines
-description: Use when composing multi-runtime pipelines in rakka-inference — hybrid local→remote escalation, fallback on `RateLimitExceeded` / `CircuitOpen`, dynamic batching, cascade routing, replica pools, hot-swap, speculative decoding, MoE. Triggers on writing an actor that calls multiple `Deployment`s, using `inference::accel_patterns::*`, or asking "how do I escalate from local to OpenAI when confidence is low".
+name: atomr-infer-pipelines
+description: Use when composing multi-runtime pipelines in atomr-infer — hybrid local→remote escalation, fallback on `RateLimitExceeded` / `CircuitOpen`, dynamic batching, cascade routing, replica pools, hot-swap, speculative decoding, MoE. Triggers on writing an actor that calls multiple `Deployment`s, using `inference::accel_patterns::*`, or asking "how do I escalate from local to OpenAI when confidence is low".
 ---
 
 # Composing multi-runtime pipelines
 
-`rakka-inference` doesn't reinvent batching, cascading, or replica
+`atomr-infer` doesn't reinvent batching, cascading, or replica
 pools — those are generic actor blueprints from
-[`rakka-accel-patterns`](https://github.com/rustakka/rakka-accel/tree/main/crates/rakka-accel-patterns).
+[`rakka-accel-patterns`](https://github.com/rustakka/atomr-accel/tree/main/crates/rakka-accel-patterns).
 The `inference --features accel-patterns` rollup re-exports them as
 `inference::accel_patterns::*`. You plug a closure that calls
 `ModelRunner::execute` into each blueprint and you've composed a §9
@@ -156,9 +156,9 @@ you:
 
 ## Canonical references
 
-- [`inference-pipeline` README](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-pipeline/README.md)
-- [Architecture doc §9](https://github.com/rustakka/rakka-inference/blob/main/docs/rustakka-inference-architecture-v4.md) — pipeline composition
-- [`rakka-accel-patterns`](https://github.com/rustakka/rakka-accel/tree/main/crates/rakka-accel-patterns) — the upstream blueprints
+- [`inference-pipeline` README](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-pipeline/README.md)
+- [Architecture doc §9](https://github.com/rustakka/atomr-infer/blob/main/docs/rustakka-inference-architecture-v4.md) — pipeline composition
+- [`rakka-accel-patterns`](https://github.com/rustakka/atomr-accel/tree/main/crates/rakka-accel-patterns) — the upstream blueprints
 
 ## Common mistakes
 

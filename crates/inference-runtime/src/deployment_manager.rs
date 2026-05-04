@@ -5,11 +5,11 @@
 use std::collections::HashMap;
 
 use async_trait::async_trait;
-use rakka_core::actor::{Actor, Context};
+use atomr_core::actor::{Actor, Context};
 use tokio::sync::oneshot;
 
-use inference_core::deployment::Deployment;
-use inference_core::error::InferenceError;
+use atomr_infer_core::deployment::Deployment;
+use atomr_infer_core::error::InferenceError;
 
 #[derive(Debug, Clone)]
 pub struct DeploymentRecord {

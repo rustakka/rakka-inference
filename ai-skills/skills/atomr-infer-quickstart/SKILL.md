@@ -1,12 +1,12 @@
 ---
-name: rakka-inference-quickstart
-description: Use when standing up the first rakka-inference deployment in a consumer project, choosing feature flags for the `inference` rollup, or writing a `Deployment` value object. Triggers on adding `inference = ...` to Cargo.toml, writing a `Deployment {...}` literal, configuring `rakka serve`, or asking "how do I get rakka-inference running".
+name: atomr-infer-quickstart
+description: Use when standing up the first atomr-infer deployment in a consumer project, choosing feature flags for the `inference` rollup, or writing a `Deployment` value object. Triggers on adding `inference = ...` to Cargo.toml, writing a `Deployment {...}` literal, configuring `atomr-infer serve`, or asking "how do I get atomr-infer running".
 ---
 
-# rakka-inference quickstart
+# atomr-infer quickstart
 
 Multi-runtime GPU + remote inference as a supervised actor system on
-the [rakka](https://github.com/rustakka/rakka) actor runtime.
+the [rakka](https://github.com/rustakka/atomr) actor runtime.
 
 ## The 30-second mental model
 
@@ -41,7 +41,7 @@ inference = { version = "0.2", features = ["remote-only"] }
 # inference = { version = "0.2", features = ["all-runtimes"] }
 ```
 
-See [`docs/feature-matrix.md`](https://github.com/rustakka/rakka-inference/blob/main/docs/feature-matrix.md)
+See [`docs/feature-matrix.md`](https://github.com/rustakka/atomr-infer/blob/main/docs/feature-matrix.md)
 in the repo for every feature, what it pulls in, and the four canonical
 "shapes" (router / Rust-native LLM box / hybrid agent / vLLM cluster).
 
@@ -75,7 +75,7 @@ Override by setting `runtime` explicitly.
 
 ## Running the gateway
 
-The `rakka serve --config <path>` binary boots an `ActorSystem`,
+The `atomr-infer serve --config <path>` binary boots an `ActorSystem`,
 applies every `[[deployment]]` from a TOML file, and mounts an
 OpenAI-compatible HTTP endpoint:
 
@@ -121,21 +121,21 @@ Useful as a regression test or as a code-skim of how the actors compose.
 
 | You need to… | Reach for skill… |
 |---|---|
-| Choose between local backends or wire a specific runtime | `rakka-inference-runtimes` |
-| Wire OpenAI / Anthropic / Gemini / LiteLLM credentials and rate limits | `rakka-inference-remote-providers` |
-| Compose hybrid local→remote pipelines | `rakka-inference-pipelines` |
-| Deploy to a cluster, handle hot-swaps and credential rotation | `rakka-inference-deployment` |
-| Diagnose 429 storms / circuit-open / CUDA-context-poisoned | `rakka-inference-troubleshooting` |
-| Add a new backend (Bedrock, Cohere, custom kernel pkg) | `rakka-inference-extending` |
+| Choose between local backends or wire a specific runtime | `atomr-infer-runtimes` |
+| Wire OpenAI / Anthropic / Gemini / LiteLLM credentials and rate limits | `atomr-infer-remote-providers` |
+| Compose hybrid local→remote pipelines | `atomr-infer-pipelines` |
+| Deploy to a cluster, handle hot-swaps and credential rotation | `atomr-infer-deployment` |
+| Diagnose 429 storms / circuit-open / CUDA-context-poisoned | `atomr-infer-troubleshooting` |
+| Add a new backend (Bedrock, Cohere, custom kernel pkg) | `atomr-infer-extending` |
 | Author the actors themselves (Msg types, supervision, FSM) | `rakka-actor-design` (rakka workspace) |
 
 ## Canonical references
 
-- [`README.md`](https://github.com/rustakka/rakka-inference/blob/main/README.md) — value-prop overview + 30-second tour
-- [`docs/feature-matrix.md`](https://github.com/rustakka/rakka-inference/blob/main/docs/feature-matrix.md) — every feature, what it pulls in, four canonical shapes
-- [`docs/rustakka-inference-architecture-v4.md`](https://github.com/rustakka/rakka-inference/blob/main/docs/rustakka-inference-architecture-v4.md) — the 1,459-line RFC
-- [`crates/inference/`](https://github.com/rustakka/rakka-inference/blob/main/crates/inference/) — the rollup
-- [`examples/remote_only_demo/`](https://github.com/rustakka/rakka-inference/blob/main/examples/remote_only_demo/) — runnable end-to-end demo
+- [`README.md`](https://github.com/rustakka/atomr-infer/blob/main/README.md) — value-prop overview + 30-second tour
+- [`docs/feature-matrix.md`](https://github.com/rustakka/atomr-infer/blob/main/docs/feature-matrix.md) — every feature, what it pulls in, four canonical shapes
+- [`docs/rustakka-inference-architecture-v4.md`](https://github.com/rustakka/atomr-infer/blob/main/docs/rustakka-inference-architecture-v4.md) — the 1,459-line RFC
+- [`crates/inference/`](https://github.com/rustakka/atomr-infer/blob/main/crates/inference/) — the rollup
+- [`examples/remote_only_demo/`](https://github.com/rustakka/atomr-infer/blob/main/examples/remote_only_demo/) — runnable end-to-end demo
 
 ## Common mistakes
 

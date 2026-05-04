@@ -4,10 +4,10 @@
 use std::sync::Arc;
 
 use anyhow::Result;
-use rakka_config::Config;
-use rakka_core::actor::{ActorSystem, Props};
+use atomr_config::Config;
+use atomr_core::actor::{ActorSystem, Props};
 
-use inference_runtime::{
+use atomr_infer_runtime::{
     spawn_gateway, DeploymentManagerActor, DeploymentManagerMsg, DpCoordinatorActor, GatewayConfig,
     MetricsActor,
 };
@@ -22,7 +22,7 @@ pub async fn run_server(project: ProjectFile) -> Result<()> {
 
     // Cluster-wide singletons (in v0 — single-process — they're just
     // top-level actors; cluster registration is added when we wire up
-    // `rakka_cluster_tools::ClusterSingletonManager`).
+    // `atomr_cluster_tools::ClusterSingletonManager`).
     let dp = sys
         .actor_of(Props::create(DpCoordinatorActor::new), "dp-coordinator")
         .map_err(|e| anyhow::anyhow!("spawn coordinator: {e}"))?;

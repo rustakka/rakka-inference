@@ -4,8 +4,8 @@
 
 use std::collections::BinaryHeap;
 
-use inference_core::batch::ExecuteBatch;
-use inference_core::tokens::TokenChunk;
+use atomr_infer_core::batch::ExecuteBatch;
+use atomr_infer_core::tokens::TokenChunk;
 
 /// Priority class — higher values served first.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -25,7 +25,7 @@ pub struct PriorityRequest {
     pub batch: ExecuteBatch,
     /// Channel the worker writes streamed chunks into. The
     /// `RequestActor` owns the receiver.
-    pub output: tokio::sync::mpsc::Sender<Result<TokenChunk, inference_core::error::InferenceError>>,
+    pub output: tokio::sync::mpsc::Sender<Result<TokenChunk, atomr_infer_core::error::InferenceError>>,
 }
 
 // BinaryHeap is a max-heap. We want highest priority first, but for

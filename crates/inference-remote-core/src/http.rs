@@ -6,7 +6,7 @@
 
 use std::time::Duration;
 
-use inference_core::deployment::Timeouts;
+use atomr_infer_core::deployment::Timeouts;
 
 pub type HttpClient = reqwest::Client;
 

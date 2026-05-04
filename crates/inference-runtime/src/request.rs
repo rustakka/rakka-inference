@@ -8,12 +8,12 @@
 //! sender held by the gateway.
 
 use async_trait::async_trait;
-use rakka_core::actor::{Actor, ActorRef, Context};
+use atomr_core::actor::{Actor, ActorRef, Context};
 use tokio::sync::{mpsc, oneshot};
 
-use inference_core::batch::ExecuteBatch;
-use inference_core::error::InferenceError;
-use inference_core::tokens::{TokenChunk, Tokens};
+use atomr_infer_core::batch::ExecuteBatch;
+use atomr_infer_core::error::InferenceError;
+use atomr_infer_core::tokens::{TokenChunk, Tokens};
 
 use crate::dp_coordinator::{DpCoordinatorMsg, RouteTarget};
 

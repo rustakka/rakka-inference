@@ -4,10 +4,10 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use tracing_subscriber::EnvFilter;
 
-use inference_cli::{run_server, ProjectFile};
+use atomr_infer_cli::{run_server, ProjectFile};
 
 #[derive(Parser)]
-#[command(name = "rakka", version, about = "rakka-inference CLI")]
+#[command(name = "rakka", version, about = "atomr-infer CLI")]
 struct Cli {
     #[command(subcommand)]
     cmd: Cmd,

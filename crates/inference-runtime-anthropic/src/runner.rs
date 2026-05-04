@@ -7,21 +7,21 @@ use reqwest::header;
 use secrecy::ExposeSecret;
 use url::Url;
 
-use inference_core::batch::ExecuteBatch;
-use inference_core::cost::from_rates;
-use inference_core::deployment::RateLimits;
-use inference_core::error::{InferenceError, InferenceResult};
-use inference_core::runner::{ModelRunner, RunHandle, SessionRebuildCause};
-use inference_core::runtime::{ProviderKind, RuntimeKind, TransportKind};
-use inference_core::tokens::{FinishReason, TokenChunk, TokenUsage};
+use atomr_infer_core::batch::ExecuteBatch;
+use atomr_infer_core::cost::from_rates;
+use atomr_infer_core::deployment::RateLimits;
+use atomr_infer_core::error::{InferenceError, InferenceResult};
+use atomr_infer_core::runner::{ModelRunner, RunHandle, SessionRebuildCause};
+use atomr_infer_core::runtime::{ProviderKind, RuntimeKind, TransportKind};
+use atomr_infer_core::tokens::{FinishReason, TokenChunk, TokenUsage};
 
 use crate::config::AnthropicConfig;
 use crate::cost::AnthropicPricing;
 use crate::error::classify_anthropic_error;
 use crate::wire::{BlockDelta, MessagesRequest, MessagesResponse, SseEvent};
 
-use inference_remote_core::session::SessionSnapshot;
-use inference_remote_core::sse::{decode_sse_stream, SseChunk};
+use atomr_infer_remote_core::session::SessionSnapshot;
+use atomr_infer_remote_core::sse::{decode_sse_stream, SseChunk};
 
 pub struct AnthropicRunner {
     config: AnthropicConfig,

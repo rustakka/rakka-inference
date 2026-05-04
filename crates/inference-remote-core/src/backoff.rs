@@ -3,13 +3,13 @@
 //! per-request retry loop inside `RemoteWorkerActor`.
 //!
 //! For supervisor-level "actor restarted N times" backoff we still use
-//! `rakka_core::pattern::backoff::BackoffOptions` directly. This module
+//! `atomr_core::pattern::backoff::BackoffOptions` directly. This module
 //! is the per-call analogue.
 
 use std::time::Duration;
 
-use inference_core::deployment::RetryPolicy;
-use inference_core::runtime::JitterKind;
+use atomr_infer_core::deployment::RetryPolicy;
+use atomr_infer_core::runtime::JitterKind;
 
 #[derive(Debug, Clone)]
 pub struct BackoffPolicy {

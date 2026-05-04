@@ -246,6 +246,419 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
+name = "atomr-cluster"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "atomr-config",
+ "atomr-core",
+ "atomr-remote",
+ "bincode",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "atomr-cluster-tools"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "atomr-cluster",
+ "atomr-core",
+ "parking_lot",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "atomr-config"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "toml 0.8.23",
+]
+
+[[package]]
+name = "atomr-core"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "atomr-config",
+ "bincode",
+ "bytes",
+ "dashmap",
+ "flume",
+ "futures",
+ "futures-util",
+ "once_cell",
+ "parking_lot",
+ "pin-project-lite",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "uuid 1.23.1",
+]
+
+[[package]]
+name = "atomr-distributed-data"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "atomr-cluster",
+ "atomr-core",
+ "parking_lot",
+ "serde",
+ "thiserror 1.0.69",
+ "tokio",
+]
+
+[[package]]
+name = "atomr-infer"
+version = "0.3.0"
+dependencies = [
+ "atomr-infer-core",
+ "atomr-infer-pipeline",
+ "atomr-infer-runtime",
+ "atomr-infer-runtime-anthropic",
+ "atomr-infer-runtime-gemini",
+ "atomr-infer-runtime-litellm",
+ "atomr-infer-runtime-mistralrs",
+ "atomr-infer-runtime-openai",
+ "atomr-infer-runtime-ort",
+ "atomr-infer-runtime-tensorrt",
+ "atomr-infer-runtime-vllm",
+ "atomr-infer-testkit",
+]
+
+[[package]]
+name = "atomr-infer-cli"
+version = "0.3.0"
+dependencies = [
+ "anyhow",
+ "atomr-config",
+ "atomr-core",
+ "atomr-infer",
+ "atomr-infer-core",
+ "atomr-infer-runtime",
+ "clap",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "toml 0.8.23",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "atomr-infer-core"
+version = "0.3.0"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "chrono",
+ "futures",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "url",
+]
+
+[[package]]
+name = "atomr-infer-pipeline"
+version = "0.3.0"
+dependencies = [
+ "async-trait",
+ "atomr-infer-core",
+ "atomr-infer-runtime",
+ "atomr-streams",
+ "futures",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "atomr-infer-py-bindings"
+version = "0.3.0"
+dependencies = [
+ "atomr-infer-core",
+ "pyo3",
+ "tracing",
+]
+
+[[package]]
+name = "atomr-infer-python-bridge"
+version = "0.3.0"
+dependencies = [
+ "atomr-infer-core",
+ "parking_lot",
+ "pyo3",
+ "tokio",
+]
+
+[[package]]
+name = "atomr-infer-remote-core"
+version = "0.3.0"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "atomr-core",
+ "atomr-distributed-data",
+ "atomr-infer-core",
+ "bytes",
+ "chrono",
+ "eventsource-stream",
+ "futures",
+ "futures-util",
+ "hyper",
+ "parking_lot",
+ "reqwest 0.12.28",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tower",
+ "tracing",
+ "url",
+ "wiremock",
+]
+
+[[package]]
+name = "atomr-infer-runtime"
+version = "0.3.0"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "atomr-cluster-tools",
+ "atomr-config",
+ "atomr-core",
+ "atomr-distributed-data",
+ "atomr-infer-core",
+ "axum",
+ "bytes",
+ "chrono",
+ "futures",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tower",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "atomr-infer-runtime-anthropic"
+version = "0.3.0"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "atomr-infer-core",
+ "atomr-infer-remote-core",
+ "atomr-infer-runtime",
+ "futures",
+ "futures-util",
+ "once_cell",
+ "reqwest 0.12.28",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "atomr-infer-runtime-candle"
+version = "0.3.0"
+dependencies = [
+ "async-trait",
+ "atomr-infer-core",
+ "atomr-infer-runtime",
+ "candle-core 0.8.4",
+ "candle-nn 0.8.4",
+ "candle-transformers",
+ "serde",
+]
+
+[[package]]
+name = "atomr-infer-runtime-cudarc"
+version = "0.3.0"
+dependencies = [
+ "async-trait",
+ "atomr-infer-core",
+ "atomr-infer-runtime",
+ "cudarc",
+ "serde",
+]
+
+[[package]]
+name = "atomr-infer-runtime-gemini"
+version = "0.3.0"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "atomr-infer-core",
+ "atomr-infer-remote-core",
+ "atomr-infer-runtime",
+ "futures",
+ "futures-util",
+ "once_cell",
+ "reqwest 0.12.28",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "atomr-infer-runtime-litellm"
+version = "0.3.0"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "atomr-infer-core",
+ "atomr-infer-remote-core",
+ "atomr-infer-runtime",
+ "atomr-infer-runtime-openai",
+ "serde",
+ "serde_json",
+ "url",
+]
+
+[[package]]
+name = "atomr-infer-runtime-mistralrs"
+version = "0.3.0"
+dependencies = [
+ "async-trait",
+ "atomr-infer-core",
+ "atomr-infer-runtime",
+ "mistralrs",
+ "serde",
+]
+
+[[package]]
+name = "atomr-infer-runtime-openai"
+version = "0.3.0"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "atomr-infer-core",
+ "atomr-infer-remote-core",
+ "atomr-infer-runtime",
+ "bytes",
+ "futures",
+ "futures-util",
+ "once_cell",
+ "reqwest 0.12.28",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+ "url",
+ "wiremock",
+]
+
+[[package]]
+name = "atomr-infer-runtime-ort"
+version = "0.3.0"
+dependencies = [
+ "async-trait",
+ "atomr-infer-core",
+ "atomr-infer-runtime",
+ "ort",
+ "serde",
+]
+
+[[package]]
+name = "atomr-infer-runtime-tensorrt"
+version = "0.3.0"
+dependencies = [
+ "async-trait",
+ "atomr-infer-core",
+ "atomr-infer-runtime",
+ "serde",
+]
+
+[[package]]
+name = "atomr-infer-runtime-vllm"
+version = "0.3.0"
+dependencies = [
+ "async-trait",
+ "atomr-infer-core",
+ "atomr-infer-python-bridge",
+ "atomr-infer-runtime",
+ "serde",
+]
+
+[[package]]
+name = "atomr-infer-testkit"
+version = "0.3.0"
+dependencies = [
+ "async-trait",
+ "atomr-infer-core",
+ "atomr-infer-remote-core",
+ "atomr-infer-runtime",
+ "futures",
+ "serde_json",
+ "tokio",
+ "wiremock",
+]
+
+[[package]]
+name = "atomr-remote"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "atomr-config",
+ "atomr-core",
+ "bincode",
+ "bytes",
+ "dashmap",
+ "futures",
+ "futures-util",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tokio-util",
+ "tracing",
+]
+
+[[package]]
+name = "atomr-streams"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "atomr-core",
+ "bytes",
+ "futures",
+ "futures-util",
+ "parking_lot",
+ "pin-project-lite",
+ "thiserror 1.0.69",
+ "tokio",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2659,164 +3072,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "inference"
-version = "0.2.6"
-dependencies = [
- "inference-pipeline",
- "inference-runtime-candle",
- "inference-runtime-cudarc",
- "inference-runtime-mistralrs",
- "inference-runtime-ort",
- "inference-runtime-tensorrt",
- "inference-runtime-vllm",
- "inference-testkit",
- "rakka-accel",
- "rakka-accel-patterns",
- "rakka-inference-core",
- "rakka-inference-runtime",
- "rakka-inference-runtime-anthropic",
- "rakka-inference-runtime-gemini",
- "rakka-inference-runtime-litellm",
- "rakka-inference-runtime-openai",
-]
-
-[[package]]
-name = "inference-cli"
-version = "0.2.6"
-dependencies = [
- "anyhow",
- "clap",
- "inference",
- "rakka-config",
- "rakka-core",
- "rakka-inference-core",
- "rakka-inference-runtime",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "toml 0.8.23",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "inference-pipeline"
-version = "0.2.6"
-dependencies = [
- "async-trait",
- "futures",
- "rakka-accel-patterns",
- "rakka-inference-core",
- "rakka-inference-runtime",
- "rakka-streams",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "inference-py-bindings"
-version = "0.2.6"
-dependencies = [
- "pyo3",
- "rakka-inference-core",
- "tracing",
-]
-
-[[package]]
-name = "inference-python-bridge"
-version = "0.2.6"
-dependencies = [
- "parking_lot",
- "pyo3",
- "rakka-inference-core",
- "tokio",
-]
-
-[[package]]
-name = "inference-runtime-candle"
-version = "0.2.6"
-dependencies = [
- "async-trait",
- "candle-core 0.8.4",
- "candle-nn 0.8.4",
- "candle-transformers",
- "rakka-accel",
- "rakka-inference-core",
- "rakka-inference-runtime",
- "serde",
-]
-
-[[package]]
-name = "inference-runtime-cudarc"
-version = "0.2.6"
-dependencies = [
- "async-trait",
- "cudarc",
- "rakka-accel",
- "rakka-inference-core",
- "rakka-inference-runtime",
- "serde",
-]
-
-[[package]]
-name = "inference-runtime-mistralrs"
-version = "0.2.6"
-dependencies = [
- "async-trait",
- "mistralrs",
- "rakka-inference-core",
- "rakka-inference-runtime",
- "serde",
-]
-
-[[package]]
-name = "inference-runtime-ort"
-version = "0.2.6"
-dependencies = [
- "async-trait",
- "ort",
- "rakka-inference-core",
- "rakka-inference-runtime",
- "serde",
-]
-
-[[package]]
-name = "inference-runtime-tensorrt"
-version = "0.2.6"
-dependencies = [
- "async-trait",
- "rakka-inference-core",
- "rakka-inference-runtime",
- "serde",
-]
-
-[[package]]
-name = "inference-runtime-vllm"
-version = "0.2.6"
-dependencies = [
- "async-trait",
- "inference-python-bridge",
- "rakka-inference-core",
- "rakka-inference-runtime",
- "serde",
-]
-
-[[package]]
-name = "inference-testkit"
-version = "0.2.6"
-dependencies = [
- "async-trait",
- "futures",
- "rakka-inference-core",
- "rakka-inference-remote-core",
- "rakka-inference-runtime",
- "serde_json",
- "tokio",
- "wiremock",
-]
-
-[[package]]
 name = "interpolate_name"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3079,15 +3334,6 @@ dependencies = [
  "num-traits",
  "sparsevec",
  "vob",
-]
-
-[[package]]
-name = "lru"
-version = "0.12.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "234cf4f4a04dc1f57e24b96cc0cd600cf2af460d4161ac5ecdd0af8e1f3b2a38"
-dependencies = [
- "hashbrown 0.15.5",
 ]
 
 [[package]]
@@ -4302,326 +4548,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rakka-accel"
-version = "0.2.9"
-dependencies = [
- "async-trait",
- "rakka-accel-cuda",
- "rakka-config",
- "rakka-core",
- "thiserror 1.0.69",
- "tokio",
-]
-
-[[package]]
-name = "rakka-accel-cuda"
-version = "0.2.9"
-dependencies = [
- "arc-swap",
- "async-trait",
- "bitflags 2.11.1",
- "cudarc",
- "futures",
- "futures-util",
- "lru",
- "parking_lot",
- "rakka-config",
- "rakka-core",
- "rakka-macros",
- "thiserror 1.0.69",
- "tokio",
- "tokio-stream",
- "tracing",
-]
-
-[[package]]
-name = "rakka-accel-patterns"
-version = "0.2.9"
-dependencies = [
- "async-trait",
- "parking_lot",
- "rakka-accel-cuda",
- "rakka-config",
- "rakka-core",
- "rakka-macros",
- "thiserror 1.0.69",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "rakka-cluster"
-version = "0.2.2"
-dependencies = [
- "async-trait",
- "bincode",
- "parking_lot",
- "rakka-config",
- "rakka-core",
- "rakka-remote",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "rakka-cluster-tools"
-version = "0.2.2"
-dependencies = [
- "async-trait",
- "parking_lot",
- "rakka-cluster",
- "rakka-core",
- "thiserror 1.0.69",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "rakka-config"
-version = "0.2.2"
-dependencies = [
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "toml 0.8.23",
-]
-
-[[package]]
-name = "rakka-core"
-version = "0.2.2"
-dependencies = [
- "async-trait",
- "bincode",
- "bytes",
- "dashmap",
- "flume",
- "futures",
- "futures-util",
- "once_cell",
- "parking_lot",
- "pin-project-lite",
- "rakka-config",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "tokio-util",
- "tracing",
- "uuid 1.23.1",
-]
-
-[[package]]
-name = "rakka-distributed-data"
-version = "0.2.2"
-dependencies = [
- "async-trait",
- "parking_lot",
- "rakka-cluster",
- "rakka-core",
- "serde",
- "thiserror 1.0.69",
- "tokio",
-]
-
-[[package]]
-name = "rakka-inference-core"
-version = "0.2.6"
-dependencies = [
- "async-trait",
- "bytes",
- "chrono",
- "futures",
- "secrecy",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "url",
-]
-
-[[package]]
-name = "rakka-inference-remote-core"
-version = "0.2.6"
-dependencies = [
- "arc-swap",
- "async-trait",
- "bytes",
- "chrono",
- "eventsource-stream",
- "futures",
- "futures-util",
- "hyper",
- "parking_lot",
- "rakka-core",
- "rakka-distributed-data",
- "rakka-inference-core",
- "reqwest 0.12.28",
- "secrecy",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "tower",
- "tracing",
- "url",
- "wiremock",
-]
-
-[[package]]
-name = "rakka-inference-runtime"
-version = "0.2.6"
-dependencies = [
- "arc-swap",
- "async-trait",
- "axum",
- "bytes",
- "chrono",
- "futures",
- "parking_lot",
- "rakka-accel",
- "rakka-cluster-tools",
- "rakka-config",
- "rakka-core",
- "rakka-distributed-data",
- "rakka-inference-core",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "tower",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "rakka-inference-runtime-anthropic"
-version = "0.2.6"
-dependencies = [
- "arc-swap",
- "async-trait",
- "futures",
- "futures-util",
- "once_cell",
- "rakka-inference-core",
- "rakka-inference-remote-core",
- "rakka-inference-runtime",
- "reqwest 0.12.28",
- "secrecy",
- "serde",
- "serde_json",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "rakka-inference-runtime-gemini"
-version = "0.2.6"
-dependencies = [
- "arc-swap",
- "async-trait",
- "futures",
- "futures-util",
- "once_cell",
- "rakka-inference-core",
- "rakka-inference-remote-core",
- "rakka-inference-runtime",
- "reqwest 0.12.28",
- "secrecy",
- "serde",
- "serde_json",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "rakka-inference-runtime-litellm"
-version = "0.2.6"
-dependencies = [
- "arc-swap",
- "async-trait",
- "rakka-inference-core",
- "rakka-inference-remote-core",
- "rakka-inference-runtime",
- "rakka-inference-runtime-openai",
- "serde",
- "serde_json",
- "url",
-]
-
-[[package]]
-name = "rakka-inference-runtime-openai"
-version = "0.2.6"
-dependencies = [
- "arc-swap",
- "async-trait",
- "bytes",
- "futures",
- "futures-util",
- "once_cell",
- "rakka-inference-core",
- "rakka-inference-remote-core",
- "rakka-inference-runtime",
- "reqwest 0.12.28",
- "secrecy",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "tracing",
- "url",
- "wiremock",
-]
-
-[[package]]
-name = "rakka-macros"
-version = "0.2.2"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.117",
-]
-
-[[package]]
-name = "rakka-remote"
-version = "0.2.2"
-dependencies = [
- "async-trait",
- "bincode",
- "bytes",
- "dashmap",
- "futures",
- "futures-util",
- "parking_lot",
- "rakka-config",
- "rakka-core",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "tokio-util",
- "tracing",
-]
-
-[[package]]
-name = "rakka-streams"
-version = "0.2.2"
-dependencies = [
- "async-trait",
- "bytes",
- "futures",
- "futures-util",
- "parking_lot",
- "pin-project-lite",
- "rakka-core",
- "thiserror 1.0.69",
- "tokio",
-]
-
-[[package]]
 name = "rand"
 version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4906,17 +4832,17 @@ checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
 
 [[package]]
 name = "remote_only_demo"
-version = "0.2.6"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "arc-swap",
  "async-trait",
+ "atomr-infer-core",
+ "atomr-infer-remote-core",
+ "atomr-infer-runtime",
+ "atomr-infer-runtime-openai",
+ "atomr-infer-testkit",
  "futures",
- "inference-testkit",
- "rakka-inference-core",
- "rakka-inference-remote-core",
- "rakka-inference-runtime",
- "rakka-inference-runtime-openai",
  "secrecy",
  "tokio",
  "tracing",
@@ -6359,17 +6285,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tokio-stream"
-version = "0.1.18"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32da49809aab5c3bc678af03902d4ccddea2a87d028d86392a4b1560c6906c70"
-dependencies = [
- "futures-core",
- "pin-project-lite",
- "tokio",
-]
-
-[[package]]
 name = "tokio-tungstenite"
 version = "0.28.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7737,7 +7652,7 @@ checksum = "1ffae5123b2d3fc086436f8834ae3ab053a283cfac8fe0a0b8eaae044768a4c4"
 
 [[package]]
 name = "xtask"
-version = "0.2.6"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "clap",

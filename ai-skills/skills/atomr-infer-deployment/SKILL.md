@@ -1,9 +1,9 @@
 ---
-name: rakka-inference-deployment
-description: Use when deploying rakka-inference to a cluster — choosing feature flags, the `remote-only` invariant, `rakka serve --config` project files, hot-swap and credential rotation, container image sizes. Triggers on writing a `inference.toml`, a Dockerfile for an inference service, configuring `kubectl apply` / Helm, or asking "how do I deploy rakka-inference to production".
+name: atomr-infer-deployment
+description: Use when deploying atomr-infer to a cluster — choosing feature flags, the `remote-only` invariant, `atomr-infer serve --config` project files, hot-swap and credential rotation, container image sizes. Triggers on writing a `inference.toml`, a Dockerfile for an inference service, configuring `kubectl apply` / Helm, or asking "how do I deploy atomr-infer to production".
 ---
 
-# Deploying rakka-inference
+# Deploying atomr-infer
 
 The release ships one binary (`rakka` from `inference-cli`) plus the
 library rollup `inference`. Most deployments are: one container, one
@@ -137,7 +137,7 @@ For a 1–2 node setup, all four roles collapse onto every node. For
 
 ## Required CI / release infrastructure
 
-The repo's [`RELEASING.md`](https://github.com/rustakka/rakka-inference/blob/main/RELEASING.md)
+The repo's [`RELEASING.md`](https://github.com/rustakka/atomr-infer/blob/main/RELEASING.md)
 documents the version-bump-on-Conventional-Commit + tag-fires-release
 pipeline. For your downstream deployment automation:
 
@@ -149,11 +149,11 @@ pipeline. For your downstream deployment automation:
 
 ## Canonical references
 
-- [`README.md`](https://github.com/rustakka/rakka-inference/blob/main/README.md) — top-level overview
-- [`docs/feature-matrix.md`](https://github.com/rustakka/rakka-inference/blob/main/docs/feature-matrix.md) — every feature, what it pulls
-- [`RELEASING.md`](https://github.com/rustakka/rakka-inference/blob/main/RELEASING.md) — versioning, allowlist, secrets
-- [Architecture doc §7](https://github.com/rustakka/rakka-inference/blob/main/docs/rustakka-inference-architecture-v4.md) — cluster operation
-- [`crates/inference-cli/README.md`](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-cli/README.md) — `rakka serve` subcommands
+- [`README.md`](https://github.com/rustakka/atomr-infer/blob/main/README.md) — top-level overview
+- [`docs/feature-matrix.md`](https://github.com/rustakka/atomr-infer/blob/main/docs/feature-matrix.md) — every feature, what it pulls
+- [`RELEASING.md`](https://github.com/rustakka/atomr-infer/blob/main/RELEASING.md) — versioning, allowlist, secrets
+- [Architecture doc §7](https://github.com/rustakka/atomr-infer/blob/main/docs/rustakka-inference-architecture-v4.md) — cluster operation
+- [`crates/inference-cli/README.md`](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-cli/README.md) — `atomr-infer serve` subcommands
 
 ## Common mistakes
 

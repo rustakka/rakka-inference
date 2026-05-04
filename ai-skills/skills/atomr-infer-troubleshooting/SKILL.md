@@ -1,9 +1,9 @@
 ---
-name: rakka-inference-troubleshooting
-description: Use when debugging rakka-inference symptoms — `InferenceError::RateLimited` storms, `CircuitOpen`, `ContentFiltered`, `CudaContextPoisoned`, mailbox backpressure, gateway 429s, missing fallbacks, the `remote-only` invariant violation. Triggers on a stack trace mentioning `inference-*`, an unexplained typed error, or asking "why is my deployment returning X".
+name: atomr-infer-troubleshooting
+description: Use when debugging atomr-infer symptoms — `InferenceError::RateLimited` storms, `CircuitOpen`, `ContentFiltered`, `CudaContextPoisoned`, mailbox backpressure, gateway 429s, missing fallbacks, the `remote-only` invariant violation. Triggers on a stack trace mentioning `inference-*`, an unexplained typed error, or asking "why is my deployment returning X".
 ---
 
-# Troubleshooting rakka-inference
+# Troubleshooting atomr-infer
 
 The typed `InferenceError` enum tells you exactly which subsystem
 emitted the failure and what to do about it. This skill maps each
@@ -137,10 +137,10 @@ Useful log targets:
 
 ## Canonical references
 
-- [`inference-core::error`](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-core/src/error.rs) — the canonical `InferenceError` definition
-- [Architecture doc §7.6](https://github.com/rustakka/rakka-inference/blob/main/docs/rustakka-inference-architecture-v4.md) — failure handling matrix
-- [`examples/remote_only_demo`](https://github.com/rustakka/rakka-inference/blob/main/examples/remote_only_demo/) — happy path / 429 / circuit open
-- [`rakka-troubleshooting`](https://github.com/rustakka/rakka/blob/main/ai-skills/skills/rakka-troubleshooting/SKILL.md) skill — for the underlying actor-system errors
+- [`inference-core::error`](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-core/src/error.rs) — the canonical `InferenceError` definition
+- [Architecture doc §7.6](https://github.com/rustakka/atomr-infer/blob/main/docs/rustakka-inference-architecture-v4.md) — failure handling matrix
+- [`examples/remote_only_demo`](https://github.com/rustakka/atomr-infer/blob/main/examples/remote_only_demo/) — happy path / 429 / circuit open
+- [`rakka-troubleshooting`](https://github.com/rustakka/atomr/blob/main/ai-skills/skills/rakka-troubleshooting/SKILL.md) skill — for the underlying actor-system errors
 
 ## Common mistakes
 

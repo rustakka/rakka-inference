@@ -5,9 +5,9 @@
 
 use serde::Deserialize;
 
-use inference_core::error::InferenceError;
-use inference_core::runtime::ProviderKind;
-use inference_remote_core::classify::{classify_http_status, parse_retry_after};
+use atomr_infer_core::error::InferenceError;
+use atomr_infer_core::runtime::ProviderKind;
+use atomr_infer_remote_core::classify::{classify_http_status, parse_retry_after};
 
 #[derive(Debug, Deserialize)]
 struct ErrorEnvelope {

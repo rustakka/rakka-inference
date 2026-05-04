@@ -1,7 +1,7 @@
 # inference-python-bridge
 
 > Bridge between Python-resident GPU runtimes (vLLM, XTTS, Bark, …)
-> and the rakka-inference actor system.
+> and the atomr-infer actor system.
 
 ## Build profiles
 

@@ -15,13 +15,13 @@ use std::sync::Arc;
 
 use arc_swap::ArcSwap;
 use async_trait::async_trait;
-use rakka_core::actor::{Actor, Context};
+use atomr_core::actor::{Actor, Context};
 use tokio::sync::oneshot;
 
-use inference_core::deployment::Timeouts;
-use inference_core::error::{InferenceError, InferenceResult};
-use inference_core::runner::SessionRebuildCause;
-use inference_core::SecretString;
+use atomr_infer_core::deployment::Timeouts;
+use atomr_infer_core::error::{InferenceError, InferenceResult};
+use atomr_infer_core::runner::SessionRebuildCause;
+use atomr_infer_core::SecretString;
 
 use crate::http::{build_client, HttpClient};
 
@@ -48,7 +48,7 @@ impl CredentialProvider for StaticApiKey {
     async fn token(&self) -> InferenceResult<SecretString> {
         // SecretString isn't Clone; we re-create from the underlying
         // `&str` exposure — secrecy zeroizes on drop, which is fine.
-        use inference_core::ExposeSecret;
+        use atomr_infer_core::ExposeSecret;
         Ok(SecretString::from(self.0.expose_secret().to_string()))
     }
 }

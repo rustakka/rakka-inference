@@ -24,21 +24,21 @@ use secrecy::SecretString;
 use tracing_subscriber::EnvFilter;
 use url::Url;
 
-use inference_core::batch::{ExecuteBatch, Message, MessageContent, Role, SamplingParams};
-use inference_core::deployment::{RateLimits, RetryPolicy, Timeouts};
-use inference_core::error::InferenceError;
-use inference_core::runner::ModelRunner;
-use inference_core::runtime::{CircuitBreakerConfig, JitterKind, ProviderKind};
+use atomr_infer_core::batch::{ExecuteBatch, Message, MessageContent, Role, SamplingParams};
+use atomr_infer_core::deployment::{RateLimits, RetryPolicy, Timeouts};
+use atomr_infer_core::error::InferenceError;
+use atomr_infer_core::runner::ModelRunner;
+use atomr_infer_core::runtime::{CircuitBreakerConfig, JitterKind, ProviderKind};
 
-use inference_remote_core::circuit_breaker::CircuitBreakerHandle;
-use inference_remote_core::http::build_client;
-use inference_remote_core::retry::{Attempt, RetryDecision, RetryEngine};
-use inference_remote_core::session::{CredentialProvider, SessionConfig, SessionSnapshot, StaticApiKey};
+use atomr_infer_remote_core::circuit_breaker::CircuitBreakerHandle;
+use atomr_infer_remote_core::http::build_client;
+use atomr_infer_remote_core::retry::{Attempt, RetryDecision, RetryEngine};
+use atomr_infer_remote_core::session::{CredentialProvider, SessionConfig, SessionSnapshot, StaticApiKey};
 
-use inference_runtime_openai::config::SecretRef;
-use inference_runtime_openai::{OpenAiConfig, OpenAiRunner, OpenAiVariant};
+use atomr_infer_runtime_openai::config::SecretRef;
+use atomr_infer_runtime_openai::{OpenAiConfig, OpenAiRunner, OpenAiVariant};
 
-use inference_testkit::mock_openai::{inject_429_once, inject_5xx_once, mount_chat_happy_path, MockOpenAi};
+use atomr_infer_testkit::mock_openai::{inject_429_once, inject_5xx_once, mount_chat_happy_path, MockOpenAi};
 
 fn batch(prompt: &str, stream: bool) -> ExecuteBatch {
     ExecuteBatch {
@@ -117,7 +117,7 @@ async fn build_runner(base_url: &str) -> Result<OpenAiRunner> {
     let credential: Arc<dyn CredentialProvider> =
         Arc::new(StaticApiKey(SecretString::from("sk-mock".to_string())));
     let session_cfg = SessionConfig {
-        user_agent: "rakka-inference-demo/0.1.0".into(),
+        user_agent: "atomr-infer-demo/0.1.0".into(),
         timeouts: Timeouts::default(),
         credential: credential.clone(),
     };

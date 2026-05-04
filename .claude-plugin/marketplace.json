@@ -1,21 +1,21 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "rakka-inference",
-  "description": "Skills and plugins for working on projects that depend on rakka-inference, the multi-runtime GPU + remote inference layer for the rakka actor runtime.",
+  "name": "atomr-infer",
+  "description": "Skills and plugins for working on projects that depend on atomr-infer, the multi-runtime GPU + remote inference layer for the atomr actor runtime.",
   "owner": {
     "name": "rustakka",
     "url": "https://github.com/rustakka"
   },
   "plugins": [
     {
-      "name": "rakka-inference-ai-skills",
-      "description": "Skills for AI coding assistants working on projects that depend on rakka-inference — quickstart, runtime selection, remote providers, hybrid pipelines, deployment, troubleshooting, and adding new backends.",
+      "name": "atomr-infer-ai-skills",
+      "description": "Skills for AI coding assistants working on projects that depend on atomr-infer — quickstart, runtime selection, remote providers, hybrid pipelines, deployment, troubleshooting, and adding new backends.",
       "author": {
         "name": "rustakka"
       },
       "category": "development",
       "source": "./ai-skills",
-      "homepage": "https://github.com/rustakka/rakka-inference/tree/main/ai-skills"
+      "homepage": "https://github.com/rustakka/atomr-infer/tree/main/ai-skills"
     }
   ]
 }

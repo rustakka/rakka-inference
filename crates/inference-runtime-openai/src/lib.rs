@@ -2,7 +2,7 @@
 //!
 //! OpenAI Chat Completions runtime + Azure OpenAI variant. Doc §10.3.
 //!
-//! Implements the [`inference_core::ModelRunner`] contract over
+//! Implements the [`atomr_infer_core::ModelRunner`] contract over
 //! HTTP/2 (via `reqwest`). SSE chunks are parsed by
 //! `inference-remote-core::sse` and lifted into provider-typed deltas
 //! by [`wire`].

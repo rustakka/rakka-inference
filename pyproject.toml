@@ -3,22 +3,22 @@ requires = ["maturin>=1.5,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "rakka-inference"
+name = "atomr-infer"
 # Maturin reads the version from the manifest-path crate's Cargo.toml
-# (inference-py-bindings, which inherits via `version.workspace = true`).
+# (atomr-infer-py-bindings, which inherits via `version.workspace = true`).
 # Hardcoding here would freeze the wheel at one number and silently no-op
 # every subsequent release through `pypa/gh-action-pypi-publish`'s
 # skip-existing.
 dynamic = ["version"]
-description = "Multi-runtime GPU + remote inference as a supervised actor system on the rakka actor runtime."
+description = "Multi-runtime GPU + remote inference as a supervised actor system on the atomr actor runtime."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
-authors = [{ name = "rakka-inference contributors" }]
+authors = [{ name = "atomr-infer contributors" }]
 keywords = [
   "llm",
   "inference",
-  "rakka",
+  "atomr",
   "actor",
   "openai",
   "anthropic",
@@ -44,18 +44,18 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage      = "https://github.com/rustakka/rakka-inference"
-Repository    = "https://github.com/rustakka/rakka-inference"
-Issues        = "https://github.com/rustakka/rakka-inference/issues"
-Changelog     = "https://github.com/rustakka/rakka-inference/releases"
-Documentation = "https://docs.rs/inference"
+Homepage      = "https://github.com/rustakka/atomr-infer"
+Repository    = "https://github.com/rustakka/atomr-infer"
+Issues        = "https://github.com/rustakka/atomr-infer/issues"
+Changelog     = "https://github.com/rustakka/atomr-infer/releases"
+Documentation = "https://docs.rs/atomr-infer"
 
 [project.optional-dependencies]
 dev = ["pytest>=7", "pytest-asyncio>=0.23"]
 
 [tool.maturin]
 manifest-path = "crates/inference-py-bindings/Cargo.toml"
-module-name   = "rakka_inference._native"
+module-name   = "atomr_infer._native"
 python-source = "python"
 features      = ["python-extension"]
 strip         = true

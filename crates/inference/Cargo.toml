@@ -1,5 +1,5 @@
 [package]
-name = "inference"
+name = "atomr-infer"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -9,66 +9,47 @@ description = "Multi-runtime GPU + remote inference as a supervised actor system
 [features]
 default = []
 
-# Local runtimes
-vllm      = ["dep:inference-runtime-vllm",      "inference-runtime-vllm/vllm"]
-tensorrt  = ["dep:inference-runtime-tensorrt",  "inference-runtime-tensorrt/tensorrt"]
-ort       = ["dep:inference-runtime-ort",       "inference-runtime-ort/ort"]
-candle    = ["dep:inference-runtime-candle",    "inference-runtime-candle/candle", "accel"]
-cudarc    = ["dep:inference-runtime-cudarc",    "inference-runtime-cudarc/cudarc", "accel"]
-mistralrs = ["dep:inference-runtime-mistralrs", "inference-runtime-mistralrs/mistralrs"]
+# Local runtimes — atomr-accel-dependent ones (`candle`, `cudarc`)
+# are intentionally absent in this release while atomr-accel completes
+# its rakka→atomr internal rename.
+vllm      = ["dep:atomr-infer-runtime-vllm",      "atomr-infer-runtime-vllm/vllm"]
+tensorrt  = ["dep:atomr-infer-runtime-tensorrt",  "atomr-infer-runtime-tensorrt/tensorrt"]
+ort       = ["dep:atomr-infer-runtime-ort",       "atomr-infer-runtime-ort/ort"]
+mistralrs = ["dep:atomr-infer-runtime-mistralrs", "atomr-infer-runtime-mistralrs/mistralrs"]
 
 # Remote runtimes (no system deps; safe to enable on any host)
-openai    = ["dep:inference-runtime-openai"]
-anthropic = ["dep:inference-runtime-anthropic"]
-gemini    = ["dep:inference-runtime-gemini"]
-litellm   = ["dep:inference-runtime-litellm", "openai"]
+openai    = ["dep:atomr-infer-runtime-openai"]
+anthropic = ["dep:atomr-infer-runtime-anthropic"]
+gemini    = ["dep:atomr-infer-runtime-gemini"]
+litellm   = ["dep:atomr-infer-runtime-litellm", "openai"]
 
 # Cross-cutting
-pipeline      = ["dep:inference-pipeline"]
-testkit       = ["dep:inference-testkit"]
-# Pulls in rakka-accel (with the CUDA backend re-exported at
-# `rakka_accel::cuda`) and the rakka-accel-patterns blueprints so
-# callers can reach `inference::accel::*` and
-# `inference::accel_patterns::*` directly. Implied by `candle` /
-# `cudarc`. Off by default — `remote-only` builds skip these and
-# therefore compile no GPU deps at all.
-accel          = ["dep:rakka-accel", "rakka-accel/cuda", "inference-runtime/local-gpu"]
-accel-patterns = ["dep:rakka-accel-patterns", "pipeline", "inference-pipeline/cuda-patterns"]
-# Back-compat aliases that match the v0.1 names. Will be removed in
-# v0.4. Prefer `accel` / `accel-patterns`.
-cuda          = ["accel"]
-cuda-patterns = ["accel-patterns"]
+pipeline      = ["dep:atomr-infer-pipeline"]
+testkit       = ["dep:atomr-infer-testkit"]
 
 # Aggregates per doc §10.5
-all-native      = ["tensorrt", "ort", "candle", "cudarc", "mistralrs"]
+all-native      = ["tensorrt", "ort", "mistralrs"]
 all-python      = ["vllm"]
 all-local       = ["all-native", "all-python"]
 all-remote      = ["openai", "anthropic", "gemini", "litellm"]
-all-runtimes    = ["all-local", "all-remote", "accel-patterns"]
+all-runtimes    = ["all-local", "all-remote"]
 default-prod    = ["vllm", "tensorrt", "ort", "openai", "anthropic", "pipeline"]
-# remote-only deliberately excludes `accel` / `accel-patterns` so the
-# resulting binary pulls no GPU deps whatsoever.
+# remote-only is the canonical zero-system-dep build.
 remote-only     = ["all-remote", "pipeline"]
 
 [dependencies]
-inference-core    = { workspace = true }
-inference-runtime = { workspace = true }
+atomr-infer-core    = { workspace = true }
+atomr-infer-runtime = { workspace = true }
 
-inference-runtime-vllm      = { workspace = true, optional = true }
-inference-runtime-tensorrt  = { workspace = true, optional = true }
-inference-runtime-ort       = { workspace = true, optional = true }
-inference-runtime-candle    = { workspace = true, optional = true }
-inference-runtime-cudarc    = { workspace = true, optional = true }
-inference-runtime-mistralrs = { workspace = true, optional = true }
+atomr-infer-runtime-vllm      = { workspace = true, optional = true }
+atomr-infer-runtime-tensorrt  = { workspace = true, optional = true }
+atomr-infer-runtime-ort       = { workspace = true, optional = true }
+atomr-infer-runtime-mistralrs = { workspace = true, optional = true }
 
-inference-runtime-openai    = { workspace = true, optional = true }
-inference-runtime-anthropic = { workspace = true, optional = true }
-inference-runtime-gemini    = { workspace = true, optional = true }
-inference-runtime-litellm   = { workspace = true, optional = true }
+atomr-infer-runtime-openai    = { workspace = true, optional = true }
+atomr-infer-runtime-anthropic = { workspace = true, optional = true }
+atomr-infer-runtime-gemini    = { workspace = true, optional = true }
+atomr-infer-runtime-litellm   = { workspace = true, optional = true }
 
-inference-pipeline          = { workspace = true, optional = true }
-inference-testkit           = { workspace = true, optional = true }
-
-# Upstream rakka-accel re-exports (gated on `cuda` / `cuda-patterns`).
-rakka-accel          = { workspace = true, optional = true }
-rakka-accel-patterns = { workspace = true, optional = true }
+atomr-infer-pipeline          = { workspace = true, optional = true }
+atomr-infer-testkit           = { workspace = true, optional = true }

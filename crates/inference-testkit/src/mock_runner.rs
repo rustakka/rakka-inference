@@ -5,11 +5,11 @@ use std::time::Duration;
 use async_trait::async_trait;
 use futures::stream::{self, BoxStream, StreamExt};
 
-use inference_core::batch::ExecuteBatch;
-use inference_core::error::{InferenceError, InferenceResult};
-use inference_core::runner::{ModelRunner, RunHandle, SessionRebuildCause};
-use inference_core::runtime::{RuntimeKind, TransportKind};
-use inference_core::tokens::{FinishReason, TokenChunk, TokenUsage};
+use atomr_infer_core::batch::ExecuteBatch;
+use atomr_infer_core::error::{InferenceError, InferenceResult};
+use atomr_infer_core::runner::{ModelRunner, RunHandle, SessionRebuildCause};
+use atomr_infer_core::runtime::{RuntimeKind, TransportKind};
+use atomr_infer_core::tokens::{FinishReason, TokenChunk, TokenUsage};
 
 #[derive(Debug, Clone, Default)]
 pub struct MockScript {

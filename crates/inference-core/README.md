@@ -1,6 +1,6 @@
 # inference-core
 
-> Foundation types for the rakka-inference workspace. Zero actor / GPU
+> Foundation types for the atomr-infer workspace. Zero actor / GPU
 > / HTTP dependencies — pure types that every other layer plugs into.
 
 ## What it gives you

@@ -7,7 +7,7 @@ use bytes::Bytes;
 use eventsource_stream::Eventsource;
 use futures::stream::{BoxStream, Stream, StreamExt};
 
-use inference_core::error::InferenceError;
+use atomr_infer_core::error::InferenceError;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SseChunk {

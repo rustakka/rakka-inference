@@ -4,18 +4,18 @@
 //! with load scores) and answers `RouteTo` asks from `RequestActor`s.
 //! The implementation is a thin in-process map for v0; a real cluster
 //! deployment registers this actor with
-//! `rakka_cluster_tools::ClusterSingletonManager` so there's exactly
+//! `atomr_cluster_tools::ClusterSingletonManager` so there's exactly
 //! one per (model, cluster).
 
 use std::collections::HashMap;
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use atomr_core::actor::{Actor, Context, UntypedActorRef};
 use parking_lot::RwLock;
-use rakka_core::actor::{Actor, Context, UntypedActorRef};
 use tokio::sync::oneshot;
 
-use inference_core::error::InferenceError;
+use atomr_infer_core::error::InferenceError;
 
 #[derive(Clone)]
 pub struct RouteTarget {
@@ -47,11 +47,11 @@ pub enum DpCoordinatorMsg {
     },
     Deregister {
         deployment: String,
-        engine_path: rakka_core::actor::ActorPath,
+        engine_path: atomr_core::actor::ActorPath,
     },
     ReportLoad {
         deployment: String,
-        engine_path: rakka_core::actor::ActorPath,
+        engine_path: atomr_core::actor::ActorPath,
         load: f64,
     },
     RouteTo {
@@ -86,13 +86,13 @@ impl DpCoordinatorActor {
             .push(target);
     }
 
-    fn deregister(&self, deployment: &str, path: &rakka_core::actor::ActorPath) {
+    fn deregister(&self, deployment: &str, path: &atomr_core::actor::ActorPath) {
         if let Some(v) = self.state.write().routes.get_mut(deployment) {
             v.retain(|t| t.engine.path() != path);
         }
     }
 
-    fn report_load(&self, deployment: &str, path: &rakka_core::actor::ActorPath, load: f64) {
+    fn report_load(&self, deployment: &str, path: &atomr_core::actor::ActorPath, load: f64) {
         if let Some(v) = self.state.write().routes.get_mut(deployment) {
             for t in v.iter_mut() {
                 if t.engine.path() == path {

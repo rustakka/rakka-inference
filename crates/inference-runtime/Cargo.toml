@@ -1,5 +1,5 @@
 [package]
-name                   = "rakka-inference-runtime"
+name = "atomr-infer-runtime"
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true
@@ -10,35 +10,29 @@ authors.workspace      = true
 keywords.workspace     = true
 categories.workspace   = true
 readme                 = "README.md"
-documentation          = "https://docs.rs/rakka-inference-runtime"
-description            = "Runtime-agnostic actor topology for rakka-inference — gateway, request actor, dp-coordinator, engine-core, two-tier worker, placement, deployment manager, metrics."
+documentation          = "https://docs.rs/atomr-infer-runtime"
+description            = "Runtime-agnostic actor topology for atomr-infer — gateway, request actor, dp-coordinator, engine-core, two-tier worker, placement, deployment manager, metrics."
 
 [lib]
-name = "inference_runtime"
+name = "atomr_infer_runtime"
 
 [features]
 default = []
-# Pulls in rakka-accel for the local-GPU two-tier supervision pattern
-# and the per-actor stream allocator. Off by default so a pure-remote
-# inference build (`inference --features remote-only`) compiles no
-# GPU dependencies whatsoever.
-local-gpu = ["dep:rakka-accel", "rakka-accel/cuda"]
+# `local-gpu` is intentionally absent from this release. atomr-accel
+# (the upstream substrate for two-tier GPU supervision and the
+# per-actor stream allocator) is mid-rakka→atomr-rename and not yet
+# resolvable as a workspace dep. Re-add `local-gpu = ["dep:atomr-accel",
+# "atomr-accel/cuda"]` once atomr-accel ships its renamed crates.
 
 [dependencies]
-inference-core = { workspace = true }
+atomr-infer-core = { workspace = true }
 
-# Rakka actor primitives — the umbrella `rakka` crate is intentionally
-# not depended on (we use the sub-crates directly so this crate
-# publishes to crates.io independent of the umbrella's release cadence).
-rakka-core             = { workspace = true }
-rakka-config           = { workspace = true }
-rakka-cluster-tools    = { workspace = true }
-rakka-distributed-data = { workspace = true }
-
-# rakka-accel is the upstream substrate for two-tier supervision and
-# GPU dispatch. Optional — only present when the `local-gpu` feature
-# is enabled (see §10.5 / R7 of the doc-redesign delta).
-rakka-accel = { workspace = true, optional = true }
+# atomr actor primitives. Imported directly without the umbrella so
+# this crate stays in sync with atomr's per-crate release cadence.
+atomr-core             = { workspace = true }
+atomr-config           = { workspace = true }
+atomr-cluster-tools    = { workspace = true }
+atomr-distributed-data = { workspace = true }
 
 # HTTP gateway
 axum     = { workspace = true }

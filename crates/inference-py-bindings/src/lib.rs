@@ -9,8 +9,8 @@
 //! module (`pip install maturin && maturin develop --features python`).
 //!
 //! When loaded via maturin / wheel, the extension module is exposed
-//! as `rakka_inference._native`; the user-facing API lives in the
-//! pure-Python `python/rakka_inference/` package which re-exports
+//! as `atomr_infer._native`; the user-facing API lives in the
+//! pure-Python `python/atomr_infer/` package which re-exports
 //! the native classes.
 
 #![forbid(unsafe_code)]
@@ -20,7 +20,7 @@
 mod py {
     use pyo3::prelude::*;
 
-    use inference_core::deployment::Deployment as RsDeployment;
+    use atomr_infer_core::deployment::Deployment as RsDeployment;
 
     /// Python-side `Deployment` — owns a `RsDeployment` value object.
     /// Python callers build it via the keyword-arg constructor below

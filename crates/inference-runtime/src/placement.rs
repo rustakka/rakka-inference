@@ -18,11 +18,11 @@
 //! per-node device choices.
 
 use async_trait::async_trait;
-use rakka_core::actor::{Actor, Context};
+use atomr_core::actor::{Actor, Context};
 use tokio::sync::oneshot;
 
-use inference_core::deployment::Deployment;
-use inference_core::runtime::{ProviderKind, TransportKind};
+use atomr_infer_core::deployment::Deployment;
+use atomr_infer_core::runtime::{ProviderKind, TransportKind};
 
 #[derive(Debug, Clone)]
 pub struct PlacementConstraints {

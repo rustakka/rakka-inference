@@ -4,7 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use inference_core::batch::{ExecuteBatch, Message, MessageContent, Role};
+use atomr_infer_core::batch::{ExecuteBatch, Message, MessageContent, Role};
 
 #[derive(Debug, Serialize)]
 pub struct ChatRequest<'a> {

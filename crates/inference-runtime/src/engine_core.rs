@@ -13,15 +13,15 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use atomr_core::actor::{Actor, Context};
 use futures::StreamExt;
 use parking_lot::Mutex;
-use rakka_core::actor::{Actor, Context};
 use tokio::sync::{mpsc, oneshot, Mutex as AsyncMutex};
 
-use inference_core::batch::ExecuteBatch;
-use inference_core::error::InferenceError;
-use inference_core::runner::ModelRunner;
-use inference_core::tokens::TokenChunk;
+use atomr_infer_core::batch::ExecuteBatch;
+use atomr_infer_core::error::InferenceError;
+use atomr_infer_core::runner::ModelRunner;
+use atomr_infer_core::tokens::TokenChunk;
 
 #[derive(Clone)]
 pub struct LocalEngineConfig {

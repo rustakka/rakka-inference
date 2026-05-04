@@ -1,4 +1,4 @@
-//! `xtask` — developer tooling for the rakka-inference workspace.
+//! `xtask` — developer tooling for the atomr-infer workspace.
 //!
 //! Modeled on the rakka workspace's xtask. Subcommands:
 //!
@@ -37,7 +37,7 @@ fn main() -> Result<()> {
 }
 
 fn print_help() {
-    println!("rakka-inference xtask");
+    println!("atomr-infer xtask");
     println!();
     println!("USAGE:");
     println!("  cargo xtask <subcommand>");
@@ -332,7 +332,7 @@ fn write_workspace_deps_versions(path: &Path, prev: &str, next: &str) -> Result<
 fn release_checklist() -> Result<()> {
     let cargo_toml = Path::new("Cargo.toml");
     let current = read_workspace_version(cargo_toml)?;
-    println!("rakka-inference release checklist (workspace version: {current})\n");
+    println!("atomr-infer release checklist (workspace version: {current})\n");
 
     let publishable_now: &[&str] = &[
         "inference-core",

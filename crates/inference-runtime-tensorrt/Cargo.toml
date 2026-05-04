@@ -1,5 +1,5 @@
 [package]
-name = "inference-runtime-tensorrt"
+name = "atomr-infer-runtime-tensorrt"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -10,7 +10,7 @@ default  = []
 tensorrt = []
 
 [dependencies]
-inference-core    = { workspace = true }
-inference-runtime = { workspace = true }
+atomr-infer-core    = { workspace = true }
+atomr-infer-runtime = { workspace = true }
 async-trait       = { workspace = true }
 serde             = { workspace = true }

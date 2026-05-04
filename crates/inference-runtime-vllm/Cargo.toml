@@ -1,5 +1,5 @@
 [package]
-name = "inference-runtime-vllm"
+name = "atomr-infer-runtime-vllm"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -7,11 +7,11 @@ license.workspace = true
 
 [features]
 default = []
-vllm    = ["inference-python-bridge/python"]
+vllm    = ["atomr-infer-python-bridge/python"]
 
 [dependencies]
-inference-core          = { workspace = true }
-inference-runtime       = { workspace = true }
-inference-python-bridge = { workspace = true }
+atomr-infer-core          = { workspace = true }
+atomr-infer-runtime       = { workspace = true }
+atomr-infer-python-bridge = { workspace = true }
 async-trait             = { workspace = true }
 serde                   = { workspace = true }

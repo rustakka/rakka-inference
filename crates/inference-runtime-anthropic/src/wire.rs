@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use inference_core::batch::{ContentPart, ExecuteBatch, MessageContent, Role};
+use atomr_infer_core::batch::{ContentPart, ExecuteBatch, MessageContent, Role};
 
 #[derive(Debug, Serialize)]
 pub struct MessagesRequest<'a> {

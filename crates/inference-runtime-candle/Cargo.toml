@@ -1,5 +1,5 @@
 [package]
-name = "inference-runtime-candle"
+name = "atomr-infer-runtime-candle"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -15,15 +15,13 @@ candle  = [
   "dep:candle-core",
   "dep:candle-nn",
   "dep:candle-transformers",
-  "dep:rakka-accel",
-]
+  ]
 
 [dependencies]
-inference-core      = { workspace = true }
-inference-runtime   = { workspace = true }
+atomr-infer-core      = { workspace = true }
+atomr-infer-runtime   = { workspace = true }
 async-trait         = { workspace = true }
 serde               = { workspace = true }
 candle-core         = { workspace = true, optional = true }
 candle-nn           = { workspace = true, optional = true }
 candle-transformers = { workspace = true, optional = true }
-rakka-accel          = { workspace = true, optional = true }

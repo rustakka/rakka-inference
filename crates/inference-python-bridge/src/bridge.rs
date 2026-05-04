@@ -22,7 +22,7 @@ use std::sync::Arc;
 use parking_lot::Mutex;
 use pyo3::prelude::*;
 
-use inference_core::error::{InferenceError, InferenceResult};
+use atomr_infer_core::error::{InferenceError, InferenceResult};
 
 pub struct PythonGpuBridge {
     /// Per-interpreter thread pool token. One bridge instance maps to

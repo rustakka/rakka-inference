@@ -18,10 +18,10 @@
 #![forbid(unsafe_code)]
 #![deny(rust_2018_idioms)]
 
-use rakka_streams::Source;
+use atomr_streams::Source;
 use tokio::sync::mpsc;
 
-use inference_core::batch::ExecuteBatch;
+use atomr_infer_core::batch::ExecuteBatch;
 
 /// Adapter — accept a `tokio::mpsc` receiver and emit it as a stream
 /// `Source`. The caller owns the sender and is responsible for closing
@@ -31,7 +31,7 @@ pub fn request_source(rx: mpsc::UnboundedReceiver<ExecuteBatch>) -> Source<Execu
 }
 
 /// Re-export of the upstream `rakka-accel-patterns` crate so callers
-/// can write `inference_pipeline::patterns::DynamicBatchingServer`
+/// can write `atomr_infer_pipeline::patterns::DynamicBatchingServer`
 /// without separately adding it to their workspace deps.
 ///
 /// Use these directly to compose §9-shaped graphs:
@@ -49,7 +49,7 @@ pub fn request_source(rx: mpsc::UnboundedReceiver<ExecuteBatch>) -> Source<Execu
 /// - `patterns::speculative::SpeculativeDecoder` — draft + verifier
 ///   pair.
 /// - `patterns::moe::MoeRouter` — mixture-of-experts gating.
-#[cfg(feature = "cuda-patterns")]
+#[cfg(any())] // atomr-accel-gated; disabled until atomr-accel renames
 pub mod patterns {
     pub use rakka_accel_patterns::*;
 }

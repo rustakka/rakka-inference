@@ -1,5 +1,5 @@
 [package]
-name                   = "rakka-inference-remote-core"
+name = "atomr-infer-remote-core"
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true
@@ -10,21 +10,20 @@ authors.workspace      = true
 keywords.workspace     = true
 categories.workspace   = true
 readme                 = "README.md"
-documentation          = "https://docs.rs/rakka-inference-remote-core"
-description            = "Remote-provider infrastructure for rakka-inference — distributed rate limiter (CRDT), circuit breaker, retry/backoff, SSE parser, session lifecycle."
+documentation          = "https://docs.rs/atomr-infer-remote-core"
+description            = "Remote-provider infrastructure for atomr-infer — distributed rate limiter (CRDT), circuit breaker, retry/backoff, SSE parser, session lifecycle."
 
 [lib]
-name = "inference_remote_core"
-
+name = "atomr_infer_remote_core"
 [dependencies]
-inference-core = { workspace = true }
+atomr-infer-core = { workspace = true }
 
 # Rakka primitives we wrap rather than reinvent. The umbrella `rakka`
 # crate is intentionally not pulled in here — this crate uses the
 # sub-crates directly so it can publish to crates.io without waiting
 # on the umbrella's release cadence.
-rakka-core             = { workspace = true }
-rakka-distributed-data = { workspace = true }
+atomr-core             = { workspace = true }
+atomr-distributed-data = { workspace = true }
 
 # HTTP / streaming
 reqwest            = { workspace = true }

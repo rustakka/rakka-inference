@@ -1,9 +1,9 @@
 ---
-name: rakka-inference-extending
-description: Use when adding a new backend to rakka-inference — implementing `ModelRunner`, plugging into the rollup, slotting a new crate into the publish dep-order. Triggers on writing `impl ModelRunner for ...`, asking "how do I add Bedrock / Cohere / a custom CUDA kernel package", or considering a fork.
+name: atomr-infer-extending
+description: Use when adding a new backend to atomr-infer — implementing `ModelRunner`, plugging into the rollup, slotting a new crate into the publish dep-order. Triggers on writing `impl ModelRunner for ...`, asking "how do I add Bedrock / Cohere / a custom CUDA kernel package", or considering a fork.
 ---
 
-# Extending rakka-inference with a new backend
+# Extending atomr-infer with a new backend
 
 The contract is small: implement `inference_core::ModelRunner`,
 provide a `RuntimeConfig`-shaped struct, add a feature flag in the
@@ -205,7 +205,7 @@ all work automatically.
 
 ## Slotting into publish dep-order
 
-[`RELEASING.md`](https://github.com/rustakka/rakka-inference/blob/main/RELEASING.md)
+[`RELEASING.md`](https://github.com/rustakka/atomr-infer/blob/main/RELEASING.md)
 documents the publish loop's strict dep-order list. Add your crate at
 the earliest layer where all its dependencies are already listed:
 
@@ -247,15 +247,15 @@ Every crate has a value-first README following this pattern:
 - Notes on integration with the upstream substrate.
 - "Common mistakes" if any.
 
-See [`inference-runtime-openai/README.md`](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-openai/README.md)
+See [`inference-runtime-openai/README.md`](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-openai/README.md)
 for the canonical example.
 
 ## Canonical references
 
-- [`inference-core::ModelRunner`](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-core/src/runner.rs) — the trait
-- [`inference-remote-core` README](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-remote-core/README.md) — the seam for remote providers
-- [`CONTRIBUTING.md`](https://github.com/rustakka/rakka-inference/blob/main/CONTRIBUTING.md) — full contributor guide
-- [`RELEASING.md`](https://github.com/rustakka/rakka-inference/blob/main/RELEASING.md) — publish dep-order, allowlist mechanism
+- [`inference-core::ModelRunner`](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-core/src/runner.rs) — the trait
+- [`inference-remote-core` README](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-remote-core/README.md) — the seam for remote providers
+- [`CONTRIBUTING.md`](https://github.com/rustakka/atomr-infer/blob/main/CONTRIBUTING.md) — full contributor guide
+- [`RELEASING.md`](https://github.com/rustakka/atomr-infer/blob/main/RELEASING.md) — publish dep-order, allowlist mechanism
 
 ## Common mistakes
 

@@ -8,14 +8,14 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use atomr_core::actor::{Actor, ActorRef, Context, Props};
 use parking_lot::Mutex;
-use rakka_core::actor::{Actor, ActorRef, Context, Props};
 use tokio::sync::{mpsc, oneshot};
 
-use inference_core::batch::ExecuteBatch;
-use inference_core::deployment::CapacityPolicy;
-use inference_core::error::InferenceError;
-use inference_core::tokens::TokenChunk;
+use atomr_infer_core::batch::ExecuteBatch;
+use atomr_infer_core::deployment::CapacityPolicy;
+use atomr_infer_core::error::InferenceError;
+use atomr_infer_core::tokens::TokenChunk;
 
 use crate::queue::{Priority, PriorityRequest, RequestQueue};
 use crate::worker::{RemoteWorkerActor, WorkerMsg, WorkerSlot};

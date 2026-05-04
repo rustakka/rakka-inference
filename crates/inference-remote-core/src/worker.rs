@@ -9,13 +9,13 @@ use std::sync::Arc;
 
 use arc_swap::ArcSwap;
 use async_trait::async_trait;
+use atomr_core::actor::{Actor, Context};
 use futures::StreamExt;
-use rakka_core::actor::{Actor, Context};
 use tokio::sync::mpsc;
 
-use inference_core::batch::ExecuteBatch;
-use inference_core::error::InferenceError;
-use inference_core::runner::ModelRunner;
+use atomr_infer_core::batch::ExecuteBatch;
+use atomr_infer_core::error::InferenceError;
+use atomr_infer_core::runner::ModelRunner;
 
 use crate::circuit_breaker::CircuitBreakerHandle;
 use crate::queue::PriorityRequest;
@@ -67,7 +67,7 @@ impl RemoteWorkerActor {
     async fn execute_with_retries(
         &mut self,
         batch: ExecuteBatch,
-        output: &mpsc::Sender<Result<inference_core::tokens::TokenChunk, InferenceError>>,
+        output: &mpsc::Sender<Result<atomr_infer_core::tokens::TokenChunk, InferenceError>>,
     ) -> Result<(), InferenceError> {
         let mut attempt = Attempt(0);
         'outer: loop {

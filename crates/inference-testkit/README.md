@@ -1,6 +1,6 @@
 # inference-testkit
 
-> Mocks and harnesses for testing `rakka-inference`. The crate the
+> Mocks and harnesses for testing `atomr-infer`. The crate the
 > demo and your tests use to exercise gateway → request → engine
 > without spending real money on a remote provider.
 

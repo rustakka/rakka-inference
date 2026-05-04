@@ -1,6 +1,6 @@
 # Feature matrix
 
-`rakka-inference` is layered so you can opt into exactly the runtimes
+`atomr-infer` is layered so you can opt into exactly the runtimes
 and infrastructure pieces you need. This page tells you *which feature
 to flip* and *what it pulls in*.
 

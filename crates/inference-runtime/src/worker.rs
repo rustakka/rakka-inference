@@ -22,17 +22,17 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use atomr_core::actor::{Actor, ActorRef, Context, Props};
+use atomr_core::supervision::SupervisorStrategy;
 use futures::StreamExt;
 use parking_lot::Mutex;
-use rakka_core::actor::{Actor, ActorRef, Context, Props};
-use rakka_core::supervision::SupervisorStrategy;
 use tokio::sync::Mutex as AsyncMutex;
 use tokio::sync::{mpsc, oneshot};
 
-use inference_core::batch::ExecuteBatch;
-use inference_core::error::InferenceError;
-use inference_core::runner::{ModelRunner, SessionRebuildCause};
-use inference_core::tokens::TokenChunk;
+use atomr_infer_core::batch::ExecuteBatch;
+use atomr_infer_core::error::InferenceError;
+use atomr_infer_core::runner::{ModelRunner, SessionRebuildCause};
+use atomr_infer_core::tokens::TokenChunk;
 
 /// What the parent hands to its child on construction. The runner
 /// owns the GPU context indirectly (via `cudarc::driver::CudaContext`,
@@ -118,16 +118,15 @@ impl Actor for WorkerActor {
         // the workspace buildable for `remote-only` consumers that
         // don't pull rakka-accel but still happen to mount a local
         // ModelRunner (e.g. inference-testkit's MockRunner in tests).
-        #[cfg(feature = "local-gpu")]
+        #[cfg(any())] // atomr-accel-gated; disabled until atomr-accel renames
         {
             // The CUDA backend is re-exported at `rakka_accel::cuda`
             // when the `cuda` feature is on. We carry that feature
             // forward via our own `local-gpu` feature.
             rakka_accel::cuda::error::device_supervisor_strategy()
         }
-        #[cfg(not(feature = "local-gpu"))]
         {
-            use rakka_core::supervision::{Directive, OneForOneStrategy};
+            use atomr_core::supervision::{Directive, OneForOneStrategy};
             OneForOneStrategy::new()
                 .with_max_retries(3)
                 .with_within(std::time::Duration::from_secs(60))
@@ -218,9 +217,8 @@ impl Actor for ContextActor {
                             // route them to Restart.
                             if matches!(e, InferenceError::CudaContextPoisoned(_)) {
                                 let _ = output.send(Err(e.clone())).await;
-                                #[cfg(feature = "local-gpu")]
+                                #[cfg(any())] // atomr-accel-gated; disabled until atomr-accel renames
                                 panic!("{}: {e}", rakka_accel::cuda::error::CONTEXT_POISONED_TAG);
-                                #[cfg(not(feature = "local-gpu"))]
                                 panic!("ContextPoisoned: {e}");
                             }
                             let _ = output.send(Err(e)).await;

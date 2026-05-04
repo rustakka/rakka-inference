@@ -1,4 +1,4 @@
-# rakka-inference
+# atomr-infer
 
 **One supervised actor topology for every place a model can run.**
 Local GPU runtimes (vLLM, TensorRT, ONNX Runtime, Candle, cudarc,
@@ -46,10 +46,10 @@ APIs. Bolting providers onto a separate retry / rate-limit /
 observability stack from your local GPU pool fragments the system —
 and the cracks are exactly where 3 a.m. pages come from.
 
-| You'd otherwise hand-roll                                   | rakka-inference gives you                                                       |
+| You'd otherwise hand-roll                                   | atomr-infer gives you                                                       |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | One routing layer for local pools, another for the API SDK  | Single routing CRDT — `gpt-4o` and `llama-3.1-70b` resolve through the same path |
-| Per-process token buckets that 429 on cluster scale-out     | `RateLimiterActor` over `rakka_distributed_data::GCounter` — one bucket, all nodes |
+| Per-process token buckets that 429 on cluster scale-out     | `RateLimiterActor` over `atomr_distributed_data::GCounter` — one bucket, all nodes |
 | Hand-written retry / breaker / backoff per provider         | `CircuitBreakerActor` + jittered retry + content-filter triage, one strategy    |
 | Sticky CUDA-context recovery glued to async tasks           | `rakka_accel::error::device_supervisor_strategy()` adopted unchanged            |
 | Cascade graphs duct-taped from threadpools and channels     | `InferenceCascade` / `DynamicBatchingServer` / `ModelReplicaPool` actors        |
@@ -123,7 +123,7 @@ We don't reinvent two-tier supervision; we adopt
 inference-specific `Box<dyn ModelRunner>` slot on top.
 
 The remote-network tier is HTTP/2 + SSE + connection pooling, with
-distributed rate limiting via `rakka_distributed_data::GCounter` and
+distributed rate limiting via `atomr_distributed_data::GCounter` and
 circuit breaking + retry/backoff inside
 [`inference-remote-core`](crates/inference-remote-core/).
 
@@ -212,7 +212,7 @@ and let the feature graph compute *deps*.
   unrecoverable failures `Stop`. No panic-string parsing in your code.
 - **Distributed rate limits.** `RateLimiterActor` shares its
   token-spent log across cluster nodes through
-  `rakka_distributed_data::GCounter`. Two members calling OpenAI on
+  `atomr_distributed_data::GCounter`. Two members calling OpenAI on
   the same API key collectively respect the bucket — no surprise 429
   storms on scale-out.
 - **Typed circuit-breaker propagation.** When the breaker opens, the
@@ -316,15 +316,15 @@ retry-after, and circuit-breaker open after consecutive 5xx.
 ## AI-assisted development
 
 If you're using Claude Code, Cursor, or another AI coding assistant on
-a project that depends on `rakka-inference`, install our
+a project that depends on `atomr-infer`, install our
 **[ai-skills bundle](ai-skills/)** — seven skills covering quickstart,
 choosing a runtime, wiring remote providers, composing pipelines,
 deployment, typed-error troubleshooting, and extending with a new
 backend.
 
 ```text
-/plugin marketplace add rustakka/rakka-inference
-/plugin install rakka-inference-ai-skills@rakka-inference
+/plugin marketplace add rustakka/atomr-infer
+/plugin install atomr-infer-ai-skills@atomr-infer
 ```
 
 Each `SKILL.md` is a thin router into the canonical docs (this README,
@@ -335,13 +335,13 @@ have install instructions in [`ai-skills/README.md`](ai-skills/README.md).
 
 Companion bundles for the broader stack:
 
-- [`rakka` ai-skills](https://github.com/rustakka/rakka/tree/main/ai-skills)
+- [`rakka` ai-skills](https://github.com/rustakka/atomr/tree/main/ai-skills)
   — actor design, supervision, persistence, clustering, Python bindings.
-- [`rakka-accel` ai-skills](https://github.com/rustakka/rakka-accel/tree/main/ai-skills)
+- [`rakka-accel` ai-skills](https://github.com/rustakka/atomr-accel/tree/main/ai-skills)
   — DeviceActor, kernel selection, two-tier GPU supervision, backend choice.
 
 Install all three when you're building a service that uses rakka
-primitives, rakka-accel GPU acceleration, and rakka-inference runtimes.
+primitives, rakka-accel GPU acceleration, and atomr-infer runtimes.
 
 ---
 

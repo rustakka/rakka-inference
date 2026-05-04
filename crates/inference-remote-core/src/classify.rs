@@ -8,8 +8,8 @@
 
 use std::time::Duration;
 
-use inference_core::error::InferenceError;
-use inference_core::runtime::ProviderKind;
+use atomr_infer_core::error::InferenceError;
+use atomr_infer_core::runtime::ProviderKind;
 
 /// Map a status code (and optional `Retry-After` header) to a typed
 /// error. The body is captured for diagnostics. Per-provider crates

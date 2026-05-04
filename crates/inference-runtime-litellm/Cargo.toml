@@ -1,5 +1,5 @@
 [package]
-name                   = "rakka-inference-runtime-litellm"
+name = "atomr-infer-runtime-litellm"
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true
@@ -10,17 +10,16 @@ authors.workspace      = true
 keywords.workspace     = true
 categories.workspace   = true
 readme                 = "README.md"
-documentation          = "https://docs.rs/rakka-inference-runtime-litellm"
-description            = "LiteLLM proxy provider for rakka-inference — implements ModelRunner against the LiteLLM unified API gateway, fronting OpenAI-compatible endpoints for any provider LiteLLM supports."
+documentation          = "https://docs.rs/atomr-infer-runtime-litellm"
+description            = "LiteLLM proxy provider for atomr-infer — implements ModelRunner against the LiteLLM unified API gateway, fronting OpenAI-compatible endpoints for any provider LiteLLM supports."
 
 [lib]
-name = "inference_runtime_litellm"
-
+name = "atomr_infer_runtime_litellm"
 [dependencies]
-inference-core           = { workspace = true }
-inference-runtime        = { workspace = true }
-inference-remote-core    = { workspace = true }
-inference-runtime-openai = { workspace = true }
+atomr-infer-core           = { workspace = true }
+atomr-infer-runtime        = { workspace = true }
+atomr-infer-remote-core    = { workspace = true }
+atomr-infer-runtime-openai = { workspace = true }
 
 async-trait = { workspace = true }
 serde       = { workspace = true }

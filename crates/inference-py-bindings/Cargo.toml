@@ -1,5 +1,5 @@
 [package]
-name = "inference-py-bindings"
+name = "atomr-infer-py-bindings"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -15,13 +15,13 @@ python           = ["dep:pyo3", "dep:tracing"]
 python-extension = ["python", "pyo3/extension-module"]
 
 [lib]
-# `_native` matches the maturin `module-name = "rakka_inference._native"`
-# convention — the cdylib ships into `rakka_inference/_native.<abi>.so`
+# `_native` matches the maturin `module-name = "atomr_infer._native"`
+# convention — the cdylib ships into `atomr_infer/_native.<abi>.so`
 # and is re-exported from the pure-Python wrapper.
 name        = "_native"
 crate-type  = ["rlib", "cdylib"]
 
 [dependencies]
-inference-core = { workspace = true }
+atomr-infer-core = { workspace = true }
 pyo3           = { workspace = true, optional = true }
 tracing        = { workspace = true, optional = true }

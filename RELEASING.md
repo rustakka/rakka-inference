@@ -1,4 +1,4 @@
-# Releasing rakka-inference
+# Releasing atomr-infer
 
 The release pipeline is fully automated. Day-to-day, the only thing a
 contributor does is **write a Conventional-Commit subject** when they
@@ -126,7 +126,7 @@ Five jobs, in order:
    via `pypa/gh-action-pypi-publish@release/v1` using **OIDC
    trusted publishing**. No long-lived token in repo secrets.
    Configure once in pypi.org → manage project → publishing → add a
-   GitHub publisher (owner: `rustakka`, repo: `rakka-inference`,
+   GitHub publisher (owner: `rustakka`, repo: `atomr-infer`,
    workflow: `release.yml`, environment: `pypi`). The action treats
    "already uploaded" as success, so re-tagging the same version is
    safe.
@@ -135,7 +135,7 @@ Five jobs, in order:
 
 ## The crates allowlist
 
-`rakka-inference` declares path dependencies on the sibling
+`atomr-infer` declares path dependencies on the sibling
 `rakka` and `rakka-accel` workspaces. Until those workspaces publish
 to crates.io, `cargo publish` for any inference-* crate that
 transitively depends on them fails. The allowlist mechanism handles
@@ -226,7 +226,7 @@ If `cargo publish` partially succeeded:
 For PyPI: `pypa/gh-action-pypi-publish` honours `skip-existing: true`,
 so a re-tag re-uploads only the wheels that didn't make it the first
 time. To pull a bad release: `pip install twine && twine yank --version
-X.Y.Z rakka-inference` (or use the PyPI web UI). PyPI does not allow
+X.Y.Z atomr-infer` (or use the PyPI web UI). PyPI does not allow
 overwriting an existing version — release `X.Y.Z+1` with the fix.
 
 ---

@@ -1,6 +1,6 @@
 //! # inference-testkit
 //!
-//! Mocks and harnesses for testing the rakka-inference workspace.
+//! Mocks and harnesses for testing the atomr-infer workspace.
 //! Doc §10.3.
 //!
 //! Provides:

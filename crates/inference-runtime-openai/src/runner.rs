@@ -10,26 +10,26 @@ use reqwest::header;
 use secrecy::ExposeSecret;
 use url::Url;
 
-use inference_core::batch::ExecuteBatch;
-use inference_core::cost::from_rates;
-use inference_core::deployment::RateLimits;
-use inference_core::error::{InferenceError, InferenceResult};
-use inference_core::runner::{ModelRunner, RunHandle, SessionRebuildCause};
-use inference_core::runtime::{ProviderKind, RuntimeKind, TransportKind};
-use inference_core::tokens::{FinishReason, TokenChunk, TokenUsage};
+use atomr_infer_core::batch::ExecuteBatch;
+use atomr_infer_core::cost::from_rates;
+use atomr_infer_core::deployment::RateLimits;
+use atomr_infer_core::error::{InferenceError, InferenceResult};
+use atomr_infer_core::runner::{ModelRunner, RunHandle, SessionRebuildCause};
+use atomr_infer_core::runtime::{ProviderKind, RuntimeKind, TransportKind};
+use atomr_infer_core::tokens::{FinishReason, TokenChunk, TokenUsage};
 
 use crate::config::OpenAiConfig;
 use crate::cost::OpenAiPricing;
 use crate::error::classify_openai_error;
 use crate::wire::{ChatChunk, ChatRequest, ChatResponse};
 
-use inference_remote_core::session::SessionSnapshot;
-use inference_remote_core::sse::{decode_sse_stream, SseChunk};
+use atomr_infer_remote_core::session::SessionSnapshot;
+use atomr_infer_remote_core::sse::{decode_sse_stream, SseChunk};
 
 pub struct OpenAiRunner {
     config: OpenAiConfig,
     /// Hot-swappable session snapshot — rebuilt on auth-failure or
-    /// operator request via `inference_remote_core::RemoteSessionActor`.
+    /// operator request via `atomr_infer_remote_core::RemoteSessionActor`.
     session: Arc<ArcSwap<SessionSnapshot>>,
     /// Concrete URL for chat-completions, computed once at construction.
     chat_url: Url,

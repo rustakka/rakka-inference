@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use inference_core::deployment::{RateLimits, RetryPolicy, Timeouts};
-use inference_core::runtime::CircuitBreakerConfig;
+use atomr_infer_core::deployment::{RateLimits, RetryPolicy, Timeouts};
+use atomr_infer_core::runtime::CircuitBreakerConfig;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GeminiConfig {

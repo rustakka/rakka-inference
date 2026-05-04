@@ -1,7 +1,7 @@
 {
-  "name": "rakka-inference-ai-skills",
-  "version": "0.2.1",
-  "description": "Skills for AI coding assistants working on projects that depend on rakka-inference.",
-  "homepage": "https://github.com/rustakka/rakka-inference",
+  "name": "atomr-infer-ai-skills",
+  "version": "0.3.0",
+  "description": "Skills for AI coding assistants working on projects that depend on atomr-infer.",
+  "homepage": "https://github.com/rustakka/atomr-infer",
   "skills_dir": "skills"
 }

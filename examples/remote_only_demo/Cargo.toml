@@ -8,11 +8,11 @@ publish = false
 description = "End-to-end demo: rate limiter + circuit breaker + retry against a wiremock OpenAI."
 
 [dependencies]
-inference-core           = { workspace = true }
-inference-runtime        = { workspace = true }
-inference-remote-core    = { workspace = true }
-inference-runtime-openai = { workspace = true }
-inference-testkit        = { workspace = true }
+atomr-infer-core           = { workspace = true }
+atomr-infer-runtime        = { workspace = true }
+atomr-infer-remote-core    = { workspace = true }
+atomr-infer-runtime-openai = { workspace = true }
+atomr-infer-testkit        = { workspace = true }
 
 tokio              = { workspace = true }
 async-trait        = { workspace = true }

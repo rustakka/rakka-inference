@@ -1,7 +1,7 @@
 //! Circuit-breaker actor (doc §3.5, §12.2). One per `(provider,
 //! endpoint)`.
 //!
-//! Originally intended to wrap `rakka_core::pattern::CircuitBreaker`,
+//! Originally intended to wrap `atomr_core::pattern::CircuitBreaker`,
 //! but that primitive's `CircuitBreakerError<E>` is not publicly
 //! re-exported, which makes composing it as an intermediary error
 //! type unworkable. The state machine itself is small (closed → open
@@ -19,12 +19,12 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use async_trait::async_trait;
+use atomr_core::actor::{Actor, Context};
 use parking_lot::Mutex;
-use rakka_core::actor::{Actor, Context};
 use tokio::sync::oneshot;
 
-use inference_core::error::InferenceError;
-use inference_core::runtime::{CircuitBreakerConfig, ProviderKind};
+use atomr_infer_core::error::InferenceError;
+use atomr_infer_core::runtime::{CircuitBreakerConfig, ProviderKind};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CircuitState {

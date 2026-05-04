@@ -1,5 +1,5 @@
 [package]
-name                   = "rakka-inference-runtime-anthropic"
+name = "atomr-infer-runtime-anthropic"
 version.workspace      = true
 edition.workspace      = true
 rust-version.workspace = true
@@ -10,16 +10,15 @@ authors.workspace      = true
 keywords.workspace     = true
 categories.workspace   = true
 readme                 = "README.md"
-documentation          = "https://docs.rs/rakka-inference-runtime-anthropic"
-description            = "Anthropic Messages API provider for rakka-inference — implements ModelRunner against api.anthropic.com, with cost table, error classification, and SSE streaming."
+documentation          = "https://docs.rs/atomr-infer-runtime-anthropic"
+description            = "Anthropic Messages API provider for atomr-infer — implements ModelRunner against api.anthropic.com, with cost table, error classification, and SSE streaming."
 
 [lib]
-name = "inference_runtime_anthropic"
-
+name = "atomr_infer_runtime_anthropic"
 [dependencies]
-inference-core        = { workspace = true }
-inference-runtime     = { workspace = true }
-inference-remote-core = { workspace = true }
+atomr-infer-core        = { workspace = true }
+atomr-infer-runtime     = { workspace = true }
+atomr-infer-remote-core = { workspace = true }
 
 reqwest      = { workspace = true }
 tokio        = { workspace = true }

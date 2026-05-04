@@ -1,15 +1,15 @@
 ---
-name: rakka-inference-remote-providers
-description: Use when wiring a remote inference provider (OpenAI / Anthropic / Gemini / LiteLLM) in a rakka-inference project — credentials, rate limits, retries, circuit breakers, cost estimation, fallback chains. Triggers on configuring `OpenAiConfig` / `AnthropicConfig` / `GeminiConfig` / `LiteLlmConfig`, handling 429 / `InferenceError::RateLimited` / `CircuitOpen`, or asking "how do I add OpenAI to my deployment".
+name: atomr-infer-remote-providers
+description: Use when wiring a remote inference provider (OpenAI / Anthropic / Gemini / LiteLLM) in a atomr-infer project — credentials, rate limits, retries, circuit breakers, cost estimation, fallback chains. Triggers on configuring `OpenAiConfig` / `AnthropicConfig` / `GeminiConfig` / `LiteLlmConfig`, handling 429 / `InferenceError::RateLimited` / `CircuitOpen`, or asking "how do I add OpenAI to my deployment".
 ---
 
 # Wiring remote providers
 
-Every remote provider in rakka-inference uses the same shared
+Every remote provider in atomr-infer uses the same shared
 infrastructure from
-[`inference-remote-core`](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-remote-core/README.md):
+[`inference-remote-core`](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-remote-core/README.md):
 HTTP/2 client pooling, distributed rate limiting via
-`rakka_distributed_data::GCounter`, circuit breakers, retry-with-backoff,
+`atomr_distributed_data::GCounter`, circuit breakers, retry-with-backoff,
 SSE streaming, and credential refresh. Per-provider crates are thin
 adapters that contribute one `ModelRunner` impl plus wire types.
 
@@ -93,7 +93,7 @@ let mut rl = RateLimiterActor::new(
 
 In a cluster, multiple nodes calling the same provider with the same
 API key share the bucket via
-`rakka_distributed_data::counters::GCounter` deltas. No surprise 429s
+`atomr_distributed_data::counters::GCounter` deltas. No surprise 429s
 from naïve client-side limits firing per-node.
 
 ## Circuit breakers
@@ -119,7 +119,7 @@ let result = breaker.run(|| async { http_post(/* ... */).await }).await;
 When the breaker is **Open**, `breaker.check()` returns
 `InferenceError::CircuitOpen { provider, opened_at_unix_ms, retry_at_unix_ms }`.
 Upstream `RequestActor`s use this to fall back to a different
-deployment (see the `rakka-inference-pipelines` skill).
+deployment (see the `atomr-infer-pipelines` skill).
 
 **429s and content-filter refusals deliberately don't count toward
 the breaker.** Those are the rate-limiter's and the per-provider
@@ -165,12 +165,12 @@ to make runaway provider spend physically impossible — `Reject`,
 
 ## Canonical references
 
-- [`inference-remote-core` README](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-remote-core/README.md)
-- [`inference-runtime-openai` README](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-openai/README.md)
-- [`inference-runtime-anthropic` README](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-anthropic/README.md)
-- [`inference-runtime-gemini` README](https://github.com/rustakka/rakka-inference/blob/main/crates/inference-runtime-gemini/README.md)
-- [`examples/remote_only_demo/`](https://github.com/rustakka/rakka-inference/blob/main/examples/remote_only_demo/) — full end-to-end demo
-- [Architecture doc §3.5, §12](https://github.com/rustakka/rakka-inference/blob/main/docs/rustakka-inference-architecture-v4.md) — rate limiting, circuit breaking, retries, credentials
+- [`inference-remote-core` README](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-remote-core/README.md)
+- [`inference-runtime-openai` README](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-openai/README.md)
+- [`inference-runtime-anthropic` README](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-anthropic/README.md)
+- [`inference-runtime-gemini` README](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-gemini/README.md)
+- [`examples/remote_only_demo/`](https://github.com/rustakka/atomr-infer/blob/main/examples/remote_only_demo/) — full end-to-end demo
+- [Architecture doc §3.5, §12](https://github.com/rustakka/atomr-infer/blob/main/docs/rustakka-inference-architecture-v4.md) — rate limiting, circuit breaking, retries, credentials
 
 ## Common mistakes
 

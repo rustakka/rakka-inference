@@ -1,5 +1,5 @@
 [package]
-name = "inference-runtime-mistralrs"
+name = "atomr-infer-runtime-mistralrs"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -10,8 +10,8 @@ default   = []
 mistralrs = ["dep:mistralrs"]
 
 [dependencies]
-inference-core    = { workspace = true }
-inference-runtime = { workspace = true }
+atomr-infer-core    = { workspace = true }
+atomr-infer-runtime = { workspace = true }
 async-trait       = { workspace = true }
 serde             = { workspace = true }
 mistralrs         = { workspace = true, optional = true }
