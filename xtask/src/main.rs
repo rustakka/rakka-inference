@@ -334,66 +334,31 @@ fn release_checklist() -> Result<()> {
     let current = read_workspace_version(cargo_toml)?;
     println!("atomr-infer release checklist (workspace version: {current})\n");
 
-    // Truly publishable = every Cargo.toml dep can resolve from
-    // crates.io alone. Path deps to sibling workspaces (atomr,
-    // atomr-accel) are stripped on `cargo publish`, so any crate
-    // that declares an `atomr-*` or `atomr-accel-*` dep is gated
-    // until upstream publishes that crate.
-    //
-    // The sibling workspaces under ../atomr and ../atomr-accel are
-    // for local development and as planning reference; they do not
-    // change what crates.io accepts.
+    // As of 2026-05-06 the upstream `atomr` family is at 0.3.1 and
+    // the `atomr-accel` family is at 0.3.3 on crates.io. Every
+    // inference-* crate's dep graph resolves cleanly. The full
+    // workspace is publishable in dep order.
     let publishable_now: &[&str] = &[
-        // Zero `atomr-*` / `atomr-accel-*` deps in the entire
-        // [dependencies] section.
         "inference-core",
+        "inference-remote-core",
+        "inference-runtime",
+        "inference-runtime-openai",
+        "inference-runtime-anthropic",
+        "inference-runtime-gemini",
+        "inference-runtime-litellm",
+        "inference-python-bridge",
+        "inference-runtime-vllm",
+        "inference-runtime-tensorrt",
+        "inference-runtime-ort",
+        "inference-runtime-candle",
+        "inference-runtime-cudarc",
+        "inference-runtime-mistralrs",
+        "inference-pipeline",
+        "inference-testkit",
+        "inference-cli",
+        "atomr-infer",
     ];
-    let gated_until_upstream: &[(&str, &str)] = &[
-        (
-            "inference-remote-core",
-            "depends on atomr-core + atomr-distributed-data",
-        ),
-        (
-            "inference-runtime",
-            "depends on atomr-core + atomr-config + atomr-cluster-tools + atomr-distributed-data",
-        ),
-        (
-            "inference-runtime-openai",
-            "transitively via inference-runtime",
-        ),
-        (
-            "inference-runtime-anthropic",
-            "transitively via inference-runtime",
-        ),
-        (
-            "inference-runtime-gemini",
-            "transitively via inference-runtime",
-        ),
-        (
-            "inference-runtime-litellm",
-            "transitively via inference-runtime + inference-runtime-openai",
-        ),
-        (
-            "inference-python-bridge",
-            "depends on atomr-accel crates (when feature `python` is on, also pyo3)",
-        ),
-        ("inference-runtime-vllm", "depends on atomr-accel + python-bridge"),
-        ("inference-runtime-tensorrt", "depends on atomr-accel"),
-        ("inference-runtime-ort", "depends on atomr-accel"),
-        ("inference-runtime-candle", "depends on atomr-accel"),
-        ("inference-runtime-cudarc", "depends on atomr-accel"),
-        ("inference-runtime-mistralrs", "depends on atomr-accel"),
-        (
-            "inference-pipeline",
-            "depends on atomr-streams; promote when atomr publishes",
-        ),
-        ("inference-testkit", "depends on atomr-testkit"),
-        ("inference-cli", "depends on atomr + inference-runtime"),
-        (
-            "atomr-infer",
-            "rollup; promote after every member it re-exports is publishable",
-        ),
-    ];
+    let gated_until_upstream: &[(&str, &str)] = &[];
 
     println!("Publishable now ({}):", publishable_now.len());
     for c in publishable_now {

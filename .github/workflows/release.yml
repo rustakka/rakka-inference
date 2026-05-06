@@ -55,25 +55,13 @@ env:
   # dep-order list lower in the file); the allowlist only filters
   # which crates that loop actually publishes vs skips.
   #
-  # Only crates whose entire Cargo.toml dep set can resolve from
-  # crates.io belong here. Path deps to sibling workspaces (atomr,
-  # atomr-accel) are stripped at publish time, so any crate that
-  # declares an `atomr-*` or `atomr-accel-*` dep is gated until
-  # upstream publishes that crate to crates.io.
-  #
-  # As of v0.6.x:
-  #   - `atomr-infer-core` — zero `atomr-*` deps; publishes cleanly.
-  #   - everything else — transitively requires `atomr-*` /
-  #     `atomr-accel-*` from crates.io, which the upstream
-  #     workspaces haven't shipped at 0.3.x yet. The sibling
-  #     workspace path-deps in Cargo.toml are reference-only for
-  #     planning and local dev; they don't affect what publishes.
-  #
-  # Expand this list as upstream lands. Use `cargo xtask
-  # release-checklist` to see the current "publishable now" subset
-  # accounting for transitive deps.
-  DEFAULT_PUBLISH_ALLOWLIST: >-
-    atomr-infer-core
+  # As of 2026-05-06 the upstream `atomr` family is published at
+  # 0.3.1 and the `atomr-accel` family at 0.3.3 on crates.io. Every
+  # member crate's dep graph now resolves from the registry alone,
+  # so the allowlist is empty (= publish every crate in dep order).
+  # Sibling-workspace path deps in Cargo.toml are reference-only
+  # for local dev and are stripped at publish time.
+  DEFAULT_PUBLISH_ALLOWLIST: ""
 
 jobs:
   verify:

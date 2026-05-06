@@ -6,6 +6,21 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.3] — 2026-05-06
+
+### Added — full workspace publishes to crates.io
+- Upstream `atomr` family is now at **0.3.1** and `atomr-accel`
+  family at **0.3.3** on crates.io, which means every inference-*
+  crate's dep graph resolves cleanly from the registry. The publish
+  allowlist is now empty (= publish all 18 crates in dep order).
+- `cargo xtask release-checklist` reports 18 / 18 publishable, 0
+  gated. Sibling-workspace path deps in `Cargo.toml` remain as
+  reference-only for local development; they're stripped at
+  publish time.
+- `RELEASING.md` documents the new state and the version-pin
+  compatibility (we pin `atomr-* = "0.3.1"` and `atomr-accel-* =
+  "0.3.0"`; both accept the published 0.3.x lines).
+
 ## [0.6.2] — 2026-05-06
 
 ### Fixed — crates.io publish allowlist now reflects transitive deps
