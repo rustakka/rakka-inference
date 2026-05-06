@@ -6,6 +6,19 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.1] — 2026-05-06
+
+### Fixed — retry publish that never fired
+- The version-bump bot tagged v0.5.0 and v0.6.0 using `GITHUB_TOKEN`,
+  which (per GitHub's downstream-workflow security default) does not
+  trigger workflows that fire on tag pushes. The `release.yml`
+  workflow's publish jobs are gated on
+  `github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')`,
+  so neither tag actually shipped to crates.io / PyPI / GitHub
+  Releases. v0.6.1 is tagged and pushed from a developer machine so
+  the publish pipeline actually fires. No source changes vs v0.6.0;
+  this is purely a CI-infrastructure retry.
+
 ## [0.6.0] — 2026-05-05
 
 ### Added — native aarch64-Linux wheels
