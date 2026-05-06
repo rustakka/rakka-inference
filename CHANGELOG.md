@@ -6,6 +6,27 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added — native aarch64-Linux wheels
+- PyPI now ships pre-built wheels for `aarch64-unknown-linux-gnu`
+  and `aarch64-unknown-linux-musl`, built natively on GitHub-hosted
+  ARM runners (`ubuntu-22.04-arm`). Mirrors the upstream atomr
+  v0.3.1 pattern. Closes the gap where ARM Linux users had to
+  install from sdist; native build avoids the `ring`/`aws-lc-rs`
+  cross-compile blocker that previously forced the skip.
+
+  PyPI wheel coverage as of this release:
+
+  | Platform              | Wheel  |
+  |-----------------------|--------|
+  | linux-gnu x86_64      | ✓      |
+  | linux-musl x86_64     | ✓      |
+  | linux-gnu aarch64     | ✓ new  |
+  | linux-musl aarch64    | ✓ new  |
+  | macOS universal2      | ✓      |
+  | windows-msvc x86_64   | ✓      |
+
+## [0.5.0] — 2026-05-05
+
 ### Added — zero-config local Gemma 4
 - `gemma-default` feature on the rollup auto-provisions a
   `gemma-local` deployment through the native PyO3 vLLM runner.
