@@ -31,8 +31,8 @@ let cfg = CudarcConfig {
 ```
 
 The runner doesn't manage a CUDA context itself — that lives in
-`atomr_accel::cuda::device::DeviceActor`. The runner simply posts typed
-kernel messages (e.g. `atomr_accel::cuda::kernel::BlasMsg::Sgemm`) to the
+`atomr_accel_cuda::device::DeviceActor`. The runner simply posts typed
+kernel messages (e.g. `atomr_accel_cuda::kernel::BlasMsg::Sgemm`) to the
 appropriate child actor and lifts replies into `TokenChunk`s.
 
 A canonical hand-roll:
@@ -40,10 +40,10 @@ A canonical hand-roll:
 ```rust
 // Inside the runner's execute() body, gated on `feature = "cudarc"`:
 //
-// 1. Pin to a thread via atomr_accel::cuda::dispatcher::GpuDispatcher.
-// 2. Allocate a stream from atomr_accel::cuda::stream::PerActorAllocator.
+// 1. Pin to a thread via atomr_accel_cuda::dispatcher::GpuDispatcher.
+// 2. Allocate a stream from atomr_accel_cuda::stream::PerActorAllocator.
 // 3. Launch your kernel via cudarc::driver::CudaSlice + cudarc::nvrtc.
-// 4. Sync via atomr_accel::cuda::completion::HostFnCompletion (sub-microsecond).
+// 4. Sync via atomr_accel_cuda::completion::HostFnCompletion (sub-microsecond).
 // 5. Stream tokenised output as TokenChunks.
 ```
 

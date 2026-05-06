@@ -9,11 +9,12 @@ The release ships one binary (`atomr` from `inference-cli`) plus the
 library rollup `inference`. Most deployments are: one container, one
 project-file TOML, the right feature flags.
 
-## The four canonical deployment shapes
+## The five canonical deployment shapes
 
 | Shape | When | Features | What ships in the binary |
 |---|---|---|---|
 | **Pure-remote router** | Front OpenAI / Anthropic / Gemini with rate limiting, fallback, observability. No GPU. | `remote-only` | All four remote provider runtimes + pipeline + circuit breakers. **Zero GPU deps.** |
+| **Zero-config dev box** | Single workstation with GPU + Python + vLLM. Auto-provisions a `gemma-local` deployment (`google/gemma-4-E4B-it`) on `atomr-infer serve` if the env probe passes; logs an `info!` tip and continues otherwise. Probe failure ⇒ no deployment, no error. Not for production. | `gemma-default` | vLLM bridge + Gemma 4 auto-provisioner + (optional) remote providers. See [`docs/local-gemma.md`](https://github.com/rustakka/atomr-infer/blob/main/docs/local-gemma.md). |
 | **Rust-native LLM box** | Owned hardware running Candle / mistral.rs without Python. | `candle, mistralrs, pipeline` | Candle + mistral.rs runtimes + atomr-accel substrate + pipeline. |
 | **Hybrid agent** | Local classify → remote plan; falls back across providers on saturation. | `mistralrs, openai, anthropic, accel-patterns` | Local + remote + the §9 pipeline blueprints (cascade, replica pool, hot-swap). |
 | **vLLM cluster** | Production LLM on owned GPUs. | `vllm, tensorrt, openai, pipeline` | Python-bridged vLLM + TensorRT for non-LLM + remote burst. |

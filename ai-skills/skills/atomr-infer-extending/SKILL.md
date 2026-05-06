@@ -150,7 +150,7 @@ async-trait       = "0.1"
 ```
 
 ```rust
-use atomr_accel::cuda::{
+use atomr_accel_cuda::{
     dispatcher::GpuDispatcher,
     stream::PerActorAllocator,
     device::DeviceActor,           // two-tier supervision substrate
@@ -165,7 +165,7 @@ impl ModelRunner for MyKernelRunner {
         // 1. Pin to a thread via GpuDispatcher.
         // 2. Allocate a stream from PerActorAllocator.
         // 3. Launch your kernel via cudarc / NVRTC.
-        // 4. Sync via atomr_accel::cuda::completion::HostFnCompletion.
+        // 4. Sync via atomr_accel_cuda::completion::HostFnCompletion.
         // 5. Stream the de-tokenized output as TokenChunks.
         todo!()
     }

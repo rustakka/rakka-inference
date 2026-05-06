@@ -29,21 +29,26 @@ the [atomr](https://github.com/rustakka/atomr) actor runtime.
 ```toml
 [dependencies]
 # Pure remote — no GPU, no Python:
-inference = { version = "0.2", features = ["remote-only"] }
+atomr-infer = { version = "0.4", features = ["remote-only"] }
 
 # Mixed local Candle + remote OpenAI fallback:
-# inference = { version = "0.2", features = ["candle", "openai", "pipeline"] }
+# atomr-infer = { version = "0.4", features = ["candle", "openai", "pipeline"] }
+
+# Zero-config local Gemma 4 on a workstation w/ GPU + Python + vLLM:
+# atomr-infer = { version = "0.4", features = ["gemma-default", "openai", "pipeline"] }
 
 # Production preset (vLLM + TensorRT + ORT + OpenAI + Anthropic + pipeline):
-# inference = { version = "0.2", features = ["default-prod"] }
+# atomr-infer = { version = "0.4", features = ["default-prod"] }
 
 # Everything:
-# inference = { version = "0.2", features = ["all-runtimes"] }
+# atomr-infer = { version = "0.4", features = ["all-runtimes"] }
 ```
 
 See [`docs/feature-matrix.md`](https://github.com/rustakka/atomr-infer/blob/main/docs/feature-matrix.md)
-in the repo for every feature, what it pulls in, and the four canonical
-"shapes" (router / Rust-native LLM box / hybrid agent / vLLM cluster).
+in the repo for every feature, what it pulls in, and the canonical
+deployment shapes (router / zero-config dev / Rust-native LLM box /
+hybrid agent / vLLM cluster). Zero-config Gemma 4 is documented at
+[`docs/local-gemma.md`](https://github.com/rustakka/atomr-infer/blob/main/docs/local-gemma.md).
 
 ## Declaring a `Deployment`
 

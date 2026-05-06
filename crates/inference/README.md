@@ -42,7 +42,7 @@ full grid. Headlines:
 - `cuda-patterns` — `atomr-accel-patterns` re-export (DynamicBatching,
   Cascade, ReplicaPool, FairShare, HotSwap, Speculative, MoE).
 - `cuda` — direct `atomr-accel` re-export, reachable as
-  `inference::cuda::*`.
+  `atomr_infer::accel_cuda::*`.
 - `testkit` — `atomr-infer-testkit` mocks.
 
 Aggregates: `all-native`, `all-python`, `all-local`, `all-remote`,
@@ -76,5 +76,5 @@ use inference::prelude::*;
 | `inference::runtime_mistralrs` | …if `features = ["mistralrs"]`                              |
 | `inference::pipeline`        | …if `features = ["pipeline"]`                                 |
 | `inference::testkit`         | …if `features = ["testkit"]`                                  |
-| `inference::cuda`            | re-export of `atomr_accel` if `features = ["cuda"]`            |
-| `inference::cuda_patterns`   | re-export of `atomr_accel_patterns` if `features = ["cuda-patterns"]` |
+| `atomr_infer::accel_cuda`            | re-export of `atomr_accel` if `features = ["cuda"]`            |
+| `atomr_infer::accel_cuda_patterns`   | re-export of `atomr_accel_patterns` if `features = ["cuda-patterns"]` |

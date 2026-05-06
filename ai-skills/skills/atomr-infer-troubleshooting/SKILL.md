@@ -94,7 +94,7 @@ human-readable list of leaked GPU-dep lines.
 
 1. **`max_retries` exhausted** — check the supervisor strategy.
    Default for the `local-gpu` feature is 3 retries / 60s window
-   from `atomr_accel::cuda::error::device_supervisor_strategy()`.
+   from `atomr_accel_cuda::error::device_supervisor_strategy()`.
    Past that, the device stops.
 2. **Sticky GPU fault** — physical GPU error. The machine needs
    manual recovery.

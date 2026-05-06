@@ -102,7 +102,7 @@ table into a `CostEstimate`.
 
 ```toml
 [dependencies]
-inference = { version = "0.2", features = ["openai", "anthropic", "candle", "accel-patterns"] }
+atomr-infer = { version = "0.4", features = ["openai", "anthropic", "candle", "accel-patterns"] }
 ```
 
 ```rust

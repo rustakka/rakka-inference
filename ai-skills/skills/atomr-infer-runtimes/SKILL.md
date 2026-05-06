@@ -121,9 +121,9 @@ let cfg = TensorRtConfig {
 ```
 
 Local runtimes integrate with the upstream `atomr-accel` substrate:
-- `atomr_accel::cuda::dispatcher::GpuDispatcher` for thread pinning.
-- `atomr_accel::cuda::stream::PerActorAllocator` for per-request streams.
-- `atomr_accel::cuda::device::DeviceActor` two-tier supervision (pulled
+- `atomr_accel_cuda::dispatcher::GpuDispatcher` for thread pinning.
+- `atomr_accel_cuda::stream::PerActorAllocator` for per-request streams.
+- `atomr_accel_cuda::device::DeviceActor` two-tier supervision (pulled
   in via `inference --features cudarc` or `--features candle`, both of
   which imply `accel`).
 

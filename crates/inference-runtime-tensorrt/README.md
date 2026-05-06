@@ -33,7 +33,7 @@ engine is opaque (a serialised `ICudaEngine`) and uses one
 your max-batch-size + max-concurrent budget.
 
 The `cudarc` driver / context lifecycle is handled by
-`atomr_accel::cuda::device::DeviceActor` (when the rollup's `cuda` feature is
+`atomr_accel_cuda::device::DeviceActor` (when the rollup's `cuda` feature is
 on), so the TensorRT runner doesn't manage a CUDA context itself —
 it lives inside the two-tier supervision tree just like any other
 local runtime.

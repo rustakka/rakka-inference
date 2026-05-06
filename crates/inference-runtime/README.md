@@ -14,7 +14,7 @@
 | `DpCoordinatorActor`           | §4           | Cluster-singleton routing CRDT — picks an engine for a deployment. |
 | `EngineCoreActor` (local)      | §5.1         | Per-replica local-GPU orchestrator; owns a `Box<dyn ModelRunner>`. |
 | `WorkerActor` + `ContextActor` | §5.3, §5.11  | Two-tier supervision; restarts on `ContextPoisoned`.             |
-| `DeploymentPlacementActor`     | §7.2         | Picks nodes for new deployments; delegates GPU choice to `atomr_accel::cuda::placement::PlacementActor`. |
+| `DeploymentPlacementActor`     | §7.2         | Picks nodes for new deployments; delegates GPU choice to `atomr_accel_cuda::placement::PlacementActor`. |
 | `DeploymentManagerActor`       | §4           | Cluster-singleton catalog of deployments.                       |
 | `MetricsActor`                 | §7.7, §12.4  | Per-deployment counters and budget tracking.                    |
 
@@ -32,12 +32,12 @@ atomr-infer-runtime = { workspace = true, features = ["local-gpu"] }
 
 With the `local-gpu` feature, `WorkerActor::supervisor_strategy()`
 returns
-[`atomr_accel::cuda::error::device_supervisor_strategy()`](../../../atomr-accel/crates/atomr-accel/src/error.rs)
+[`atomr_accel_cuda::error::device_supervisor_strategy()`](../../../atomr-accel/crates/atomr-accel/src/error.rs)
 verbatim — three retries inside a 60-second window with the upstream
 `ContextPoisoned` / `OutOfMemory` / `Unrecoverable` decider. When a
 `ModelRunner::execute` returns `InferenceError::CudaContextPoisoned`,
 the `ContextActor` panics with the
-[`atomr_accel::cuda::error::CONTEXT_POISONED_TAG`](../../../atomr-accel/crates/atomr-accel/src/error.rs)
+[`atomr_accel_cuda::error::CONTEXT_POISONED_TAG`](../../../atomr-accel/crates/atomr-accel/src/error.rs)
 marker so the upstream supervisor routes the failure to `Restart`.
 
 Without the feature, the same shape is preserved with an in-crate

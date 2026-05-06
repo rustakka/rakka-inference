@@ -34,9 +34,9 @@ let cfg = CandleConfig {
 
 The runner uses upstream substrate, not local re-implementations:
 
-- `atomr_accel::cuda::dispatcher::GpuDispatcher` for thread pinning
-- `atomr_accel::cuda::stream::PerActorAllocator` for per-request stream allocation
-- `atomr_accel::cuda::device::DeviceActor` two-tier supervision (via the
+- `atomr_accel_cuda::dispatcher::GpuDispatcher` for thread pinning
+- `atomr_accel_cuda::stream::PerActorAllocator` for per-request stream allocation
+- `atomr_accel_cuda::device::DeviceActor` two-tier supervision (via the
   rollup's `cuda` feature)
 
 The Candle-specific bit is the model loader and the forward-pass

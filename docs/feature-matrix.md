@@ -12,43 +12,47 @@ actual dependency graph for you.
 
 ## Quick recipes
 
-| You want…                                          | Feature flags                                  |
-|----------------------------------------------------|------------------------------------------------|
-| Pure-remote router (no GPU, no Python)             | `remote-only`                                  |
-| Just OpenAI                                        | `openai`                                       |
-| OpenAI + Anthropic, with hybrid pipeline           | `openai`, `anthropic`, `pipeline`              |
-| Local Candle GPU + remote OpenAI                   | `candle`, `openai`, `pipeline`                 |
-| The full v3-ish production preset                  | `default-prod`                                 |
-| Everything                                         | `all-runtimes`                                 |
-| Mocking + wiremock for tests                       | `testkit` (alongside the runtimes you mock)    |
-| Reach into `atomr_accel::*` directly                | `cuda` (re-exports as `inference::cuda`)       |
-| Use `DynamicBatchingServer` / `InferenceCascade`   | `cuda-patterns` (re-exports as `inference::cuda_patterns`) |
-| Embed in Python                                    | `atomr-infer-py-bindings/python` on the bindings crate |
+| You want…                                                | Feature flags                                                |
+|----------------------------------------------------------|--------------------------------------------------------------|
+| Pure-remote router (no GPU, no Python)                   | `remote-only`                                                |
+| Just OpenAI                                              | `openai`                                                     |
+| OpenAI + Anthropic, with hybrid pipeline                 | `openai`, `anthropic`, `pipeline`                            |
+| Local Candle GPU + remote OpenAI                         | `candle`, `openai`, `pipeline`                               |
+| Zero-config local Gemma 4 on a workstation               | `gemma-default` *(opt-in only — auto-provisions a deployment)* |
+| The full production preset                               | `default-prod`                                               |
+| Everything                                               | `all-runtimes`                                               |
+| Mocking + wiremock for tests                             | `testkit` (alongside the runtimes you mock)                  |
+| Reach into `atomr_accel::*` directly                     | `accel` (re-exports as `atomr_infer::accel`)                 |
+| Reach the NVIDIA CUDA backend                            | `accel` (re-exports as `atomr_infer::accel_cuda`)            |
+| Use `DynamicBatchingServer` / `InferenceCascade`         | `accel-patterns` (re-exports as `atomr_infer::accel_patterns`) |
+| Embed in Python                                          | `atomr-infer-py-bindings/python` on the bindings crate       |
 
 ---
 
 ## What each feature pulls in
 
-| Feature              | Adds crate(s)                                  | System / heavy deps   | Notes |
-|----------------------|------------------------------------------------|-----------------------|-------|
-| `openai`             | `atomr-infer-runtime-openai`                     | `reqwest`, `hyper`    | Includes the Azure variant. |
-| `anthropic`          | `atomr-infer-runtime-anthropic`                  | `reqwest`, `hyper`    | Tool-use + base64 vision. |
-| `gemini`             | `atomr-infer-runtime-gemini`                     | `reqwest`, `hyper`    | AI Studio + Vertex; OAuth2 via pluggable `CredentialProvider`. |
-| `litellm`            | `atomr-infer-runtime-litellm`                    | (re-uses `openai`)    | LiteLLM proxy with proxy-friendly defaults. |
-| `vllm`               | `atomr-infer-runtime-vllm`                       | **`pyo3`**, `python`  | Pulls `atomr-infer-python-bridge/python`. |
-| `tensorrt`           | `atomr-infer-runtime-tensorrt`                   | `libnvinfer.so` (link-time) | Default-features-off compiles a stub. |
-| `ort`                | `atomr-infer-runtime-ort`                        | `ort`                 | ONNX Runtime via the `ort` crate. |
-| `candle`             | `atomr-infer-runtime-candle` + `cuda`            | `candle-*`, `cudarc`  | Pure-Rust transformer inference. |
-| `cudarc`             | `atomr-infer-runtime-cudarc` + `cuda`            | `cudarc`              | Direct kernel dispatch via `atomr_accel::cuda::kernel::*`. |
-| `mistralrs`          | `atomr-infer-runtime-mistralrs`                  | `mistralrs`           | Rust-native LLM runtime. |
-| `pipeline`           | `atomr-infer-pipeline`                           | `atomr-streams`       | Streams DSL adapter. |
-| `cuda`               | `atomr-accel` re-export, `atomr-infer-runtime/local-gpu` | `cudarc`         | Use only if you want `inference::cuda::*` reachable. |
-| `cuda-patterns`      | `atomr-accel-patterns` re-export, `pipeline`    | `cudarc`              | `DynamicBatchingServer`, `InferenceCascade`, `ModelReplicaPool`, `FairShareScheduler`, `ModelHotSwapServer`, `SpeculativeDecoder`, `MoeRouter`. |
-| `testkit`            | `atomr-infer-testkit`                            | `wiremock`            | `MockRunner`, OpenAI/Anthropic/Gemini wiremock fixtures. |
+| Feature                | Adds crate(s)                                                       | System / heavy deps         | Notes |
+|------------------------|---------------------------------------------------------------------|-----------------------------|-------|
+| `openai`               | `atomr-infer-runtime-openai`                                        | `reqwest`, `hyper`          | Includes the Azure variant. |
+| `anthropic`            | `atomr-infer-runtime-anthropic`                                     | `reqwest`, `hyper`          | Tool-use + base64 vision. |
+| `gemini`               | `atomr-infer-runtime-gemini`                                        | `reqwest`, `hyper`          | AI Studio + Vertex; OAuth2 via pluggable `CredentialProvider`. |
+| `litellm`              | `atomr-infer-runtime-litellm`                                       | (re-uses `openai`)          | LiteLLM proxy with proxy-friendly defaults. |
+| `vllm`                 | `atomr-infer-runtime-vllm`                                          | **`pyo3`**, `python`        | Native `LLMEngine` bridge with token-streaming. |
+| `tensorrt`             | `atomr-infer-runtime-tensorrt` + `atomr-accel-tensorrt`             | `libnvinfer.so` (link-time) | Real engine builder + runtime wrapper since v0.5. |
+| `tensorrt-onnx` / `-int8` / `-fp8` / `-plugin` / `-link` | (sub-features on `tensorrt`)             | per-feature                 | ONNX import / INT8 / FP8 PTQ / `IPluginV3` / actual `libnvinfer` link. |
+| `ort`                  | `atomr-infer-runtime-ort`                                           | `ort`                       | ONNX Runtime via the `ort` crate. |
+| `candle`               | `atomr-infer-runtime-candle` + `accel`                              | `candle-*`, `cudarc`        | Pure-Rust transformer inference. |
+| `cudarc`               | `atomr-infer-runtime-cudarc` + `accel`                              | `cudarc`                    | Direct kernel dispatch via `atomr_accel_cuda::kernel::*`. |
+| `mistralrs`            | `atomr-infer-runtime-mistralrs`                                     | `mistralrs`                 | Rust-native LLM runtime with token-streaming. |
+| `gemma-default`        | `atomr-infer-runtime-vllm/gemma-default` (= `vllm` + env probe)     | `pyo3`, `python`, `hf-hub`  | Auto-provisions a `gemma-local` deployment (`google/gemma-4-E4B-it`) when GPU + Python + vLLM + HF token are present. See [`docs/local-gemma.md`](local-gemma.md). |
+| `pipeline`             | `atomr-infer-pipeline`                                              | `atomr-streams`             | Streams DSL adapter. |
+| `accel`                | `atomr-accel` (trait surface) + `atomr-accel-cuda` (NVIDIA backend) | `cudarc`                    | Reach `atomr_infer::accel::*` and `atomr_infer::accel_cuda::*`. |
+| `accel-patterns`       | `atomr-accel-patterns` re-export, `pipeline`                        | `cudarc`                    | `DynamicBatchingServer`, `InferenceCascade`, `ModelReplicaPool`, `FairShareScheduler`, `ModelHotSwapServer`, `SpeculativeDecoder`, `MoeRouter`. |
+| `testkit`              | `atomr-infer-testkit`                                               | `wiremock`                  | `MockRunner`, OpenAI/Anthropic/Gemini wiremock fixtures. |
 
-The `candle` and `cudarc` features automatically imply `cuda` because
-their bodies use `atomr_accel::cuda::dispatcher::GpuDispatcher` and
-`atomr_accel::cuda::kernel::*` for thread pinning and kernel dispatch.
+The `candle` and `cudarc` features automatically imply `accel` because
+their bodies use `atomr_accel_cuda::dispatcher::GpuDispatcher` and
+`atomr_accel_cuda::kernel::*` for thread pinning and kernel dispatch.
 
 ---
 
@@ -60,9 +64,9 @@ their bodies use `atomr_accel::cuda::dispatcher::GpuDispatcher` and
 | `all-python`         | `vllm`                                                                   |
 | `all-local`          | `all-native` + `all-python`                                              |
 | `all-remote`         | `openai`, `anthropic`, `gemini`, `litellm`                               |
-| `all-runtimes`       | `all-local` + `all-remote` + `cuda-patterns`                             |
+| `all-runtimes`       | `all-local` + `all-remote` + `accel-patterns`                            |
 | `default-prod`       | `vllm`, `tensorrt`, `ort`, `openai`, `anthropic`, `pipeline`             |
-| `remote-only`        | `all-remote` + `pipeline` *(deliberately excludes `cuda` / `cuda-patterns`)* |
+| `remote-only`        | `all-remote` + `pipeline` *(deliberately excludes `accel` / `accel-patterns` / `gemma-default`)* |
 
 ---
 
@@ -103,9 +107,9 @@ the runtime-agnostic actors into a remote-only service.
 
 ### `atomr-infer-pipeline`
 
-| Feature           | Adds                            |
-|-------------------|---------------------------------|
-| `cuda-patterns`   | `atomr-accel-patterns` re-export |
+| Feature              | Adds                                  |
+|----------------------|---------------------------------------|
+| `cuda-patterns`      | `atomr-accel-patterns` re-export (sub-feature of the rollup's `accel-patterns`) |
 
 Without the feature you still get `request_source`, `HybridGraph`, and
 the `atomr-streams` `Source` adapter — useful for remote-only
@@ -158,7 +162,7 @@ inference = { workspace = true, features = ["candle", "mistralrs", "pipeline"] }
 on hard queries; falls back to Claude on saturation.
 
 ```toml
-inference = { workspace = true, features = ["mistralrs", "openai", "anthropic", "cuda-patterns"] }
+inference = { workspace = true, features = ["mistralrs", "openai", "anthropic", "accel-patterns"] }
 ```
 
 **4. The vLLM cluster.** Production LLM inference on owned hardware.

@@ -33,5 +33,5 @@ let cfg = OrtConfig {
 
 When `execution_provider == Cuda`, the runner binds the ORT session to
 a `cudarc` stream allocated by
-`atomr_accel::cuda::stream::PerActorAllocator`. That keeps GPU contention
+`atomr_accel_cuda::stream::PerActorAllocator`. That keeps GPU contention
 predictable when the same node also runs a vLLM or Candle deployment.
