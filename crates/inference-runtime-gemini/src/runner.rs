@@ -103,6 +103,7 @@ fn lift_chunk(request_id: &str, sc: SseChunk) -> Option<InferenceResult<TokenChu
 
 #[async_trait]
 impl ModelRunner for GeminiRunner {
+    #[tracing::instrument(skip(self, batch), fields(request_id = %batch.request_id, model = %batch.model))]
     async fn execute(&mut self, batch: ExecuteBatch) -> InferenceResult<RunHandle> {
         let snap = self.session.load_full();
         let mut url = self

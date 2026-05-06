@@ -4,12 +4,12 @@
 //! Doc §10.3.
 //!
 //! With `--features cudarc` the runner becomes a thin wrapper around
-//! the atomr-accel kernel-actor mailbox: `ExecuteBatch` → user-supplied
-//! kernel-launch closure → tokens. `atomr_accel::cuda::dispatcher::GpuDispatcher`
-//! handles thread pinning and `atomr_accel::cuda::stream::PerActorAllocator`
-//! handles per-request stream allocation, so this crate does not
-//! re-implement either. Default-features-off the crate compiles to a
-//! typed-error stub.
+//! the atomr-accel-cuda kernel-actor mailbox: `ExecuteBatch` →
+//! user-supplied kernel-launch closure → tokens.
+//! `atomr_accel_cuda::dispatcher::GpuDispatcher` handles thread pinning
+//! and `atomr_accel_cuda::stream::PerActorAllocator` handles per-request
+//! stream allocation, so this crate does not re-implement either.
+//! Default-features-off the crate compiles to a typed-error stub.
 
 #![forbid(unsafe_code)]
 #![deny(rust_2018_idioms)]
@@ -52,8 +52,8 @@ impl ModelRunner for CudarcRunner {
         }
         #[cfg(feature = "cudarc")]
         {
-            // Real wiring: atomr_accel::cuda::device::DeviceActor owns the
-            // `Arc<CudaContext>`; atomr_accel::cuda::kernel::BlasActor and
+            // Real wiring: atomr_accel_cuda::device::DeviceActor owns the
+            // `Arc<CudaContext>`; atomr_accel_cuda::kernel::BlasActor and
             // friends sit underneath it as KernelChildren. The runner
             // selected at deploy time is a closure that posts a
             // typed kernel message (e.g. BlasMsg::Sgemm) to the
@@ -63,12 +63,12 @@ impl ModelRunner for CudarcRunner {
             // `CudarcConfig.kernel_package` to a concrete launcher.
             //
             // See:
-            //   atomr_accel::cuda::dispatcher::GpuDispatcher
-            //   atomr_accel::cuda::stream::PerActorAllocator
-            //   atomr_accel::cuda::kernel::BlasActor
+            //   atomr_accel_cuda::dispatcher::GpuDispatcher
+            //   atomr_accel_cuda::stream::PerActorAllocator
+            //   atomr_accel_cuda::kernel::BlasActor
             return Err(InferenceError::Internal(
                 "cudarc runner: kernel registry pending — wire via \
-                 atomr_accel::cuda::kernel::BlasActor (doc §13 Phase 2b)"
+                 atomr_accel_cuda::kernel::BlasActor (doc §13 Phase 2b)"
                     .into(),
             ));
         }

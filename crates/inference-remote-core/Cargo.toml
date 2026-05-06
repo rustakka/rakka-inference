@@ -18,7 +18,7 @@ name = "atomr_infer_remote_core"
 [dependencies]
 atomr-infer-core = { workspace = true }
 
-# Rakka primitives we wrap rather than reinvent. The umbrella `rakka`
+# atomr primitives we wrap rather than reinvent. The umbrella `atomr`
 # crate is intentionally not pulled in here — this crate uses the
 # sub-crates directly so it can publish to crates.io without waiting
 # on the umbrella's release cadence.

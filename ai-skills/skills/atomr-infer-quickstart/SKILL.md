@@ -6,7 +6,7 @@ description: Use when standing up the first atomr-infer deployment in a consumer
 # atomr-infer quickstart
 
 Multi-runtime GPU + remote inference as a supervised actor system on
-the [rakka](https://github.com/rustakka/atomr) actor runtime.
+the [atomr](https://github.com/rustakka/atomr) actor runtime.
 
 ## The 30-second mental model
 
@@ -127,13 +127,13 @@ Useful as a regression test or as a code-skim of how the actors compose.
 | Deploy to a cluster, handle hot-swaps and credential rotation | `atomr-infer-deployment` |
 | Diagnose 429 storms / circuit-open / CUDA-context-poisoned | `atomr-infer-troubleshooting` |
 | Add a new backend (Bedrock, Cohere, custom kernel pkg) | `atomr-infer-extending` |
-| Author the actors themselves (Msg types, supervision, FSM) | `rakka-actor-design` (rakka workspace) |
+| Author the actors themselves (Msg types, supervision, FSM) | `atomr-actor-design` (atomr workspace) |
 
 ## Canonical references
 
 - [`README.md`](https://github.com/rustakka/atomr-infer/blob/main/README.md) — value-prop overview + 30-second tour
 - [`docs/feature-matrix.md`](https://github.com/rustakka/atomr-infer/blob/main/docs/feature-matrix.md) — every feature, what it pulls in, four canonical shapes
-- [`docs/rustakka-inference-architecture-v4.md`](https://github.com/rustakka/atomr-infer/blob/main/docs/rustakka-inference-architecture-v4.md) — the 1,459-line RFC
+- [`docs/architecture.md`](https://github.com/rustakka/atomr-infer/blob/main/docs/architecture.md) — the 1,459-line RFC
 - [`crates/inference/`](https://github.com/rustakka/atomr-infer/blob/main/crates/inference/) — the rollup
 - [`examples/remote_only_demo/`](https://github.com/rustakka/atomr-infer/blob/main/examples/remote_only_demo/) — runnable end-to-end demo
 

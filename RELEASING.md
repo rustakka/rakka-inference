@@ -82,11 +82,11 @@ Five jobs, in order:
    - `cargo xtask audit --check`
    - **the remote-only invariant**: `cargo tree -p inference
      --features remote-only` must contain zero `cudarc` /
-     `rakka-accel` / `candle` / `pyo3` lines. This is the
+     `atomr-accel` / `candle` / `pyo3` lines. This is the
      architectural invariant — pull-requests that violate it fail
      CI before they reach a tag.
 
-2. **build-binaries** — cross-platform `rakka` (the `atomr-infer-cli`
+2. **build-binaries** — cross-platform `atomr-infer` (the `atomr-infer-cli`
    binary) builds for:
    - `x86_64-unknown-linux-gnu`
    - `aarch64-unknown-linux-gnu` (via `cross`)
@@ -105,7 +105,7 @@ Five jobs, in order:
 4. **publish-crates** — walks every `inference-*` crate in dependency
    order and runs `cargo publish`. The publish loop:
    - reads the **allowlist** from the repo variable
-     `RAKKA_INFERENCE_PUBLISH_ALLOWLIST` (default below). Crates
+     `ATOMR_INFER_PUBLISH_ALLOWLIST` (default below). Crates
      outside the allowlist are logged-and-skipped.
    - retries on `429 / Too Many Requests` with exponential backoff
      (90s × attempt, capped at 6 attempts).
@@ -136,7 +136,7 @@ Five jobs, in order:
 ## The crates allowlist
 
 `atomr-infer` declares path dependencies on the sibling
-`rakka` and `rakka-accel` workspaces. Until those workspaces publish
+`atomr` and `atomr-accel` workspaces. Until those workspaces publish
 to crates.io, `cargo publish` for any inference-* crate that
 transitively depends on them fails. The allowlist mechanism handles
 this:
@@ -151,15 +151,15 @@ this:
   atomr-infer-runtime-gemini
   atomr-infer-runtime-litellm
   ```
-  These six crates have no `rakka` / `rakka-accel` dependency in
+  These six crates have no `atomr` / `atomr-accel` dependency in
   their published surface and can ship today.
 
 - **Override** via repo variable
-  `RAKKA_INFERENCE_PUBLISH_ALLOWLIST`. Set on
+  `ATOMR_INFER_PUBLISH_ALLOWLIST`. Set on
   *Settings → Secrets and variables → Actions → Variables → New repository variable*.
 
-- **Full publish** — once `rakka` and `rakka-accel` ship their stable
-  versions to crates.io, set `RAKKA_INFERENCE_PUBLISH_ALLOWLIST=""`
+- **Full publish** — once `atomr` and `atomr-accel` ship their stable
+  versions to crates.io, set `ATOMR_INFER_PUBLISH_ALLOWLIST=""`
   (empty) and the next tag will publish every member crate in dep
   order.
 
@@ -174,8 +174,8 @@ crate so you can see what's gated and why.
 |---------|-----------------------------------------|------------------------------------------------------------------------|
 | Secret  | `CRATES_IO_TOKEN`                       | crates.io API token with publish rights for every inference-* crate.   |
 | Secret  | `GITHUB_TOKEN` (default)                | Used by `softprops/action-gh-release` and the bump push. No extra setup. |
-| Variable| `RAKKA_INFERENCE_WORKSPACE_VERSION`     | Optional. `cargo-semver-checks` flips from warn → hard-fail when this starts with `1.`. Default `0.`. |
-| Variable| `RAKKA_INFERENCE_PUBLISH_ALLOWLIST`     | Optional. Space-separated list of crates that may publish. Empty = publish all. |
+| Variable| `ATOMR_INFER_WORKSPACE_VERSION`     | Optional. `cargo-semver-checks` flips from warn → hard-fail when this starts with `1.`. Default `0.`. |
+| Variable| `ATOMR_INFER_PUBLISH_ALLOWLIST`     | Optional. Space-separated list of crates that may publish. Empty = publish all. |
 
 For PyPI, configure **OIDC trusted publishing** on the project's PyPI
 settings page (preferred — no token rotation, no long-lived
@@ -269,7 +269,7 @@ appears after every crate it depends on:
 
 ```
 atomr-infer-core                   ← leaf
-atomr-infer-runtime                ← rakka-* + atomr-infer-core
+atomr-infer-runtime                ← atomr-* + atomr-infer-core
 atomr-infer-python-bridge          ← atomr-infer-core (pyo3 optional)
 atomr-infer-remote-core            ← atomr-infer-core + atomr-infer-runtime
 atomr-infer-runtime-openai         ← + atomr-infer-remote-core
@@ -282,9 +282,9 @@ atomr-infer-runtime-ort
 atomr-infer-runtime-candle
 atomr-infer-runtime-cudarc
 atomr-infer-runtime-mistralrs
-atomr-infer-pipeline               ← rakka-streams + atomr-infer-runtime
-atomr-infer-testkit                ← rakka-testkit + remote-core
-atomr-infer-cli                    ← rakka + atomr-infer-runtime
+atomr-infer-pipeline               ← atomr-streams + atomr-infer-runtime
+atomr-infer-testkit                ← atomr-testkit + remote-core
+atomr-infer-cli                    ← atomr + atomr-infer-runtime
 inference                        ← rollup; everything above
 ```
 
@@ -305,7 +305,7 @@ cold publish of all 18 crates takes ~10 minutes.
   `Deployment`) are intentionally narrow. Expect breaking changes on
   every minor bump until the surface stabilises (RFC v4 §11.1).
 - **`semver-checks` hard-fail** — warn-only at `0.x`. Flip
-  `RAKKA_INFERENCE_WORKSPACE_VERSION` to `1.` to arm.
-- **Coordinated cross-workspace releases** with `rakka` / `rakka-accel`
+  `ATOMR_INFER_WORKSPACE_VERSION` to `1.` to arm.
+- **Coordinated cross-workspace releases** with `atomr` / `atomr-accel`
   — handled today by the allowlist; flip to full when those workspaces
   publish.

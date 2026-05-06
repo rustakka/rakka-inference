@@ -1,6 +1,6 @@
 //! # inference-cli
 //!
-//! `rakka serve` binary plus the supporting config-loading machinery.
+//! `atomr-infer serve` binary plus the supporting config-loading machinery.
 //! Doc §11.3.
 
 #![forbid(unsafe_code)]

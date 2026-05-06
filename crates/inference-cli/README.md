@@ -17,9 +17,9 @@ cargo run -p atomr-infer-cli --features all-remote -- \
 | Subcommand                         | What it does                                                                  |
 |------------------------------------|-------------------------------------------------------------------------------|
 | `atomr-infer serve --config <path>`      | Parse the project file, build the actor system, register every deployment, mount the gateway, wait for `Ctrl+C`. |
-| `rakka status --config <path>`     | Print the deployments in the project file (validate without running).        |
-| `rakka cost-report`                | Per-deployment cost — talks to a running `MetricsActor`. *(Phase 6 stub.)* |
-| `rakka rotate-credentials <name>`  | Triggers `RemoteSessionActor::rebuild` on the named deployment. *(Phase 6 stub.)* |
+| `atomr-infer status --config <path>`     | Print the deployments in the project file (validate without running).        |
+| `atomr-infer cost-report`                | Per-deployment cost — talks to a running `MetricsActor`. *(Phase 6 stub.)* |
+| `atomr-infer rotate-credentials <name>`  | Triggers `RemoteSessionActor::rebuild` on the named deployment. *(Phase 6 stub.)* |
 
 ## Project file (TOML)
 

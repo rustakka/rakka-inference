@@ -1,16 +1,50 @@
 [package]
 name = "atomr-infer-runtime-tensorrt"
-version.workspace = true
-edition.workspace = true
+version.workspace      = true
+edition.workspace      = true
 rust-version.workspace = true
-license.workspace = true
+license.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+authors.workspace      = true
+keywords.workspace     = true
+categories.workspace   = true
+readme                 = "README.md"
+documentation          = "https://docs.rs/atomr-infer-runtime-tensorrt"
+description            = "TensorRT runner for atomr-infer. Wraps atomr-accel-tensorrt's TrtRuntime / ExecutionContext / ExecutionBindings behind the ModelRunner trait."
 
 [features]
-default  = []
-tensorrt = []
+default = []
+
+# Pull in the upstream `atomr-accel-tensorrt` crate (Phase 8 of
+# atomr-accel). Without this feature the runner compiles to a typed-
+# error stub so the workspace builds on hosts that don't ship libnvinfer.
+tensorrt        = ["dep:atomr-accel-tensorrt", "dep:cudarc", "dep:parking_lot"]
+
+# Forwarded sub-features. Each opts the upstream into its matching
+# capability (ONNX import, INT8 calibration, FP8 PTQ, IPluginV3
+# trampolines, real link to libnvinfer).
+tensorrt-onnx   = ["tensorrt", "atomr-accel-tensorrt/tensorrt-onnx"]
+tensorrt-int8   = ["tensorrt", "atomr-accel-tensorrt/tensorrt-int8"]
+tensorrt-fp8    = ["tensorrt", "atomr-accel-tensorrt/tensorrt-fp8"]
+tensorrt-plugin = ["tensorrt", "atomr-accel-tensorrt/tensorrt-plugin"]
+tensorrt-link   = ["tensorrt", "atomr-accel-tensorrt/tensorrt-link"]
 
 [dependencies]
-atomr-infer-core    = { workspace = true }
-atomr-infer-runtime = { workspace = true }
-async-trait       = { workspace = true }
-serde             = { workspace = true }
+atomr-infer-core     = { workspace = true }
+atomr-infer-runtime  = { workspace = true }
+
+# Upstream Phase 8 crate. Only present under the `tensorrt` feature.
+atomr-accel-tensorrt = { workspace = true, optional = true }
+
+# Needed at runtime to allocate the CUDA stream for `enqueue_on_stream`.
+cudarc      = { workspace = true, optional = true }
+parking_lot = { workspace = true, optional = true }
+
+async-trait = { workspace = true }
+serde       = { workspace = true }
+tracing     = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3"
+tokio    = { workspace = true, features = ["macros", "rt"] }

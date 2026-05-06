@@ -127,6 +127,7 @@ fn map_finish_reason(s: &str) -> Option<FinishReason> {
 
 #[async_trait]
 impl ModelRunner for OpenAiRunner {
+    #[tracing::instrument(skip(self, batch), fields(request_id = %batch.request_id, model = %batch.model))]
     async fn execute(&mut self, batch: ExecuteBatch) -> InferenceResult<RunHandle> {
         let snap = self.session.load_full();
         let body = ChatRequest::from_batch(&batch);

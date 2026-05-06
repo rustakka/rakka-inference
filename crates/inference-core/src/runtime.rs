@@ -14,6 +14,7 @@ use serde::{Deserialize, Serialize};
 /// the canonical enum.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[non_exhaustive]
 pub enum RuntimeKind {
     Vllm,
     TensorRt,
@@ -49,6 +50,7 @@ impl RuntimeKind {
 /// `WorkerActor` to spin up. Doc §5.4.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
+#[non_exhaustive]
 pub enum TransportKind {
     LocalGpu,
     RemoteNetwork { provider: ProviderKind },
@@ -56,6 +58,7 @@ pub enum TransportKind {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[non_exhaustive]
 pub enum ProviderKind {
     OpenAi,
     Anthropic,
@@ -157,6 +160,7 @@ impl Default for CircuitBreakerConfig {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[non_exhaustive]
 pub enum JitterKind {
     None,
     Equal,

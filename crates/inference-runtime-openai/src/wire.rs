@@ -50,6 +50,9 @@ fn serialize_message(m: &Message) -> ChatMessage {
         Role::User => "user",
         Role::Assistant => "assistant",
         Role::Tool => "tool",
+        // `Role` is `#[non_exhaustive]`; default unknown roles to
+        // "user" so the request still goes through.
+        _ => "user",
     }
     .to_string();
     let content = match &m.content {
@@ -57,6 +60,7 @@ fn serialize_message(m: &Message) -> ChatMessage {
         MessageContent::Parts(parts) => {
             serde_json::to_value(parts).unwrap_or(serde_json::Value::String(String::new()))
         }
+        _ => serde_json::Value::String(String::new()),
     };
     ChatMessage { role, content }
 }

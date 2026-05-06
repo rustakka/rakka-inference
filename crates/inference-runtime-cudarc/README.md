@@ -1,6 +1,6 @@
 # atomr-infer-runtime-cudarc
 
-> Direct CUDA kernel dispatch via `cudarc` and `rakka-accel`'s kernel
+> Direct CUDA kernel dispatch via `cudarc` and `atomr-accel`'s kernel
 > actors. The escape hatch for novel architectures, research code, and
 > custom CUDA kernel packages that don't fit any framework.
 
@@ -17,7 +17,7 @@
 | Build                                                          | Result                                            |
 |----------------------------------------------------------------|---------------------------------------------------|
 | `cargo build -p atomr-infer-runtime-cudarc` (default)            | Stub.                                             |
-| `cargo build -p atomr-infer-runtime-cudarc --features cudarc`    | Pulls `cudarc` + `rakka-accel`.                    |
+| `cargo build -p atomr-infer-runtime-cudarc --features cudarc`    | Pulls `cudarc` + `atomr-accel`.                    |
 
 ## What it gives you
 

@@ -13,13 +13,15 @@ default     = []
 remote-only = ["atomr-infer/remote-only"]
 all-remote  = ["atomr-infer/all-remote", "atomr-infer/pipeline"]
 default-prod = ["atomr-infer/default-prod"]
+# Zero-config Gemma 4 auto-provisioning on `atomr-infer serve`.
+gemma-default = ["atomr-infer/gemma-default"]
 
 [dependencies]
 atomr-infer         = { workspace = true }
 atomr-infer-core    = { workspace = true }
 atomr-infer-runtime = { workspace = true }
 
-# The umbrella `rakka` crate is intentionally not pulled in — the CLI
+# The umbrella `atomr` crate is intentionally not pulled in — the CLI
 # uses the sub-crates directly so it publishes to crates.io
 # independent of the umbrella's release cadence.
 atomr-core       = { workspace = true }

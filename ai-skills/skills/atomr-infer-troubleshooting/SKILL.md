@@ -71,7 +71,7 @@ breaker_actor.tell(CircuitBreakerMsg::ForceOpen {
 
 ```sh
 $ cargo tree -p inference --no-default-features --features remote-only \
-    | grep -Ec 'cudarc|rakka-accel|candle|pyo3'
+    | grep -Ec 'cudarc|atomr-accel|candle|pyo3'
 1   # ← invariant violated
 ```
 
@@ -82,7 +82,7 @@ transitively pulls a GPU runtime. Check:
   `accel-patterns` in addition to `remote-only`?
 - Did a downstream crate enable them via its own `default-features`?
 - Did you add a `dep:` line in your service crate that pulls
-  `rakka-accel` directly?
+  `atomr-accel` directly?
 
 Run `cargo xtask verify` locally — the verify gate fails with a
 human-readable list of leaked GPU-dep lines.
@@ -94,7 +94,7 @@ human-readable list of leaked GPU-dep lines.
 
 1. **`max_retries` exhausted** — check the supervisor strategy.
    Default for the `local-gpu` feature is 3 retries / 60s window
-   from `rakka_accel::cuda::error::device_supervisor_strategy()`.
+   from `atomr_accel::cuda::error::device_supervisor_strategy()`.
    Past that, the device stops.
 2. **Sticky GPU fault** — physical GPU error. The machine needs
    manual recovery.
@@ -138,9 +138,9 @@ Useful log targets:
 ## Canonical references
 
 - [`inference-core::error`](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-core/src/error.rs) — the canonical `InferenceError` definition
-- [Architecture doc §7.6](https://github.com/rustakka/atomr-infer/blob/main/docs/rustakka-inference-architecture-v4.md) — failure handling matrix
+- [Architecture doc §7.6](https://github.com/rustakka/atomr-infer/blob/main/docs/architecture.md) — failure handling matrix
 - [`examples/remote_only_demo`](https://github.com/rustakka/atomr-infer/blob/main/examples/remote_only_demo/) — happy path / 429 / circuit open
-- [`rakka-troubleshooting`](https://github.com/rustakka/atomr/blob/main/ai-skills/skills/rakka-troubleshooting/SKILL.md) skill — for the underlying actor-system errors
+- [`atomr-troubleshooting`](https://github.com/rustakka/atomr/blob/main/ai-skills/skills/atomr-troubleshooting/SKILL.md) skill — for the underlying actor-system errors
 
 ## Common mistakes
 

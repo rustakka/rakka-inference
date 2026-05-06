@@ -25,6 +25,11 @@ pub enum DeploymentState {
     Failed,
 }
 
+// `Apply` carries a full `Deployment` (~248B) while the other
+// variants are name-string-shaped. Boxing would force every caller
+// to wrap, which is more friction than the size penalty is worth for
+// a short-lived mailbox message.
+#[allow(clippy::large_enum_variant)]
 pub enum DeploymentManagerMsg {
     Apply {
         deployment: Deployment,

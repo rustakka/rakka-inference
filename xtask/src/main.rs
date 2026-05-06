@@ -1,6 +1,6 @@
 //! `xtask` — developer tooling for the atomr-infer workspace.
 //!
-//! Modeled on the rakka workspace's xtask. Subcommands:
+//! Modeled on the atomr workspace's xtask. Subcommands:
 //!
 //! - `build`           — `cargo build` across the documented feature matrix.
 //! - `test`            — `cargo test` across the documented feature matrix.
@@ -138,7 +138,7 @@ fn verify() -> Result<()> {
     audit(vec!["--check".into()])?;
 
     // Remote-only invariant: cargo tree must show zero GPU deps.
-    println!("==> remote-only invariant: cargo tree | grep -Ec 'cudarc|rakka-accel|candle|pyo3' == 0");
+    println!("==> remote-only invariant: cargo tree | grep -Ec 'cudarc|atomr-accel|candle|pyo3' == 0");
     let output = Command::new(cargo_bin)
         .args([
             "tree",
@@ -160,7 +160,7 @@ fn verify() -> Result<()> {
     let leaks: Vec<&str> = tree
         .lines()
         .filter(|l| {
-            l.contains("cudarc") || l.contains("rakka-accel") || l.contains("candle") || l.contains("pyo3")
+            l.contains("cudarc") || l.contains("atomr-accel") || l.contains("candle") || l.contains("pyo3")
         })
         .collect();
     if !leaks.is_empty() {
@@ -215,7 +215,7 @@ fn bump(args: Vec<String>) -> Result<()> {
         .args(["update", "--workspace"])
         .status();
 
-    println!("RAKKA_INFERENCE_NEW_VERSION={next}");
+    println!("ATOMR_INFER_NEW_VERSION={next}");
     Ok(())
 }
 
@@ -345,24 +345,24 @@ fn release_checklist() -> Result<()> {
     let gated_until_upstream: &[(&str, &str)] = &[
         (
             "inference-runtime",
-            "depends on rakka-* crates which are not yet on crates.io",
+            "depends on atomr-* crates which are not yet on crates.io",
         ),
         (
             "inference-python-bridge",
-            "depends on rakka-accel crates (when feature `python` is on, also pyo3)",
+            "depends on atomr-accel crates (when feature `python` is on, also pyo3)",
         ),
-        ("inference-runtime-vllm", "depends on rakka-accel + python-bridge"),
-        ("inference-runtime-tensorrt", "depends on rakka-accel"),
-        ("inference-runtime-ort", "depends on rakka-accel"),
-        ("inference-runtime-candle", "depends on rakka-accel"),
-        ("inference-runtime-cudarc", "depends on rakka-accel"),
-        ("inference-runtime-mistralrs", "depends on rakka-accel"),
+        ("inference-runtime-vllm", "depends on atomr-accel + python-bridge"),
+        ("inference-runtime-tensorrt", "depends on atomr-accel"),
+        ("inference-runtime-ort", "depends on atomr-accel"),
+        ("inference-runtime-candle", "depends on atomr-accel"),
+        ("inference-runtime-cudarc", "depends on atomr-accel"),
+        ("inference-runtime-mistralrs", "depends on atomr-accel"),
         (
             "inference-pipeline",
-            "depends on rakka-streams; promote when rakka publishes",
+            "depends on atomr-streams; promote when atomr publishes",
         ),
-        ("inference-testkit", "depends on rakka-testkit"),
-        ("inference-cli", "depends on rakka + inference-runtime"),
+        ("inference-testkit", "depends on atomr-testkit"),
+        ("inference-cli", "depends on atomr + inference-runtime"),
         (
             "atomr-infer",
             "rollup; promote after every member it re-exports is publishable",
@@ -380,9 +380,9 @@ fn release_checklist() -> Result<()> {
     }
     println!();
     println!(
-        "release.yml uses RAKKA_INFERENCE_PUBLISH_ALLOWLIST (repo var) to control the\n\
-         publish set. Default = the 'publishable now' list above. Once `rakka` and\n\
-         `rakka-accel` ship to crates.io, set RAKKA_INFERENCE_PUBLISH_ALLOWLIST=\"\" to\n\
+        "release.yml uses ATOMR_INFER_PUBLISH_ALLOWLIST (repo var) to control the\n\
+         publish set. Default = the 'publishable now' list above. Once `atomr` and\n\
+         `atomr-accel` ship to crates.io, set ATOMR_INFER_PUBLISH_ALLOWLIST=\"\" to\n\
          publish the full workspace in dep order."
     );
     Ok(())

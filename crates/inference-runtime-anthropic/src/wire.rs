@@ -47,6 +47,9 @@ impl MessagesRequest<'_> {
                 Role::User | Role::Tool => "user",
                 Role::Assistant => "assistant",
                 Role::System => unreachable!(),
+                // `Role` is `#[non_exhaustive]`; treat unknown variants
+                // as user input so the message isn't silently dropped.
+                _ => "user",
             }
             .to_string();
             let content = match &m.content {
@@ -54,6 +57,7 @@ impl MessagesRequest<'_> {
                 MessageContent::Parts(parts) => {
                     serde_json::Value::Array(parts.iter().map(serialize_part).collect())
                 }
+                _ => serde_json::Value::String(String::new()),
             };
             messages.push(MessagesMessage { role, content });
         }
@@ -81,6 +85,10 @@ fn serialize_part(p: &ContentPart) -> serde_json::Value {
             "type": "image",
             "source": {"type": "url", "url": url}
         }),
+        // Forward-compat: drop unknown variants. Logged at the call
+        // site if the ExecuteBatch is reconstructed from a future
+        // schema.
+        _ => serde_json::Value::Null,
     }
 }
 

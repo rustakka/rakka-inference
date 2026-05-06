@@ -19,6 +19,7 @@ pub struct Message {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
+#[non_exhaustive]
 pub enum Role {
     System,
     User,
@@ -28,6 +29,7 @@ pub enum Role {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
+#[non_exhaustive]
 pub enum MessageContent {
     Text(String),
     Parts(Vec<ContentPart>),
@@ -35,6 +37,7 @@ pub enum MessageContent {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
+#[non_exhaustive]
 pub enum ContentPart {
     Text {
         text: String,

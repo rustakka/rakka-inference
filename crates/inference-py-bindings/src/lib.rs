@@ -61,7 +61,7 @@ mod py {
 
     /// `Cluster.connect(endpoint)` — returns a `Cluster` handle.
     /// In v0 this is a placeholder; real cluster connection wires up
-    /// with `rakka-cluster` once the binding surface stabilises.
+    /// with `atomr-cluster` once the binding surface stabilises.
     #[pyclass(name = "Cluster")]
     pub struct PyCluster {
         endpoint: String,
@@ -80,7 +80,7 @@ mod py {
 
         fn deploy(&self, deployment: &PyDeployment) -> PyResult<()> {
             // TODO(doc §11.5): submit Apply through the cluster's
-            // DeploymentManagerActor singleton over rakka-remote IPC.
+            // DeploymentManagerActor singleton over atomr-remote IPC.
             tracing::info!(name = %deployment.inner.name, "py: deploy stub");
             Ok(())
         }

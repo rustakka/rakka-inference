@@ -43,6 +43,7 @@ impl std::fmt::Debug for RunHandle {
 /// Where to load weights from. Local runtimes implement; remote
 /// runtimes no-op.
 #[derive(Debug, Clone)]
+#[non_exhaustive]
 pub enum WeightSource {
     HuggingFace {
         repo: String,
@@ -58,6 +59,7 @@ pub enum WeightSource {
 /// Why a session rebuild was requested. Drives the runtime-specific
 /// rebuild behaviour described in §3.4.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[non_exhaustive]
 pub enum SessionRebuildCause {
     CudaContextPoisoned,
     RemoteAuthFailure,
@@ -66,7 +68,7 @@ pub enum SessionRebuildCause {
 }
 
 /// Opaque CUDA-context handle. Real local runtimes downcast to
-/// `Arc<atomr_accel::cuda::device::DeviceState>` (which itself wraps the
+/// `Arc<atomr_accel_cuda::device::DeviceState>` (which itself wraps the
 /// `cudarc::driver::CudaContext`); tests and remote runtimes pass
 /// `None`. Kept type-erased so `inference-core` doesn't depend on
 /// `atomr-accel`/`cudarc` — preserves the §10.4 dependency budget so

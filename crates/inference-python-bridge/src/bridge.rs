@@ -9,10 +9,11 @@
 //!   around `pyo3::Python::with_gil` plus a dedicated runtime.
 //!
 //! TODO(atomr-accel F4): atomr-accel's lib.rs lists `PythonGpuBridge` as
-//! a deferred phase. When upstream ships it, replace this body with
-//! `pub use atomr_accel::python::PythonGpuBridge;` plus a thin
-//! `python_pinned_dispatcher` that delegates to
-//! `atomr_accel::cuda::dispatcher::GpuDispatcher::python_pinned()`. The
+//! a deferred phase. When upstream ships it (likely in
+//! `atomr-accel-py` or as a `python` feature on `atomr-accel-cuda`),
+//! replace this body with `pub use atomr_accel_py::PythonGpuBridge;`
+//! plus a thin `python_pinned_dispatcher` that delegates to
+//! `atomr_accel_cuda::dispatcher::GpuDispatcher::python_pinned()`. The
 //! public surface this module exposes (`PythonGpuBridge::with_python`,
 //! `python_pinned_dispatcher`) is intentionally narrow so that lift
 //! is mechanical.
@@ -53,7 +54,7 @@ impl PythonGpuBridge {
         T: Send,
     {
         let _ord = self.serializer.lock();
-        Python::with_gil(|py| f(py)).map_err(|e| InferenceError::Internal(format!("python: {e}")))
+        Python::with_gil(f).map_err(|e| InferenceError::Internal(format!("python: {e}")))
     }
 }
 

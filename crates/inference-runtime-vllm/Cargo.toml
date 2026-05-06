@@ -1,17 +1,70 @@
 [package]
 name = "atomr-infer-runtime-vllm"
-version.workspace = true
-edition.workspace = true
+version.workspace      = true
+edition.workspace      = true
 rust-version.workspace = true
-license.workspace = true
+license.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+authors.workspace      = true
+keywords.workspace     = true
+categories.workspace   = true
+readme                 = "README.md"
+documentation          = "https://docs.rs/atomr-infer-runtime-vllm"
+description            = "vLLM runner for atomr-infer. Hosts local LLMs via PyO3-bound AsyncLLMEngine + token-streaming. Includes Gemma 4 auto-provisioning helpers under the `gemma-default` feature."
 
 [features]
 default = []
-vllm    = ["atomr-infer-python-bridge/python"]
+# Pull in the PyO3 vLLM bridge. Without this feature the runner
+# compiles to a typed-error stub so a `cargo build --features
+# remote-only` consumer never pulls pyo3 / vllm.
+vllm = [
+  "atomr-infer-python-bridge/python",
+  "dep:pyo3",
+  "dep:tokio",
+  "dep:tokio-stream",
+  "dep:futures",
+  "dep:parking_lot",
+]
+
+# Zero-config local Gemma 4 auto-provisioning. Adds the env probe
+# (nvidia-smi + python subprocess), the HuggingFace cache resolver,
+# the optional pre-download path via hf-hub, and the
+# `DeploymentManagerActor`-facing provisioner. The probe is
+# subprocess-based (nvidia-smi) rather than cudarc-bound so a libcuda
+# version mismatch doesn't false-skip — vLLM's own CUDA bindings
+# handle the actual workload.
+gemma-default = [
+  "vllm",
+  "dep:hf-hub",
+  "dep:dirs",
+  "dep:atomr-core",
+  "dep:serde_json",
+]
 
 [dependencies]
 atomr-infer-core          = { workspace = true }
 atomr-infer-runtime       = { workspace = true }
 atomr-infer-python-bridge = { workspace = true }
-async-trait             = { workspace = true }
-serde                   = { workspace = true }
+async-trait               = { workspace = true }
+serde                     = { workspace = true }
+tracing                   = { workspace = true }
+thiserror                 = { workspace = true }
+
+# vllm feature deps (optional)
+pyo3                = { workspace = true, optional = true }
+tokio               = { workspace = true, optional = true }
+tokio-stream        = { version = "0.1", optional = true }
+futures             = { workspace = true, optional = true }
+parking_lot         = { workspace = true, optional = true }
+
+# gemma-default feature deps (optional)
+hf-hub      = { workspace = true, optional = true }
+dirs        = { version = "5", optional = true }
+atomr-core  = { workspace = true, optional = true }
+serde_json  = { workspace = true, optional = true }
+
+[dev-dependencies]
+tokio      = { workspace = true, features = ["macros", "rt"] }
+tempfile   = "3"
+serde_json = { workspace = true }

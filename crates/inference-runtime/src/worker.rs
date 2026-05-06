@@ -5,8 +5,8 @@
 //! **restartable** and owns the runtime-specific resources (CUDA
 //! context, weights, etc). When the runner reports
 //! `CudaContextPoisoned` the parent panics with the
-//! `atomr_accel::cuda::error::CONTEXT_POISONED_TAG` marker so that
-//! `atomr_accel::cuda::error::device_supervisor_strategy` routes the
+//! `atomr_accel_cuda::error::CONTEXT_POISONED_TAG` marker so that
+//! `atomr_accel_cuda::error::device_supervisor_strategy` routes the
 //! failure to `Directive::Restart`.
 //!
 //! The supervision *policy* (3 retries / 60s, decider, marker tags) is
@@ -36,7 +36,7 @@ use atomr_infer_core::tokens::TokenChunk;
 
 /// What the parent hands to its child on construction. The runner
 /// owns the GPU context indirectly (via `cudarc::driver::CudaContext`,
-/// `atomr_accel::cuda::device::DeviceState`, or whatever the backend uses);
+/// `atomr_accel_cuda::device::DeviceState`, or whatever the backend uses);
 /// when the parent decides to rebuild, it constructs a fresh
 /// `WorkerSlot` and the child cell starts anew.
 pub struct WorkerSlot {
@@ -85,7 +85,7 @@ impl WorkerActor {
 
     fn spawn_child(&mut self, ctx: &mut Context<Self>) {
         // Factory is called once per spawn. ContextActor itself isn't
-        // restarted by rakka's supervisor — we tear it down and spawn
+        // restarted by atomr's supervisor — we tear it down and spawn
         // a fresh one with a new slot when context poisoning happens.
         self.parent_to_child_seq += 1;
         let name = format!("ctx-{}", self.parent_to_child_seq);
@@ -120,10 +120,10 @@ impl Actor for WorkerActor {
         // ModelRunner (e.g. inference-testkit's MockRunner in tests).
         #[cfg(feature = "local-gpu")]
         {
-            // The CUDA backend is re-exported at `atomr_accel::cuda`
-            // when the `cuda` feature is on. We carry that feature
-            // forward via our own `local-gpu` feature.
-            atomr_accel::cuda::error::device_supervisor_strategy()
+            // The NVIDIA CUDA backend lives in its own crate
+            // (atomr-accel-cuda) since atomr-accel 0.3; the umbrella
+            // crate only ships the trait surface.
+            atomr_accel_cuda::error::device_supervisor_strategy()
         }
         #[cfg(not(feature = "local-gpu"))]
         {
@@ -132,7 +132,7 @@ impl Actor for WorkerActor {
                 .with_max_retries(3)
                 .with_within(std::time::Duration::from_secs(60))
                 .with_decider(|err| {
-                    // Mirror atomr_accel::cuda::error::decider's tag set.
+                    // Mirror atomr_accel_cuda::error::decider's tag set.
                     if err.contains("ContextPoisoned") {
                         Directive::Restart
                     } else if err.contains("OutOfMemory") {
@@ -175,7 +175,7 @@ impl Actor for WorkerActor {
 
 /// `ContextActor` — restartable child holding the CUDA context (or the
 /// remote-network analogue). Distinct from
-/// `atomr_accel::cuda::device::ContextActor`: that one specialises to CUDA
+/// `atomr_accel_cuda::device::ContextActor`: that one specialises to CUDA
 /// memory / streams; this one holds the polymorphic
 /// `Box<dyn ModelRunner>` so the same supervision shape covers
 /// remote-network runners too.
@@ -219,7 +219,7 @@ impl Actor for ContextActor {
                             if matches!(e, InferenceError::CudaContextPoisoned(_)) {
                                 let _ = output.send(Err(e.clone())).await;
                                 #[cfg(feature = "local-gpu")]
-                                panic!("{}: {e}", atomr_accel::cuda::error::CONTEXT_POISONED_TAG);
+                                panic!("{}: {e}", atomr_accel_cuda::error::CONTEXT_POISONED_TAG);
                                 #[cfg(not(feature = "local-gpu"))]
                                 panic!("ContextPoisoned: {e}");
                             }

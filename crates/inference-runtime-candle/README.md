@@ -16,7 +16,7 @@
 | Build                                                          | Result                                            |
 |----------------------------------------------------------------|---------------------------------------------------|
 | `cargo build -p atomr-infer-runtime-candle` (default)            | Stub.                                             |
-| `cargo build -p atomr-infer-runtime-candle --features candle`    | Pulls `candle-core`, `candle-nn`, `candle-transformers`, and `rakka-accel` for `GpuDispatcher` + `PerActorAllocator`. |
+| `cargo build -p atomr-infer-runtime-candle --features candle`    | Pulls `candle-core`, `candle-nn`, `candle-transformers`, and `atomr-accel` for `GpuDispatcher` + `PerActorAllocator`. |
 
 ## Configuration
 
@@ -30,7 +30,7 @@ let cfg = CandleConfig {
 };
 ```
 
-## How it integrates with rakka-accel
+## How it integrates with atomr-accel
 
 The runner uses upstream substrate, not local re-implementations:
 

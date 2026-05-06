@@ -1,4 +1,4 @@
-//! `rakka serve` runtime — boot the actor system, register every
+//! `atomr-infer serve` runtime — boot the actor system, register every
 //! `[[deployment]]`, mount the gateway, wait for shutdown.
 
 use std::sync::Arc;
@@ -48,6 +48,28 @@ pub async fn run_server(project: ProjectFile) -> Result<()> {
             Ok(Ok(())) => tracing::info!(deployment = %name, "applied"),
             Ok(Err(e)) => tracing::error!(deployment = %name, ?e, "deployment validation failed"),
             Err(_) => tracing::error!(deployment = %name, "manager dropped reply"),
+        }
+    }
+
+    // Auto-provision the local Gemma 4 deployment when the
+    // `gemma-default` feature is on, the env probe passes, and the
+    // operator hasn't disabled it via ATOMR_INFER_GEMMA_AUTO=skip.
+    #[cfg(feature = "gemma-default")]
+    {
+        use atomr_infer::defaults::gemma;
+        let cfg = gemma::GemmaDefaults::from_env();
+        if cfg.auto_provision {
+            match gemma::provision_if_ready(&mgr, &cfg).await {
+                Ok(gemma::ProvisionOutcome::Ready { deployment_name }) => {
+                    tracing::info!(deployment = %deployment_name, "local Gemma 4 provisioned");
+                }
+                Ok(gemma::ProvisionOutcome::Skipped { reason, hint }) => {
+                    tracing::info!(reason = %reason, hint = %hint, "local Gemma 4 skipped");
+                }
+                Err(e) => {
+                    tracing::warn!(?e, "local Gemma 4 auto-provision failed");
+                }
+            }
         }
     }
 

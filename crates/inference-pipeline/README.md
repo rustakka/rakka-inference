@@ -1,7 +1,7 @@
 # atomr-infer-pipeline
 
 > Streams DSL adapter + a re-export shim over
-> [`rakka-accel-patterns`](../../../rakka-accel/crates/rakka-accel-patterns/).
+> [`atomr-accel-patterns`](../../../atomr-accel/crates/atomr-accel-patterns/).
 > If you're composing inference graphs (§9 of the architecture doc),
 > this is the crate you reach for.
 
@@ -10,7 +10,7 @@
 The doc's §9 building blocks — dynamic batching, cascade routing,
 replica pools, fair-share scheduling, hot-swap, speculative decoding,
 MoE gating — are all *generic actor blueprints* that already live in
-`rakka-accel-patterns`. They take user-supplied closures / trait impls
+`atomr-accel-patterns`. They take user-supplied closures / trait impls
 as the backend, so we don't reimplement them — we just plug a
 `Box<dyn ModelRunner>` into each one.
 
@@ -59,9 +59,9 @@ use tokio::sync::mpsc;
 
 let (tx, rx) = mpsc::unbounded_channel();
 let source = request_source(rx);
-// Compose with rakka-streams operators: filter, map, throttle, ...
+// Compose with atomr-streams operators: filter, map, throttle, ...
 ```
 
 This is the bridge between the actor system (which talks `tokio::mpsc`
-under the hood) and the rakka-streams DSL (`Source` / `Flow` / `Sink`
+under the hood) and the atomr-streams DSL (`Source` / `Flow` / `Sink`
 operator graphs).

@@ -1,17 +1,38 @@
 [package]
 name = "atomr-infer-runtime-mistralrs"
-version.workspace = true
-edition.workspace = true
+version.workspace      = true
+edition.workspace      = true
 rust-version.workspace = true
-license.workspace = true
+license.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+authors.workspace      = true
+keywords.workspace     = true
+categories.workspace   = true
+readme                 = "README.md"
+documentation          = "https://docs.rs/atomr-infer-runtime-mistralrs"
+description            = "Mistral.rs runner for atomr-infer. Wraps mistralrs::TextModelBuilder + Model behind the ModelRunner trait with token-streaming."
 
 [features]
 default   = []
-mistralrs = ["dep:mistralrs"]
+# Pull in the `mistralrs` LLM runtime. mistralrs 0.8 declares MSRV
+# 1.88; the workspace's MSRV (1.78) only applies to remote-only +
+# default-features builds. Operators enabling this feature need a
+# rustc that satisfies mistralrs's own MSRV.
+mistralrs = ["dep:mistralrs", "dep:tokio", "dep:tokio-stream", "dep:futures"]
 
 [dependencies]
 atomr-infer-core    = { workspace = true }
 atomr-infer-runtime = { workspace = true }
-async-trait       = { workspace = true }
-serde             = { workspace = true }
-mistralrs         = { workspace = true, optional = true }
+async-trait         = { workspace = true }
+serde               = { workspace = true }
+tracing             = { workspace = true }
+
+mistralrs           = { workspace = true, optional = true }
+tokio               = { workspace = true, optional = true }
+tokio-stream        = { version = "0.1", optional = true }
+futures             = { workspace = true, optional = true }
+
+[dev-dependencies]
+tokio      = { workspace = true, features = ["macros", "rt"] }
+serde_json = { workspace = true }

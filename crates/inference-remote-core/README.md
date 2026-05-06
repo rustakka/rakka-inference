@@ -12,7 +12,7 @@
 | `RemoteEngineCoreActor`         | Per-replica HTTP orchestrator: bounded priority queue + worker pool.   |
 | `RemoteWorkerActor`             | One per concurrent slot; pulls from the queue, retries with backoff, emits `TokenChunk`s. |
 | `RemoteSessionActor`            | Credential lifecycle — analog of `ContextActor` for the network world. |
-| `RateLimiterActor`              | Approximate distributed token bucket via `rakka_distributed_data::GCounter`. |
+| `RateLimiterActor`              | Approximate distributed token bucket via `atomr_distributed_data::GCounter`. |
 | `StrictRateLimiterActor`        | Cluster-singleton variant for premium API keys with hard caps.         |
 | `CircuitBreakerActor` + `CircuitBreakerHandle` | State machine (Closed → Open → Half-open) per `(provider, endpoint)`. |
 | `RetryEngine`                   | Per-call retry decisions with `Retry-After` parsing and jitter.        |
@@ -45,7 +45,7 @@ let mut rl = RateLimiterActor::new(
 ```
 
 `RateLimiterActor` keeps a per-node `GCounter` of tokens spent in the
-current window. The replicator (when wired up via `rakka-cluster`)
+current window. The replicator (when wired up via `atomr-cluster`)
 syncs deltas across nodes so the cluster collectively respects the
 provider's RPM/TPM budget. For premium API keys with hard caps, swap
 in `StrictRateLimiterActor` and register it as a cluster singleton —
@@ -102,9 +102,9 @@ Pure HTTP / async — no GPU, no Python:
 - `reqwest` (rustls + http2 + json + stream) for HTTP/2
 - `eventsource-stream` for SSE parsing
 - `tower` for middleware composition
-- `rakka-core` + `rakka-distributed-data` for actor + CRDT
+- `atomr-core` + `atomr-distributed-data` for actor + CRDT
 
-Importantly, `rakka-accel` is **not** a dependency. This crate is the
+Importantly, `atomr-accel` is **not** a dependency. This crate is the
 linchpin of the remote-only invariant: a build with `--features
 remote-only` reaches `atomr-infer-remote-core` and stops — no `cudarc`,
 no `pyo3`, no GPU code anywhere in the dep graph.

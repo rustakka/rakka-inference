@@ -20,7 +20,7 @@ workspace builds without a Python venv.
 ```python
 from inference import Cluster, Deployment
 
-cluster = Cluster.connect("rakka://prod:7355")
+cluster = Cluster.connect("atomr://prod:7355")
 
 cluster.deploy(
     Deployment(

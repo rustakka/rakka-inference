@@ -9,7 +9,7 @@ Adding `inference = { features = [...] }` is a single statement of
 intent. The Cargo feature graph computes the actual dependency graph
 for you: enable `openai` and you pull `atomr-infer-runtime-openai` plus
 its `reqwest` / `eventsource-stream` deps; enable `candle` and you
-additionally pull `rakka-accel`, `cudarc`, `candle-*`. Disable
+additionally pull `atomr-accel`, `cudarc`, `candle-*`. Disable
 everything and you compile only `atomr-infer-core` + `atomr-infer-runtime`.
 
 ## The shape that matters: `remote-only`
@@ -22,7 +22,7 @@ inference = { workspace = true, default-features = false, features = ["remote-on
 
 ```sh
 $ cargo tree -p inference --no-default-features --features remote-only \
-    | grep -Ec 'cudarc|rakka-accel|candle|pyo3'
+    | grep -Ec 'cudarc|atomr-accel|candle|pyo3'
 0
 ```
 
@@ -38,10 +38,10 @@ full grid. Headlines:
 - `openai`, `anthropic`, `gemini`, `litellm` — remote providers, no GPU.
 - `vllm`, `tensorrt`, `ort`, `candle`, `cudarc`, `mistralrs` — local
   runtimes; each gates its own system deps.
-- `pipeline` — `rakka-streams` adapter (no GPU).
-- `cuda-patterns` — `rakka-accel-patterns` re-export (DynamicBatching,
+- `pipeline` — `atomr-streams` adapter (no GPU).
+- `cuda-patterns` — `atomr-accel-patterns` re-export (DynamicBatching,
   Cascade, ReplicaPool, FairShare, HotSwap, Speculative, MoE).
-- `cuda` — direct `rakka-accel` re-export, reachable as
+- `cuda` — direct `atomr-accel` re-export, reachable as
   `inference::cuda::*`.
 - `testkit` — `atomr-infer-testkit` mocks.
 

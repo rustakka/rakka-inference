@@ -41,9 +41,9 @@ actual dependency graph for you.
 | `candle`             | `atomr-infer-runtime-candle` + `cuda`            | `candle-*`, `cudarc`  | Pure-Rust transformer inference. |
 | `cudarc`             | `atomr-infer-runtime-cudarc` + `cuda`            | `cudarc`              | Direct kernel dispatch via `atomr_accel::cuda::kernel::*`. |
 | `mistralrs`          | `atomr-infer-runtime-mistralrs`                  | `mistralrs`           | Rust-native LLM runtime. |
-| `pipeline`           | `atomr-infer-pipeline`                           | `rakka-streams`       | Streams DSL adapter. |
-| `cuda`               | `rakka-accel` re-export, `atomr-infer-runtime/local-gpu` | `cudarc`         | Use only if you want `inference::cuda::*` reachable. |
-| `cuda-patterns`      | `rakka-accel-patterns` re-export, `pipeline`    | `cudarc`              | `DynamicBatchingServer`, `InferenceCascade`, `ModelReplicaPool`, `FairShareScheduler`, `ModelHotSwapServer`, `SpeculativeDecoder`, `MoeRouter`. |
+| `pipeline`           | `atomr-infer-pipeline`                           | `atomr-streams`       | Streams DSL adapter. |
+| `cuda`               | `atomr-accel` re-export, `atomr-infer-runtime/local-gpu` | `cudarc`         | Use only if you want `inference::cuda::*` reachable. |
+| `cuda-patterns`      | `atomr-accel-patterns` re-export, `pipeline`    | `cudarc`              | `DynamicBatchingServer`, `InferenceCascade`, `ModelReplicaPool`, `FairShareScheduler`, `ModelHotSwapServer`, `SpeculativeDecoder`, `MoeRouter`. |
 | `testkit`            | `atomr-infer-testkit`                            | `wiremock`            | `MockRunner`, OpenAI/Anthropic/Gemini wiremock fixtures. |
 
 The `candle` and `cudarc` features automatically imply `cuda` because
@@ -75,7 +75,7 @@ This is enforced by the feature graph:
 
 ```sh
 $ cargo tree -p inference --no-default-features --features remote-only \
-    | grep -Ec 'cudarc|rakka-accel|candle|pyo3'
+    | grep -Ec 'cudarc|atomr-accel|candle|pyo3'
 0
 ```
 
@@ -96,19 +96,19 @@ Some crates expose their own gates so they can be consumed
 
 | Feature      | Adds                                            |
 |--------------|-------------------------------------------------|
-| `local-gpu`  | `rakka-accel` dep; `WorkerActor` adopts upstream `device_supervisor_strategy()` |
+| `local-gpu`  | `atomr-accel` dep; `WorkerActor` adopts upstream `device_supervisor_strategy()` |
 
-Default builds compile without rakka-accel; useful when you're embedding
+Default builds compile without atomr-accel; useful when you're embedding
 the runtime-agnostic actors into a remote-only service.
 
 ### `atomr-infer-pipeline`
 
 | Feature           | Adds                            |
 |-------------------|---------------------------------|
-| `cuda-patterns`   | `rakka-accel-patterns` re-export |
+| `cuda-patterns`   | `atomr-accel-patterns` re-export |
 
 Without the feature you still get `request_source`, `HybridGraph`, and
-the `rakka-streams` `Source` adapter — useful for remote-only
+the `atomr-streams` `Source` adapter — useful for remote-only
 pipelines.
 
 ### `atomr-infer-python-bridge`
@@ -180,4 +180,4 @@ rollup to wire it in. The 18-crate layout is *additive*: a third-party
 runtime (Bedrock, Cohere, internal proxy, custom CUDA kernel package)
 ships as a sibling crate that depends on `atomr-infer-core` and
 `atomr-infer-remote-core` (for remote) or `atomr-infer-core` +
-`rakka-accel` (for local), without forking the workspace.
+`atomr-accel` (for local), without forking the workspace.

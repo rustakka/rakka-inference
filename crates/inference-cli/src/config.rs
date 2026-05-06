@@ -19,7 +19,7 @@ pub struct ClusterConfig {
     /// HTTP gateway bind address. Optional — defaults to 127.0.0.1:8080.
     #[serde(default = "default_bind")]
     pub bind: std::net::SocketAddr,
-    /// rakka cluster endpoint (placeholder; v0 runs single-node).
+    /// atomr cluster endpoint (placeholder; v0 runs single-node).
     #[serde(default)]
     pub endpoint: Option<String>,
 }

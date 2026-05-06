@@ -75,7 +75,9 @@ invariant load-bearing, not aspirational.
 | `atomr-infer-runtime` | Gateway, request actor, dp-coordinator, engine-core, two-tier worker, placement, deployment manager, metrics |
 | `atomr-infer-remote-core` | Distributed rate limiter (CRDT), circuit breaker, retry/backoff, SSE parser, session lifecycle |
 | `atomr-infer-runtime-{openai,anthropic,gemini,litellm}` | Per-provider `ModelRunner` against `api.openai.com`, `api.anthropic.com`, Vertex AI / AI Studio, and the LiteLLM proxy |
-| `atomr-infer-runtime-{vllm,tensorrt,ort,mistralrs}` | Per-backend `ModelRunner` for local Rust-native and FFI runtimes; feature-gated so absent system libs don't break the workspace |
+| `atomr-infer-runtime-tensorrt` | NVIDIA TensorRT runner over `atomr-accel-tensorrt`'s `TrtRuntime` / `ExecutionContext` (Phase 8); ONNX / INT8 / FP8 / IPluginV3 sub-features forwarded |
+| `atomr-infer-runtime-mistralrs` | Mistral.rs LLM runtime via `TextModelBuilder` + token-streaming through `mpsc` |
+| `atomr-infer-runtime-{vllm,ort,candle,cudarc}` | Per-backend `ModelRunner` for the remaining local Rust-native and FFI runtimes; feature-gated so absent system libs don't break the workspace |
 | `atomr-infer-pipeline` | `atomr-streams` integration plus `DynamicBatchingServer` / `InferenceCascade` / `ModelReplicaPool` / `FairShareScheduler` / `ModelHotSwapServer` / `SpeculativeDecoder` blueprints |
 | `atomr-infer-testkit` | `MockRunner` + `wiremock`-backed provider mocks (`inject_429`, `inject_5xx`, …) |
 | `atomr-infer-cli` | `atomr-infer serve --config <toml>` |
@@ -91,7 +93,7 @@ The umbrella crate is published on crates.io as **`atomr-infer`**:
 
 ```toml
 [dependencies]
-atomr-infer = { version = "0.3", features = ["openai", "anthropic", "pipeline"] }
+atomr-infer = { version = "0.4", features = ["openai", "anthropic", "pipeline"] }
 ```
 
 Or pull in subsystem crates directly — `atomr-infer-core`,
@@ -126,6 +128,28 @@ cargo run --bin remote_only_demo
 cargo build -p atomr-infer --no-default-features --features remote-only
 ```
 
+## Zero-config local LLM
+
+If you have a workstation with a CUDA GPU + Python 3.10+, you can
+auto-provision a local Gemma 4 deployment with no project-file
+edits:
+
+```sh
+pip install 'vllm>=0.6.4' timm
+hf auth login    # then accept the ToS at https://huggingface.co/google/gemma-4-E4B-it
+cargo run -p atomr-infer-cli --features gemma-default -- serve --config demo.toml
+```
+
+The feature auto-probes for GPU + Python + vLLM + HF token at boot;
+on success it registers a `gemma-local` deployment backed by
+`google/gemma-4-E4B-it`. Probe failure logs a one-line tip and
+continues. All four Gemma 4 variants (`E2B`, `E2B-it`, `E4B`,
+`E4B-it`) are reachable via `ATOMR_INFER_GEMMA_MODEL=...`. Cache
+respects `$HF_HOME` so multiple instances on the same workstation
+share one on-disk model.
+
+Full reference: [`docs/local-gemma.md`](docs/local-gemma.md).
+
 ## Quick start (Python)
 
 ```bash
@@ -140,7 +164,7 @@ cluster = Cluster.connect("inproc://app")
 cluster.deploy(Deployment(name="gpt-4o-mini", model="gpt-4o-mini", replicas=1))
 ```
 
-The 0.3 surface is intentionally narrow — `Deployment` value objects
+The 0.4 surface is intentionally narrow — `Deployment` value objects
 and `Cluster.connect(...).deploy(...)`. Decorators and direct
 `ActorRef` escape hatches land as the underlying Rust surface
 stabilises.
@@ -218,11 +242,16 @@ Companion bundles for the broader stack:
 
 ## Learn more
 
+- [`docs/architecture.md`](docs/architecture.md) — full RFC v4 design
+  (~1,400 lines): supervision tree, routing CRDT, distributed rate
+  limiter, hybrid pipelines.
+- [`docs/local-gemma.md`](docs/local-gemma.md) — zero-config local
+  Gemma 4 via the `gemma-default` feature: probe behaviour, variant
+  matrix, env var reference.
 - [`docs/feature-matrix.md`](docs/feature-matrix.md) — every feature
   flag, what it pulls into the dep graph, when to enable it.
-- [`docs/rustakka-inference-architecture-v4.md`](docs/rustakka-inference-architecture-v4.md)
-  — full RFC v4 design (1,400+ lines): supervision tree, routing
-  CRDT, distributed rate limiter, hybrid pipelines.
+- [`CHANGELOG.md`](CHANGELOG.md) — release history, including the
+  upstream-alignment + TensorRT/Mistral.rs notes.
 - [`RELEASING.md`](RELEASING.md) — versioning, allowlist, secrets,
   emergency-release runbook.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — dev setup, conventional

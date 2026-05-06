@@ -1,6 +1,6 @@
 # atomr-infer-runtime
 
-> Runtime-agnostic actors on top of `rakka-core`. Gateway, per-request
+> Runtime-agnostic actors on top of `atomr-core`. Gateway, per-request
 > lifecycle, coordinator, deployment manager, two-tier supervision —
 > none of which knows or cares whether the underlying backend is a
 > GPU or a remote network call.
@@ -32,17 +32,17 @@ atomr-infer-runtime = { workspace = true, features = ["local-gpu"] }
 
 With the `local-gpu` feature, `WorkerActor::supervisor_strategy()`
 returns
-[`atomr_accel::cuda::error::device_supervisor_strategy()`](../../../rakka-accel/crates/rakka-accel/src/error.rs)
+[`atomr_accel::cuda::error::device_supervisor_strategy()`](../../../atomr-accel/crates/atomr-accel/src/error.rs)
 verbatim — three retries inside a 60-second window with the upstream
 `ContextPoisoned` / `OutOfMemory` / `Unrecoverable` decider. When a
 `ModelRunner::execute` returns `InferenceError::CudaContextPoisoned`,
 the `ContextActor` panics with the
-[`atomr_accel::cuda::error::CONTEXT_POISONED_TAG`](../../../rakka-accel/crates/rakka-accel/src/error.rs)
+[`atomr_accel::cuda::error::CONTEXT_POISONED_TAG`](../../../atomr-accel/crates/atomr-accel/src/error.rs)
 marker so the upstream supervisor routes the failure to `Restart`.
 
 Without the feature, the same shape is preserved with an in-crate
 fallback strategy — useful when you embed the runtime-agnostic actors
-into a remote-only build that doesn't want `rakka-accel` in its
+into a remote-only build that doesn't want `atomr-accel` in its
 dependency graph.
 
 ## Feature flags
@@ -50,7 +50,7 @@ dependency graph.
 | Feature      | Adds                                            | When to enable                                  |
 |--------------|-------------------------------------------------|-------------------------------------------------|
 | (default)    | runtime-agnostic actors only                    | Remote-only deployments                         |
-| `local-gpu`  | `rakka-accel` dep; upstream supervisor strategy  | Any deployment with local GPU runtimes          |
+| `local-gpu`  | `atomr-accel` dep; upstream supervisor strategy  | Any deployment with local GPU runtimes          |
 
 ## A canonical wiring
 
@@ -59,8 +59,8 @@ use inference_runtime::{
     ApiGatewayActor, DeploymentManagerActor, DpCoordinatorActor, GatewayConfig,
     MetricsActor, spawn_gateway,
 };
-use rakka_core::actor::{ActorSystem, Props};
-use rakka_config::Config;
+use atomr_core::actor::{ActorSystem, Props};
+use atomr_config::Config;
 
 # async fn run() -> anyhow::Result<()> {
 let sys = ActorSystem::create("inference", Config::reference()).await?;

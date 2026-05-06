@@ -12,6 +12,7 @@ pub type InferenceResult<T> = Result<T, InferenceError>;
 
 #[derive(Debug, Clone, thiserror::Error, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
+#[non_exhaustive]
 pub enum InferenceError {
     /// 429 from a remote provider. Worker backs off and retries unless
     /// `max_retries` is exhausted; then this surfaces to the request.

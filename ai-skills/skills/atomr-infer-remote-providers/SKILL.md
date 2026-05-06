@@ -170,7 +170,7 @@ to make runaway provider spend physically impossible — `Reject`,
 - [`inference-runtime-anthropic` README](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-anthropic/README.md)
 - [`inference-runtime-gemini` README](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-gemini/README.md)
 - [`examples/remote_only_demo/`](https://github.com/rustakka/atomr-infer/blob/main/examples/remote_only_demo/) — full end-to-end demo
-- [Architecture doc §3.5, §12](https://github.com/rustakka/atomr-infer/blob/main/docs/rustakka-inference-architecture-v4.md) — rate limiting, circuit breaking, retries, credentials
+- [Architecture doc §3.5, §12](https://github.com/rustakka/atomr-infer/blob/main/docs/architecture.md) — rate limiting, circuit breaking, retries, credentials
 
 ## Common mistakes
 

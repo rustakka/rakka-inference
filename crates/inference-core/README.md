@@ -52,7 +52,7 @@ impl ModelRunner for MyCustomRunner {
 - `chrono` (no-default-features, `clock` only) — for `Tokens` timestamps
 - `url` — for endpoint validation
 
-**No** `tokio`, **no** `rakka`, **no** `rakka-accel`, **no** `pyo3`,
+**No** `tokio`, **no** `atomr`, **no** `atomr-accel`, **no** `pyo3`,
 **no** `reqwest`. This is what makes `cargo build -p atomr-infer
 --features remote-only` produce a binary with zero GPU deps — the
 foundation layer simply doesn't carry any.

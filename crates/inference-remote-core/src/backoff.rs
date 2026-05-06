@@ -1,4 +1,4 @@
-//! Exponential backoff + jitter, mirroring rakka's
+//! Exponential backoff + jitter, mirroring atomr's
 //! `pattern::backoff::BackoffOptions` shape but specialised for the
 //! per-request retry loop inside `RemoteWorkerActor`.
 //!
@@ -38,12 +38,15 @@ pub fn compute_backoff(policy: &BackoffPolicy, attempt: u32) -> Duration {
         JitterKind::None => capped,
         JitterKind::Equal => capped * 0.5 + capped * pseudo_random_01(attempt) * 0.5,
         JitterKind::Full => capped * pseudo_random_01(attempt),
+        // `JitterKind` is `#[non_exhaustive]`; treat unknown variants
+        // as no-op to keep the math defensive across upgrades.
+        _ => capped,
     };
     Duration::from_millis(with_jitter.max(0.0) as u64)
 }
 
 /// Deterministic pseudo-randomness — tests don't want real entropy.
-/// Same idiom rakka uses in `pattern::backoff`.
+/// Same idiom atomr uses in `pattern::backoff`.
 fn pseudo_random_01(seed: u32) -> f64 {
     ((seed.wrapping_mul(2_654_435_761)) % 10_000) as f64 / 10_000.0
 }

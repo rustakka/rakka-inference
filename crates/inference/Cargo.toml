@@ -1,21 +1,42 @@
 [package]
 name = "atomr-infer"
-version.workspace = true
-edition.workspace = true
+version.workspace      = true
+edition.workspace      = true
 rust-version.workspace = true
-license.workspace = true
-description = "Multi-runtime GPU + remote inference as a supervised actor system on atomr."
+license.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+authors.workspace      = true
+keywords.workspace     = true
+categories.workspace   = true
+readme                 = "../../README.md"
+documentation          = "https://docs.rs/atomr-infer"
+description            = "Multi-runtime GPU + remote inference as a supervised actor system on atomr. Single-crate rollup that re-exports per-runtime backends behind feature flags."
 
 [features]
 default = []
 
 # Local runtimes
 vllm      = ["dep:atomr-infer-runtime-vllm",      "atomr-infer-runtime-vllm/vllm"]
+# Zero-config local Gemma 4 on top of the vllm runner. Auto-probes
+# GPU + Python + vLLM + HF token at boot; provisions a `gemma-local`
+# deployment when ready. Off by default — operators running production
+# don't want a surprise model download.
+gemma-default = ["vllm", "atomr-infer-runtime-vllm/gemma-default"]
 tensorrt  = ["dep:atomr-infer-runtime-tensorrt",  "atomr-infer-runtime-tensorrt/tensorrt"]
 ort       = ["dep:atomr-infer-runtime-ort",       "atomr-infer-runtime-ort/ort"]
 candle    = ["dep:atomr-infer-runtime-candle",    "atomr-infer-runtime-candle/candle", "accel"]
 cudarc    = ["dep:atomr-infer-runtime-cudarc",    "atomr-infer-runtime-cudarc/cudarc", "accel"]
 mistralrs = ["dep:atomr-infer-runtime-mistralrs", "atomr-infer-runtime-mistralrs/mistralrs"]
+
+# Forwarded TensorRT sub-features (atomr-accel Phase 8). Each implies
+# `tensorrt`. `tensorrt-link` only flips on the libnvinfer link probe;
+# without it the runner compiles + unit-tests on hosts without TensorRT.
+tensorrt-onnx   = ["tensorrt", "atomr-infer-runtime-tensorrt/tensorrt-onnx"]
+tensorrt-int8   = ["tensorrt", "atomr-infer-runtime-tensorrt/tensorrt-int8"]
+tensorrt-fp8    = ["tensorrt", "atomr-infer-runtime-tensorrt/tensorrt-fp8"]
+tensorrt-plugin = ["tensorrt", "atomr-infer-runtime-tensorrt/tensorrt-plugin"]
+tensorrt-link   = ["tensorrt", "atomr-infer-runtime-tensorrt/tensorrt-link"]
 
 # Remote runtimes (no system deps; safe to enable on any host)
 openai    = ["dep:atomr-infer-runtime-openai"]
@@ -26,13 +47,13 @@ litellm   = ["dep:atomr-infer-runtime-litellm", "openai"]
 # Cross-cutting
 pipeline      = ["dep:atomr-infer-pipeline"]
 testkit       = ["dep:atomr-infer-testkit"]
-# Pulls in atomr-accel (with the CUDA backend re-exported at
-# `atomr_accel::cuda`) and the atomr-accel-patterns blueprints so
-# callers can reach `atomr_infer::accel::*` and
-# `atomr_infer::accel_patterns::*` directly. Implied by `candle` /
-# `cudarc`. Off by default — `remote-only` builds skip these and
-# therefore compile no GPU deps at all.
-accel          = ["dep:atomr-accel", "atomr-accel/cuda", "atomr-infer-runtime/local-gpu"]
+# Pulls in the atomr-accel trait surface, the NVIDIA CUDA backend
+# (atomr-accel-cuda — split out of the umbrella in atomr-accel 0.3),
+# and wires the runtime's two-tier supervision pattern. The
+# atomr-accel-patterns blueprints layer on via `accel-patterns`. Both
+# are implied by `candle` / `cudarc`. Off by default — `remote-only`
+# builds skip these and therefore compile no GPU deps at all.
+accel          = ["dep:atomr-accel", "dep:atomr-accel-cuda", "atomr-infer-runtime/local-gpu"]
 accel-patterns = ["dep:atomr-accel-patterns", "pipeline", "atomr-infer-pipeline/cuda-patterns"]
 
 # Aggregates per doc §10.5
@@ -66,5 +87,9 @@ atomr-infer-pipeline          = { workspace = true, optional = true }
 atomr-infer-testkit           = { workspace = true, optional = true }
 
 # Upstream atomr-accel re-exports (gated on `accel` / `accel-patterns`).
+# The umbrella trait surface ships in `atomr-accel`; the NVIDIA CUDA
+# backend (DeviceActor, GpuDispatcher, etc.) lives in
+# `atomr-accel-cuda` since the 0.3 split.
 atomr-accel          = { workspace = true, optional = true }
+atomr-accel-cuda     = { workspace = true, optional = true }
 atomr-accel-patterns = { workspace = true, optional = true }

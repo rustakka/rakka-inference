@@ -1,6 +1,6 @@
 //! # inference-runtime
 //!
-//! Runtime-agnostic actor implementations on top of `rakka-core`.
+//! Runtime-agnostic actor implementations on top of `atomr-core`.
 //!
 //! Per architecture doc §4 these are the actors whose logic doesn't
 //! depend on whether the underlying backend is local-GPU or

@@ -84,11 +84,15 @@ impl GenerateContentRequest<'_> {
                 Role::User | Role::Tool => "user",
                 Role::Assistant => "model",
                 Role::System => unreachable!(),
+                // `Role` is `#[non_exhaustive]`; default unknown roles
+                // to "user" so the request still goes through.
+                _ => "user",
             }
             .to_string();
             let parts = match &m.content {
                 MessageContent::Text(t) => vec![Part::Text { text: t.clone() }],
                 MessageContent::Parts(parts) => parts.iter().map(serialize_part).collect(),
+                _ => vec![Part::Text { text: String::new() }],
             };
             contents.push(Content { role, parts });
         }
@@ -127,6 +131,8 @@ fn serialize_part(p: &ContentPart) -> Part {
                 file_uri: url.clone(),
             },
         },
+        // Forward-compat: drop unknown variants.
+        _ => Part::Text { text: String::new() },
     }
 }
 

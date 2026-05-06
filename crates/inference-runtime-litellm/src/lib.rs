@@ -96,6 +96,7 @@ impl LiteLlmRunner {
 
 #[async_trait]
 impl ModelRunner for LiteLlmRunner {
+    #[tracing::instrument(skip(self, batch), fields(request_id = %batch.request_id, model = %batch.model))]
     async fn execute(&mut self, batch: ExecuteBatch) -> InferenceResult<RunHandle> {
         self.inner.execute(batch).await
     }

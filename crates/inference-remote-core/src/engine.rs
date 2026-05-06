@@ -149,7 +149,7 @@ impl Actor for RemoteEngineCoreActor {
     async fn pre_start(&mut self, ctx: &mut Context<Self>) {
         // Each worker needs a fresh slot. We invoke the factory N times
         // up-front; the slot moves into a `Props::create` factory whose
-        // closure can produce it on demand (Rakka may call the factory
+        // closure can produce it on demand (atomr may call the factory
         // again on restart — we currently propagate the same WorkerSlot
         // for the first creation only; restart-after-failure rebuilds
         // are handled at the higher RemoteSessionActor tier and not

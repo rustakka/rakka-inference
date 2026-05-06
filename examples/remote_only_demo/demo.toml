@@ -1,4 +1,4 @@
-# Sample project file for `rakka serve --config demo.toml`.
+# Sample project file for `atomr-infer serve --config demo.toml`.
 # Doc §11.3.
 
 [cluster]

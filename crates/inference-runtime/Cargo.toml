@@ -18,11 +18,13 @@ name = "atomr_infer_runtime"
 
 [features]
 default = []
-# Pulls in atomr-accel for the local-GPU two-tier supervision pattern
-# and the per-actor stream allocator. Off by default so a pure-remote
-# inference build (`atomr-infer --features remote-only`) compiles no
-# GPU dependencies whatsoever.
-local-gpu = ["dep:atomr-accel", "atomr-accel/cuda"]
+# Pulls in atomr-accel (trait surface) and atomr-accel-cuda (the
+# NVIDIA backend, split out of the umbrella in atomr-accel 0.3) for
+# the two-tier supervision pattern and per-actor stream allocator.
+# Off by default so a pure-remote inference build
+# (`atomr-infer --features remote-only`) compiles no GPU dependencies
+# whatsoever.
+local-gpu = ["dep:atomr-accel", "dep:atomr-accel-cuda"]
 
 [dependencies]
 atomr-infer-core = { workspace = true }
@@ -34,10 +36,13 @@ atomr-config           = { workspace = true }
 atomr-cluster-tools    = { workspace = true }
 atomr-distributed-data = { workspace = true }
 
-# atomr-accel is the upstream substrate for two-tier supervision and
-# GPU dispatch. Optional — only present when the `local-gpu` feature
-# is enabled.
-atomr-accel = { workspace = true, optional = true }
+# atomr-accel is the upstream trait surface for two-tier supervision;
+# atomr-accel-cuda is the NVIDIA CUDA implementation (split out in
+# atomr-accel 0.3, exposes `error::device_supervisor_strategy` and
+# `error::CONTEXT_POISONED_TAG`). Both optional — only present when
+# the `local-gpu` feature is enabled.
+atomr-accel      = { workspace = true, optional = true }
+atomr-accel-cuda = { workspace = true, optional = true }
 
 # HTTP gateway
 axum     = { workspace = true }

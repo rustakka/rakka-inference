@@ -1,6 +1,6 @@
 {
   "name": "atomr-infer-ai-skills",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Skills for AI coding assistants working on projects that depend on atomr-infer.",
   "homepage": "https://github.com/rustakka/atomr-infer",
   "skills_dir": "skills"

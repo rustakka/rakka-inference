@@ -1,6 +1,6 @@
 //! # inference-pipeline
 //!
-//! `rakka-streams` integration for inference graphs (doc §9), plus a
+//! `atomr-streams` integration for inference graphs (doc §9), plus a
 //! re-export shim over `atomr-accel-patterns` so callers get the
 //! upstream universal-GPU blueprints (batching, cascade, replica pool,
 //! fair-share scheduler, hot-swap, MoE router, speculative decoder)

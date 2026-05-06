@@ -17,8 +17,8 @@ calls, or HTTP/2 to a managed API.
 | `vllm` | `inference-runtime-vllm` | Production LLM throughput on owned GPUs | `vllm` | `pyo3`, Python venv, `vllm` package |
 | `tensorrt` | `inference-runtime-tensorrt` | Stable-shape pre-compiled plans (Whisper, vision, embeddings) | `tensorrt` | `libnvinfer.so` |
 | `ort` | `inference-runtime-ort` | ONNX graphs (rerankers, embeddings, vision) | `ort` | `ort` crate |
-| `candle` | `inference-runtime-candle` | Pure-Rust transformers; quantized GGUF on edge | `candle` | `candle-*`, `cudarc`, `rakka-accel` |
-| `cudarc` | `inference-runtime-cudarc` | Custom CUDA kernels; research code | `cudarc` | `cudarc`, `rakka-accel` |
+| `candle` | `inference-runtime-candle` | Pure-Rust transformers; quantized GGUF on edge | `candle` | `candle-*`, `cudarc`, `atomr-accel` |
+| `cudarc` | `inference-runtime-cudarc` | Custom CUDA kernels; research code | `cudarc` | `cudarc`, `atomr-accel` |
 | `mistralrs` | `inference-runtime-mistralrs` | Mistral / Llama / Gemma in pure Rust with paged attention | `mistralrs` | `mistralrs` crate |
 | `openai` | `inference-runtime-openai` | OpenAI Chat Completions + Azure OpenAI | `openai` | `reqwest`, `hyper` |
 | `anthropic` | `inference-runtime-anthropic` | Anthropic Messages API | `anthropic` | `reqwest`, `hyper` |
@@ -120,10 +120,10 @@ let cfg = TensorRtConfig {
 };
 ```
 
-Local runtimes integrate with the upstream `rakka-accel` substrate:
-- `rakka_accel::cuda::dispatcher::GpuDispatcher` for thread pinning.
-- `rakka_accel::cuda::stream::PerActorAllocator` for per-request streams.
-- `rakka_accel::cuda::device::DeviceActor` two-tier supervision (pulled
+Local runtimes integrate with the upstream `atomr-accel` substrate:
+- `atomr_accel::cuda::dispatcher::GpuDispatcher` for thread pinning.
+- `atomr_accel::cuda::stream::PerActorAllocator` for per-request streams.
+- `atomr_accel::cuda::device::DeviceActor` two-tier supervision (pulled
   in via `inference --features cudarc` or `--features candle`, both of
   which imply `accel`).
 
@@ -162,7 +162,7 @@ on_capacity_exhausted = "queue"
   [tensorrt](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-tensorrt/README.md),
   [ort](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-ort/README.md),
   [mistralrs](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-runtime-mistralrs/README.md)
-- [Architecture doc §3](https://github.com/rustakka/atomr-infer/blob/main/docs/rustakka-inference-architecture-v4.md) — backend taxonomy
+- [Architecture doc §3](https://github.com/rustakka/atomr-infer/blob/main/docs/architecture.md) — backend taxonomy
 - [`inference-core::registry`](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-core/src/registry.rs) — the `infer_runtime(model)` table
 
 ## Common mistakes

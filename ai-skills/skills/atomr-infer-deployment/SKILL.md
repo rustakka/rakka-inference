@@ -5,7 +5,7 @@ description: Use when deploying atomr-infer to a cluster — choosing feature fl
 
 # Deploying atomr-infer
 
-The release ships one binary (`rakka` from `inference-cli`) plus the
+The release ships one binary (`atomr` from `inference-cli`) plus the
 library rollup `inference`. Most deployments are: one container, one
 project-file TOML, the right feature flags.
 
@@ -14,7 +14,7 @@ project-file TOML, the right feature flags.
 | Shape | When | Features | What ships in the binary |
 |---|---|---|---|
 | **Pure-remote router** | Front OpenAI / Anthropic / Gemini with rate limiting, fallback, observability. No GPU. | `remote-only` | All four remote provider runtimes + pipeline + circuit breakers. **Zero GPU deps.** |
-| **Rust-native LLM box** | Owned hardware running Candle / mistral.rs without Python. | `candle, mistralrs, pipeline` | Candle + mistral.rs runtimes + rakka-accel substrate + pipeline. |
+| **Rust-native LLM box** | Owned hardware running Candle / mistral.rs without Python. | `candle, mistralrs, pipeline` | Candle + mistral.rs runtimes + atomr-accel substrate + pipeline. |
 | **Hybrid agent** | Local classify → remote plan; falls back across providers on saturation. | `mistralrs, openai, anthropic, accel-patterns` | Local + remote + the §9 pipeline blueprints (cascade, replica pool, hot-swap). |
 | **vLLM cluster** | Production LLM on owned GPUs. | `vllm, tensorrt, openai, pipeline` | Python-bridged vLLM + TensorRT for non-LLM + remote burst. |
 
@@ -22,7 +22,7 @@ project-file TOML, the right feature flags.
 
 ```sh
 $ cargo tree -p inference --no-default-features --features remote-only \
-    | grep -Ec 'cudarc|rakka-accel|candle|pyo3'
+    | grep -Ec 'cudarc|atomr-accel|candle|pyo3'
 0
 ```
 
@@ -39,13 +39,13 @@ fail.
 FROM rust:1.78-slim AS build
 WORKDIR /src
 COPY . .
-RUN cargo build --release -p inference-cli \
+RUN cargo build --release -p atomr-infer-cli \
     --no-default-features --features remote-only
 
 FROM debian:trixie-slim
-COPY --from=build /src/target/release/rakka /usr/local/bin/rakka
+COPY --from=build /src/target/release/atomr-infer /usr/local/bin/atomr-infer
 COPY inference.toml /etc/inference/inference.toml
-ENTRYPOINT ["rakka", "serve", "--config", "/etc/inference/inference.toml"]
+ENTRYPOINT ["atomr-infer", "serve", "--config", "/etc/inference/inference.toml"]
 ```
 
 For a vLLM image, pivot to a CUDA base + Python venv + `--features
@@ -118,9 +118,9 @@ the TOML via `api_key = { from_env = "..." }`.
 
 | Operation | What it does |
 |---|---|
-| `rakka rotate-credentials <name>` | Triggers `RemoteSessionActor::rebuild` on the named deployment. In-flight requests finish on the old credential; new ones use the rotated value. |
-| `rakka cost-report` | Per-deployment USD spend from the running `MetricsActor`. |
-| `rakka status --config <path>` | Validates the project file without running. |
+| `atomr-infer rotate-credentials <name>` | Triggers `RemoteSessionActor::rebuild` on the named deployment. In-flight requests finish on the old credential; new ones use the rotated value. |
+| `atomr-infer cost-report` | Per-deployment USD spend from the running `MetricsActor`. |
+| `atomr-infer status --config <path>` | Validates the project file without running. |
 | Operator API: `cluster.deployment("X").force_open(duration)` | Manually trip the circuit breaker for incident response. |
 
 ## Cluster topology
@@ -141,8 +141,8 @@ The repo's [`RELEASING.md`](https://github.com/rustakka/atomr-infer/blob/main/RE
 documents the version-bump-on-Conventional-Commit + tag-fires-release
 pipeline. For your downstream deployment automation:
 
-- Pin `inference = "=0.2.1"` (or your tag) in `Cargo.toml`.
-- Use `cargo build --release -p inference-cli --features <preset>` in
+- Pin `atomr-infer = "=0.4.0"` (or your tag) in `Cargo.toml`.
+- Use `cargo build --release -p atomr-infer-cli --features <preset>` in
   your container build.
 - Mount the project-file TOML at `/etc/inference/inference.toml` (or
   whatever path you pass to `--config`).
@@ -152,7 +152,7 @@ pipeline. For your downstream deployment automation:
 - [`README.md`](https://github.com/rustakka/atomr-infer/blob/main/README.md) — top-level overview
 - [`docs/feature-matrix.md`](https://github.com/rustakka/atomr-infer/blob/main/docs/feature-matrix.md) — every feature, what it pulls
 - [`RELEASING.md`](https://github.com/rustakka/atomr-infer/blob/main/RELEASING.md) — versioning, allowlist, secrets
-- [Architecture doc §7](https://github.com/rustakka/atomr-infer/blob/main/docs/rustakka-inference-architecture-v4.md) — cluster operation
+- [Architecture doc §7](https://github.com/rustakka/atomr-infer/blob/main/docs/architecture.md) — cluster operation
 - [`crates/inference-cli/README.md`](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-cli/README.md) — `atomr-infer serve` subcommands
 
 ## Common mistakes

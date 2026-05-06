@@ -1,0 +1,91 @@
+# cargo-deny configuration for atomr-infer.
+#
+# Run `cargo deny check` locally; CI runs the same command in the
+# `deny` job under `.github/workflows/ci.yml`. The four checks are:
+#
+# - `advisories` — reject crates with known security advisories.
+# - `bans`       — reject duplicate or banned crates.
+# - `licenses`   — reject licenses outside the explicit allow-list.
+# - `sources`    — reject crates from unexpected source registries.
+
+[graph]
+# Check both Linux and Apple targets so a "default-features-off"
+# advisory on a macOS-only crate still trips CI.
+targets = [
+  { triple = "x86_64-unknown-linux-gnu" },
+  { triple = "aarch64-unknown-linux-gnu" },
+  { triple = "x86_64-apple-darwin" },
+  { triple = "aarch64-apple-darwin" },
+]
+all-features = false
+
+[advisories]
+db-path     = "~/.cargo/advisory-db"
+db-urls     = ["https://github.com/rustsec/advisory-db"]
+yanked      = "warn"
+ignore      = [
+  # bincode 2.x is marked unmaintained but still widely used by
+  # transitive deps in atomr-accel-cuda's NVRTC cache path. Track
+  # https://github.com/bincode-org/bincode for v3 readiness; until
+  # then alternatives (postcard, rkyv) require a coordinated cross-
+  # crate migration.
+  { id = "RUSTSEC-2025-0141", reason = "bincode 2.x maintenance status — pending cross-workspace migration" },
+]
+
+[licenses]
+# Apache-2.0 is the workspace's primary license; everything else is
+# transitive. Permissive-only — no GPL / LGPL / MPL / SSPL allowed.
+allow = [
+  "Apache-2.0",
+  "Apache-2.0 WITH LLVM-exception",
+  "MIT",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "Unicode-DFS-2016",
+  "Unicode-3.0",
+  "Zlib",
+  "CC0-1.0",
+  "OpenSSL",
+  "BSL-1.0",
+  # CDLA-Permissive-2.0 is the license of webpki-roots (the trusted
+  # CA bundle). It is a permissive license suitable for inclusion.
+  "CDLA-Permissive-2.0",
+]
+confidence-threshold = 0.93
+
+[[licenses.exceptions]]
+# `ring` ships under its bespoke license. The crate is widely used
+# (rustls, etc.) and this is the conventional exception.
+allow = ["LicenseRef-ring"]
+name  = "ring"
+
+[[licenses.clarify]]
+name       = "ring"
+expression = "LicenseRef-ring"
+license-files = [{ path = "LICENSE", hash = 0xbd0eed23 }]
+
+[bans]
+multiple-versions = "warn"
+wildcards         = "warn"
+highlight         = "all"
+# Crates atomr-infer must never depend on (security / footgun /
+# unmaintained). Add justified entries here.
+deny = []
+# Skip duplicate-version checks for crates that are routinely pinned
+# in different versions across the wider Rust ecosystem. We accept
+# the bloat in exchange for not blocking on upstream alignment.
+skip = [
+  { name = "syn" },
+  { name = "windows-sys" },
+  { name = "windows_x86_64_gnu" },
+  { name = "windows_x86_64_msvc" },
+  { name = "windows_aarch64_gnullvm" },
+  { name = "windows_aarch64_msvc" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git      = "deny"
+allow-registry   = ["https://github.com/rust-lang/crates.io-index"]
+allow-git        = []

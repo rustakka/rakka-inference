@@ -145,12 +145,12 @@ research code:
 [dependencies]
 inference-core    = "0.2"
 inference-runtime = "0.2"
-rakka-accel       = { version = "0.2", features = ["cuda"] }   # for GpuDispatcher etc.
+atomr-accel       = { version = "0.2", features = ["cuda"] }   # for GpuDispatcher etc.
 async-trait       = "0.1"
 ```
 
 ```rust
-use rakka_accel::cuda::{
+use atomr_accel::cuda::{
     dispatcher::GpuDispatcher,
     stream::PerActorAllocator,
     device::DeviceActor,           // two-tier supervision substrate
@@ -165,7 +165,7 @@ impl ModelRunner for MyKernelRunner {
         // 1. Pin to a thread via GpuDispatcher.
         // 2. Allocate a stream from PerActorAllocator.
         // 3. Launch your kernel via cudarc / NVRTC.
-        // 4. Sync via rakka_accel::cuda::completion::HostFnCompletion.
+        // 4. Sync via atomr_accel::cuda::completion::HostFnCompletion.
         // 5. Stream the de-tokenized output as TokenChunks.
         todo!()
     }
@@ -270,5 +270,5 @@ for the canonical example.
   `InferenceError::Internal("<runtime> feature disabled at build time")`)
   so the workspace builds without your system deps.
 - **Putting the runner in `inference-core`.** Core has zero `tokio` /
-  `rakka` / GPU / HTTP deps by design. New runtimes go in their own
+  `atomr` / GPU / HTTP deps by design. New runtimes go in their own
   sibling crate.

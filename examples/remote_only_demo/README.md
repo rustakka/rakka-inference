@@ -59,7 +59,7 @@ spend.
 
 ## Companion config
 
-[`demo.toml`](demo.toml) shows the corresponding `rakka serve` project
-file shape. Run `cargo run -p inference-cli -- serve --config
-examples/remote_only_demo/demo.toml` to boot the same providers
-through the full actor system.
+[`demo.toml`](demo.toml) shows the corresponding
+`atomr-infer serve` project file shape. Run
+`cargo run -p atomr-infer-cli -- serve --config examples/remote_only_demo/demo.toml`
+to boot the same providers through the full actor system.

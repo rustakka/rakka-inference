@@ -1,9 +1,9 @@
 //! # atomr-infer
 //!
 //! Multi-runtime GPU + remote inference as a supervised actor system
-//! on top of [rakka](https://github.com/rustakka/atomr) and the
+//! on top of [atomr](https://github.com/rustakka/atomr) and the
 //! backend-agnostic [atomr-accel](https://github.com/rustakka/atomr-accel)
-//! compute substrate. See `docs/rustakka-inference-architecture-v4.md`
+//! compute substrate. See `docs/architecture.md`
 //! for the design.
 //!
 //! This crate is a **rollup**: it re-exports the public surface of the
@@ -56,15 +56,21 @@ pub use atomr_infer_pipeline as pipeline;
 #[cfg(feature = "testkit")]
 pub use atomr_infer_testkit as testkit;
 
-/// Re-export of the upstream `atomr-accel` substrate so callers can
-/// reach `AccelBackend`, `AccelRef<T>`, `AccelError`, and (with the
-/// `cuda` backend re-exported at `atomr_accel::cuda`) `DeviceActor`,
-/// `ContextActor`, `GpuRef`, `GpuDispatcher`, `PerActorAllocator`,
-/// `PlacementActor`, the kernel actors, etc., without taking a
-/// separate dependency. Doc §4 ("Foundational Mapping" —
-/// `WorkerActor` ≡ `DeviceActor`).
+/// Re-export of the upstream `atomr-accel` trait surface so callers
+/// can reach `AccelBackend`, `AccelRef<T>`, `AccelError`,
+/// `CompletionStrategy`, `KernelOp`, etc. without taking a separate
+/// dependency.
 #[cfg(feature = "accel")]
 pub use atomr_accel as accel;
+
+/// Re-export of the NVIDIA CUDA backend (`atomr-accel-cuda`, split
+/// out of the umbrella in atomr-accel 0.3) so callers can reach
+/// `DeviceActor`, `ContextActor`, `GpuRef`, `GpuDispatcher`,
+/// `PerActorAllocator`, `PlacementActor`, and the kernel actors at
+/// `atomr_infer::accel_cuda::*`. Doc §4 ("Foundational Mapping" —
+/// `WorkerActor` ≡ `DeviceActor`).
+#[cfg(feature = "accel")]
+pub use atomr_accel_cuda as accel_cuda;
 
 /// Re-export of `atomr-accel-patterns` so callers can compose §9
 /// pipelines (`DynamicBatchingServer`, `InferenceCascade`,
@@ -73,13 +79,19 @@ pub use atomr_accel as accel;
 #[cfg(feature = "accel-patterns")]
 pub use atomr_accel_patterns as accel_patterns;
 
-// Back-compat aliases for the v0.1 names. Will be removed in v0.4.
-#[cfg(feature = "accel")]
-#[doc(hidden)]
-pub use atomr_accel as cuda;
-#[cfg(feature = "accel-patterns")]
-#[doc(hidden)]
-pub use atomr_accel_patterns as cuda_patterns;
+/// Zero-config defaults — auto-provisioning helpers for common
+/// dev-experience setups.
+///
+/// Currently ships [`defaults::gemma`] for local Gemma 4 via the
+/// vLLM runner. Off by default; opt in with the `gemma-default`
+/// feature.
+#[cfg(feature = "gemma-default")]
+pub mod defaults {
+    /// Gemma 4 auto-provisioner. See
+    /// `atomr_infer_runtime_vllm::defaults` for the full surface;
+    /// re-exported here so rollup consumers don't need a second dep.
+    pub use atomr_infer_runtime_vllm::defaults as gemma;
+}
 
 /// Re-export the most commonly used types so callers can `use
 /// atomr_infer::prelude::*;` and have everything they need to declare

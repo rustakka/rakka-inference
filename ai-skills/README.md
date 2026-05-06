@@ -22,7 +22,7 @@ does not entangle this repo's internal development workflow.
 | `atomr-infer-extending` | Adding a new backend — implementing `ModelRunner`, plugging into the rollup, where to slot a new crate in publish dep-order |
 
 Each `SKILL.md` is a thin router: it points at canonical docs in this
-repo (`README.md`, `docs/feature-matrix.md`, `docs/rustakka-inference-architecture-v4.md`,
+repo (`README.md`, `docs/feature-matrix.md`, `docs/architecture.md`,
 the per-crate READMEs) and at the relevant crate's API. It does **not**
 restate API surfaces that belong in rustdoc, because those drift faster
 than docs.
@@ -153,14 +153,14 @@ are not separately published.
 
 ## Companion skills
 
-- [Sibling rakka skills](https://github.com/rustakka/atomr/tree/main/ai-skills)
+- [Sibling atomr skills](https://github.com/rustakka/atomr/tree/main/ai-skills)
   — actor design, supervision, persistence, clustering, Python bindings.
-- [Sibling rakka-accel skills](https://github.com/rustakka/atomr-accel/tree/main/ai-skills)
+- [Sibling atomr-accel skills](https://github.com/rustakka/atomr-accel/tree/main/ai-skills)
   — DeviceActor, kernel selection, two-tier supervision, Python bindings,
   backend choice (CUDA today; ROCm/Metal/oneAPI/Vulkan on the roadmap).
 
 Install all three together when you're building a service that uses
-rakka primitives, rakka-accel GPU acceleration, **and** atomr-infer
+atomr primitives, atomr-accel GPU acceleration, **and** atomr-infer
 runtimes.
 
 ## License

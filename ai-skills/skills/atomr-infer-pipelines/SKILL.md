@@ -7,7 +7,7 @@ description: Use when composing multi-runtime pipelines in atomr-infer — hybri
 
 `atomr-infer` doesn't reinvent batching, cascading, or replica
 pools — those are generic actor blueprints from
-[`rakka-accel-patterns`](https://github.com/rustakka/atomr-accel/tree/main/crates/rakka-accel-patterns).
+[`atomr-accel-patterns`](https://github.com/rustakka/atomr-accel/tree/main/crates/atomr-accel-patterns).
 The `inference --features accel-patterns` rollup re-exports them as
 `inference::accel_patterns::*`. You plug a closure that calls
 `ModelRunner::execute` into each blueprint and you've composed a §9
@@ -147,8 +147,8 @@ Even without the `accel-patterns` feature, `inference-pipeline` gives
 you:
 
 - `request_source(rx)` — bridge a `tokio::mpsc::UnboundedReceiver<ExecuteBatch>`
-  into a `rakka_streams::Source<ExecuteBatch>` so you can compose with
-  the rakka-streams DSL.
+  into a `atomr_streams::Source<ExecuteBatch>` so you can compose with
+  the atomr-streams DSL.
 - `HybridGraph { local_classify_deployment, local_executor_deployment,
   remote_planner_deployment, remote_fallback_deployment }` — pure
   metadata describing the §9.1 shape; turn into a real
@@ -157,8 +157,8 @@ you:
 ## Canonical references
 
 - [`inference-pipeline` README](https://github.com/rustakka/atomr-infer/blob/main/crates/inference-pipeline/README.md)
-- [Architecture doc §9](https://github.com/rustakka/atomr-infer/blob/main/docs/rustakka-inference-architecture-v4.md) — pipeline composition
-- [`rakka-accel-patterns`](https://github.com/rustakka/atomr-accel/tree/main/crates/rakka-accel-patterns) — the upstream blueprints
+- [Architecture doc §9](https://github.com/rustakka/atomr-infer/blob/main/docs/architecture.md) — pipeline composition
+- [`atomr-accel-patterns`](https://github.com/rustakka/atomr-accel/tree/main/crates/atomr-accel-patterns) — the upstream blueprints
 
 ## Common mistakes
 

@@ -1,4 +1,4 @@
-//! `rakka` CLI binary. Subcommands per doc §11.3 / §11.6.
+//! `atomr-infer` CLI binary. Subcommands per doc §11.3 / §11.6.
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
@@ -7,7 +7,7 @@ use tracing_subscriber::EnvFilter;
 use atomr_infer_cli::{run_server, ProjectFile};
 
 #[derive(Parser)]
-#[command(name = "rakka", version, about = "atomr-infer CLI")]
+#[command(name = "atomr-infer", version, about = "atomr-infer CLI")]
 struct Cli {
     #[command(subcommand)]
     cmd: Cmd,

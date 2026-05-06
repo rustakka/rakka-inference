@@ -5,7 +5,7 @@
 //! (`RemoteNetwork { provider }`). This actor operates at the
 //! deployment → node level; once a node is chosen for a `LocalGpu`
 //! deployment, the *which-GPU-on-this-node* decision is delegated to
-//! the upstream `atomr_accel::cuda::placement::PlacementActor` (under the
+//! the upstream `atomr_accel_cuda::placement::PlacementActor` (under the
 //! `local-gpu` feature). Renamed from the doc's plain `PlacementActor`
 //! to make the abstraction-level distinction visible at the call site.
 //!
@@ -49,6 +49,7 @@ pub struct NodeAssignment {
 }
 
 #[derive(Debug, thiserror::Error)]
+#[non_exhaustive]
 pub enum PlacementError {
     #[error("no GPU nodes available")]
     NoGpuNodes,
@@ -56,6 +57,8 @@ pub enum PlacementError {
     NoEgressNodes(ProviderKind),
     #[error("deployment requires {requested} GPUs but no node has that many free")]
     NotEnoughGpus { requested: u32 },
+    #[error("unknown TransportKind variant — atomr-infer was built against a newer atomr-infer-core")]
+    UnknownTransport,
 }
 
 pub enum PlacementMsg {
@@ -96,7 +99,7 @@ impl DeploymentPlacementActor {
                 for i in 0..deployment.replicas {
                     let node = constraints.gpu_nodes[(i as usize) % constraints.gpu_nodes.len()].clone();
                     // Per-node GPU choice is the upstream
-                    // `atomr_accel::cuda::placement::PlacementActor`'s job —
+                    // `atomr_accel_cuda::placement::PlacementActor`'s job —
                     // topology constraints (NVLink islands, MIG, P2P
                     // groups) live there. v0 hands a contiguous range
                     // here and lets the per-node placement actor refine
@@ -123,6 +126,10 @@ impl DeploymentPlacementActor {
                     });
                 }
             }
+            // `TransportKind` is `#[non_exhaustive]`; reject unknown
+            // variants with a typed error rather than silently mis-
+            // placing the deployment.
+            _ => return Err(PlacementError::UnknownTransport),
         }
         Ok(PlacementResult {
             deployment: deployment.name.clone(),
