@@ -293,7 +293,11 @@ jobs:
                 printf '%s\n' "$out"
                 # Throttle between successful new-crate publishes so
                 # crates.io's "new crates per period" limit doesn't bite.
-                sleep 30
+                # 60s is the floor that keeps a full-workspace publish
+                # (~18 new crates) under the rolling per-minute cap;
+                # the v0.6.4 release hit 429s with 30s sleeps and
+                # spent ~12 extra minutes on retry backoff.
+                sleep 60
                 return 0
               fi
               printf '%s\n' "$out"
@@ -315,10 +319,12 @@ jobs:
           # Strict dep order. A crate appears after every crate it
           # depends on. Adding a new crate? Slot it into the earliest
           # layer that has all its dependencies already published.
-          # Names match Cargo.toml [package] name (atomr-infer-*
-          # for the publishable subset; the GPU/local/python/rollup
-          # crates still use the squat-blocked short names and are
-          # gated out of the default allowlist until they're renamed).
+          # Names match Cargo.toml [package] name (the rollup is
+          # `atomr-infer`, not the legacy short name `inference`).
+          # Note: `atomr-infer-cli` depends on the `atomr-infer`
+          # rollup (it imports the prelude). The rollup must publish
+          # *before* the CLI so cargo can resolve `atomr-infer = "X"`
+          # at CLI publish time.
           for crate in \
             atomr-infer-core \
             atomr-infer-runtime \
@@ -336,8 +342,8 @@ jobs:
             atomr-infer-runtime-mistralrs \
             atomr-infer-pipeline \
             atomr-infer-testkit \
-            atomr-infer-cli \
-            inference; do
+            atomr-infer \
+            atomr-infer-cli; do
             publish_one "$crate"
           done
 

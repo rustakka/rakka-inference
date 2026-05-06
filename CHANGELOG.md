@@ -6,6 +6,23 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.5] — 2026-05-06
+
+### Fixed — release pipeline: publish dep order + crates.io rate-limit headroom
+- v0.6.4 published 16 of 18 crates (everything from `core` through
+  `testkit`); the rollup `atomr-infer` and `atomr-infer-cli` were
+  left out:
+  1. `release.yml` had a stale `inference` (legacy short name) at
+     the end of the dep-order list. Renamed to `atomr-infer`.
+  2. `atomr-infer-cli` depends on the `atomr-infer` rollup but
+     was listed *before* it. Reordered so the rollup publishes
+     first, then the CLI.
+- v0.6.4's run also spent ~12 extra minutes on 429-rate-limit
+  retries: the 30s inter-publish sleep wasn't enough to stay under
+  crates.io's rolling per-minute cap. Bumped to 60s so a
+  full-workspace publish (~18 crates) completes without 429
+  backoffs in the typical case.
+
 ## [0.6.4] — 2026-05-06
 
 ### Fixed — crates.io metadata for the remaining 8 crates
