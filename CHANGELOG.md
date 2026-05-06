@@ -6,6 +6,30 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.2] — 2026-05-06
+
+### Fixed — crates.io publish allowlist now reflects transitive deps
+- `release.yml`'s `DEFAULT_PUBLISH_ALLOWLIST` was overstating what
+  could ship. The previous list (7 crates) included
+  `atomr-infer-runtime` and the four remote runners, but those
+  transitively declare `atomr-*` deps that are not yet on
+  crates.io — so `cargo publish` fails on them. The v0.6.1 publish
+  job hit this: `atomr-infer-core` shipped, then
+  `atomr-infer-runtime` failed with
+  `failed to select a version for the requirement
+   atomr-accel = "^0.3.0"; candidate versions found: 0.1.0`.
+- Trimmed the default allowlist to **just `atomr-infer-core`** —
+  the only crate whose entire `[dependencies]` section resolves
+  from crates.io alone. Sibling-workspace path deps to `atomr` and
+  `atomr-accel` are reference-only for planning and local
+  development; they don't change what crates.io accepts.
+- `cargo xtask release-checklist` now accounts for transitive
+  upstream-`atomr-*` deps and lists only `atomr-infer-core` as
+  publishable today; the other 17 crates are gated with a
+  per-crate reason.
+- `RELEASING.md` updated to match. Expand the allowlist as upstream
+  ships 0.3.x crates to crates.io.
+
 ## [0.6.1] — 2026-05-06
 
 ### Fixed — retry publish that never fired

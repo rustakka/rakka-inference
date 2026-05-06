@@ -135,36 +135,40 @@ Five jobs, in order:
 
 ## The crates allowlist
 
-`atomr-infer` declares path dependencies on the sibling
-`atomr` and `atomr-accel` workspaces. Until those workspaces publish
-to crates.io, `cargo publish` for any inference-* crate that
-transitively depends on them fails. The allowlist mechanism handles
-this:
+`atomr-infer` declares path dependencies on the sibling `atomr` and
+`atomr-accel` workspaces. **The sibling workspaces are
+reference-only for planning and local development — they don't
+ship**. When `cargo publish` runs against crates.io, the `path =
+"..."` part is stripped and only the version constraint matters:
+if `atomr-core 0.3.1` isn't on crates.io, no inference-* crate that
+declares `atomr-core` as a dep can publish.
+
+The allowlist mechanism only allows truly publishable crates onto
+crates.io:
 
 - **Default allowlist** (in `release.yml`'s `DEFAULT_PUBLISH_ALLOWLIST`
   env var):
   ```
   atomr-infer-core
-  atomr-infer-remote-core
-  atomr-infer-runtime-openai
-  atomr-infer-runtime-anthropic
-  atomr-infer-runtime-gemini
-  atomr-infer-runtime-litellm
   ```
-  These six crates have no `atomr` / `atomr-accel` dependency in
-  their published surface and can ship today.
+  This is the only crate whose entire `[dependencies]` section
+  resolves from crates.io alone. Every other member crate
+  transitively depends on the unpublished `atomr-*` /
+  `atomr-accel-*` 0.3.x line.
 
 - **Override** via repo variable
   `ATOMR_INFER_PUBLISH_ALLOWLIST`. Set on
   *Settings → Secrets and variables → Actions → Variables → New repository variable*.
 
-- **Full publish** — once `atomr` and `atomr-accel` ship their stable
-  versions to crates.io, set `ATOMR_INFER_PUBLISH_ALLOWLIST=""`
-  (empty) and the next tag will publish every member crate in dep
-  order.
+- **Expanding the allowlist** — as upstream publishes 0.3.x crates
+  to crates.io, run `cargo xtask release-checklist` to see which
+  inference-* crates are now publishable, and add them to the
+  allowlist (or set `ATOMR_INFER_PUBLISH_ALLOWLIST=""` to publish
+  every crate in dep order).
 
 `cargo xtask release-checklist` prints the current state of every
-crate so you can see what's gated and why.
+crate so you can see what's gated and why; it accounts for
+transitive `atomr-*` deps.
 
 ---
 

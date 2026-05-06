@@ -334,18 +334,44 @@ fn release_checklist() -> Result<()> {
     let current = read_workspace_version(cargo_toml)?;
     println!("atomr-infer release checklist (workspace version: {current})\n");
 
+    // Truly publishable = every Cargo.toml dep can resolve from
+    // crates.io alone. Path deps to sibling workspaces (atomr,
+    // atomr-accel) are stripped on `cargo publish`, so any crate
+    // that declares an `atomr-*` or `atomr-accel-*` dep is gated
+    // until upstream publishes that crate.
+    //
+    // The sibling workspaces under ../atomr and ../atomr-accel are
+    // for local development and as planning reference; they do not
+    // change what crates.io accepts.
     let publishable_now: &[&str] = &[
+        // Zero `atomr-*` / `atomr-accel-*` deps in the entire
+        // [dependencies] section.
         "inference-core",
-        "inference-remote-core",
-        "inference-runtime-openai",
-        "inference-runtime-anthropic",
-        "inference-runtime-gemini",
-        "inference-runtime-litellm",
     ];
     let gated_until_upstream: &[(&str, &str)] = &[
         (
+            "inference-remote-core",
+            "depends on atomr-core + atomr-distributed-data",
+        ),
+        (
             "inference-runtime",
-            "depends on atomr-* crates which are not yet on crates.io",
+            "depends on atomr-core + atomr-config + atomr-cluster-tools + atomr-distributed-data",
+        ),
+        (
+            "inference-runtime-openai",
+            "transitively via inference-runtime",
+        ),
+        (
+            "inference-runtime-anthropic",
+            "transitively via inference-runtime",
+        ),
+        (
+            "inference-runtime-gemini",
+            "transitively via inference-runtime",
+        ),
+        (
+            "inference-runtime-litellm",
+            "transitively via inference-runtime + inference-runtime-openai",
         ),
         (
             "inference-python-bridge",

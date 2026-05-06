@@ -26,7 +26,7 @@ members = [
 ]
 
 [workspace.package]
-version       = "0.6.1"
+version       = "0.6.2"
 edition       = "2021"
 rust-version  = "1.78"
 license       = "Apache-2.0"
@@ -132,23 +132,23 @@ hf-hub              = { version = "0.3", default-features = false, features = ["
 # All publishable crates live under the `atomr-infer-*` namespace.
 # Lib names follow `atomr_infer_X` (snake_case of the package name),
 # so source code imports them as `use atomr_infer_X::*`.
-atomr-infer-core              = { path = "crates/inference-core",              version = "0.6.1" }
-atomr-infer-runtime           = { path = "crates/inference-runtime",           version = "0.6.1" }
-atomr-infer-python-bridge     = { path = "crates/inference-python-bridge",     version = "0.6.1" }
-atomr-infer-remote-core       = { path = "crates/inference-remote-core",       version = "0.6.1" }
-atomr-infer-runtime-vllm      = { path = "crates/inference-runtime-vllm",      version = "0.6.1" }
-atomr-infer-runtime-tensorrt  = { path = "crates/inference-runtime-tensorrt",  version = "0.6.1" }
-atomr-infer-runtime-ort       = { path = "crates/inference-runtime-ort",       version = "0.6.1" }
-atomr-infer-runtime-candle    = { path = "crates/inference-runtime-candle",    version = "0.6.1" }
-atomr-infer-runtime-cudarc    = { path = "crates/inference-runtime-cudarc",    version = "0.6.1" }
-atomr-infer-runtime-mistralrs = { path = "crates/inference-runtime-mistralrs", version = "0.6.1" }
-atomr-infer-runtime-openai    = { path = "crates/inference-runtime-openai",    version = "0.6.1" }
-atomr-infer-runtime-anthropic = { path = "crates/inference-runtime-anthropic", version = "0.6.1" }
-atomr-infer-runtime-gemini    = { path = "crates/inference-runtime-gemini",    version = "0.6.1" }
-atomr-infer-runtime-litellm   = { path = "crates/inference-runtime-litellm",   version = "0.6.1" }
-atomr-infer-pipeline          = { path = "crates/inference-pipeline",          version = "0.6.1" }
-atomr-infer-testkit           = { path = "crates/inference-testkit",           version = "0.6.1" }
-atomr-infer                   = { path = "crates/inference",                   version = "0.6.1" }
+atomr-infer-core              = { path = "crates/inference-core",              version = "0.6.2" }
+atomr-infer-runtime           = { path = "crates/inference-runtime",           version = "0.6.2" }
+atomr-infer-python-bridge     = { path = "crates/inference-python-bridge",     version = "0.6.2" }
+atomr-infer-remote-core       = { path = "crates/inference-remote-core",       version = "0.6.2" }
+atomr-infer-runtime-vllm      = { path = "crates/inference-runtime-vllm",      version = "0.6.2" }
+atomr-infer-runtime-tensorrt  = { path = "crates/inference-runtime-tensorrt",  version = "0.6.2" }
+atomr-infer-runtime-ort       = { path = "crates/inference-runtime-ort",       version = "0.6.2" }
+atomr-infer-runtime-candle    = { path = "crates/inference-runtime-candle",    version = "0.6.2" }
+atomr-infer-runtime-cudarc    = { path = "crates/inference-runtime-cudarc",    version = "0.6.2" }
+atomr-infer-runtime-mistralrs = { path = "crates/inference-runtime-mistralrs", version = "0.6.2" }
+atomr-infer-runtime-openai    = { path = "crates/inference-runtime-openai",    version = "0.6.2" }
+atomr-infer-runtime-anthropic = { path = "crates/inference-runtime-anthropic", version = "0.6.2" }
+atomr-infer-runtime-gemini    = { path = "crates/inference-runtime-gemini",    version = "0.6.2" }
+atomr-infer-runtime-litellm   = { path = "crates/inference-runtime-litellm",   version = "0.6.2" }
+atomr-infer-pipeline          = { path = "crates/inference-pipeline",          version = "0.6.2" }
+atomr-infer-testkit           = { path = "crates/inference-testkit",           version = "0.6.2" }
+atomr-infer                   = { path = "crates/inference",                   version = "0.6.2" }
 
 [profile.release]
 opt-level     = 3
