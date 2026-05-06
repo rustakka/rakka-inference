@@ -4,6 +4,13 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+repository.workspace   = true
+homepage.workspace     = true
+authors.workspace      = true
+keywords.workspace     = true
+categories.workspace   = true
+readme                 = "README.md"
+description            = "ONNX Runtime backend for atomr-infer (Whisper, embeddings, rerankers) via the ort crate. Feature-gated."
 
 [features]
 default = []

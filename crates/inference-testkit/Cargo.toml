@@ -4,6 +4,13 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+repository.workspace   = true
+homepage.workspace     = true
+authors.workspace      = true
+keywords.workspace     = true
+categories.workspace   = true
+readme                 = "README.md"
+description            = "Test kit for atomr-infer: MockRunner plus wiremock-based provider fixtures (MockOpenAi, MockAnthropic, MockGemini, mount_chat_happy_path, inject_429_once, inject_5xx_once)."
 
 [dependencies]
 atomr-infer-core        = { workspace = true }

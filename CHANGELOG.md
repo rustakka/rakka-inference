@@ -6,6 +6,26 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.4] — 2026-05-06
+
+### Fixed — crates.io metadata for the remaining 8 crates
+- `cargo publish` rejects a crate with `missing or empty metadata
+  fields: description`. Eight crates were missing `description`
+  (and the standard publish-metadata block) in their own
+  `Cargo.toml`: `inference-cli`, `inference-pipeline`,
+  `inference-py-bindings`, `inference-python-bridge`,
+  `inference-runtime-candle`, `inference-runtime-cudarc`,
+  `inference-runtime-ort`, `inference-testkit`.
+- Added per-crate `description`, `repository.workspace = true`,
+  `homepage.workspace = true`, `authors.workspace = true`,
+  `keywords.workspace = true`, `categories.workspace = true`,
+  `readme = "README.md"` to each. README files already existed for
+  every crate.
+- v0.6.3 partially shipped before failing here:
+  `atomr-infer-core 0.6.3` and `atomr-infer-runtime 0.6.3` are on
+  crates.io. The publish loop's idempotent "already uploaded"
+  handler will skip those during the v0.6.4 attempt and continue.
+
 ## [0.6.3] — 2026-05-06
 
 ### Added — full workspace publishes to crates.io
