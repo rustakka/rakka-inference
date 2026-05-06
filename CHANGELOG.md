@@ -6,6 +6,8 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-05-05
+
 ### Added — native aarch64-Linux wheels
 - PyPI now ships pre-built wheels for `aarch64-unknown-linux-gnu`
   and `aarch64-unknown-linux-musl`, built natively on GitHub-hosted
