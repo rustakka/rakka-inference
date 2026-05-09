@@ -316,13 +316,14 @@ dependencies = [
 
 [[package]]
 name = "atomr-cluster"
-version = "0.3.1"
+version = "0.6.0"
 dependencies = [
  "async-trait",
  "atomr-config",
  "atomr-core",
  "atomr-remote",
  "bincode 2.0.1",
+ "dashmap",
  "parking_lot",
  "serde",
  "serde_json",
@@ -333,7 +334,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-cluster-tools"
-version = "0.3.1"
+version = "0.6.0"
 dependencies = [
  "async-trait",
  "atomr-cluster",
@@ -346,7 +347,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-config"
-version = "0.3.1"
+version = "0.6.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -356,7 +357,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-core"
-version = "0.3.1"
+version = "0.6.0"
 dependencies = [
  "async-trait",
  "atomr-config",
@@ -380,7 +381,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-distributed-data"
-version = "0.3.1"
+version = "0.6.0"
 dependencies = [
  "async-trait",
  "atomr-cluster",
@@ -468,7 +469,14 @@ name = "atomr-infer-py-bindings"
 version = "0.6.5"
 dependencies = [
  "atomr-infer-core",
+ "atomr-infer-testkit",
+ "futures",
+ "futures-util",
  "pyo3",
+ "pyo3-async-runtimes",
+ "serde",
+ "serde_json",
+ "tokio",
  "tracing",
 ]
 
@@ -727,7 +735,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-macros"
-version = "0.3.1"
+version = "0.6.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -736,7 +744,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-remote"
-version = "0.3.1"
+version = "0.6.0"
 dependencies = [
  "async-trait",
  "atomr-config",
@@ -757,7 +765,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-streams"
-version = "0.3.1"
+version = "0.6.0"
 dependencies = [
  "async-trait",
  "atomr-core",
@@ -4738,6 +4746,19 @@ dependencies = [
  "pyo3-ffi",
  "pyo3-macros",
  "unindent",
+]
+
+[[package]]
+name = "pyo3-async-runtimes"
+version = "0.22.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2529f0be73ffd2be0cc43c013a640796558aa12d7ca0aab5cc14f375b4733031"
+dependencies = [
+ "futures",
+ "once_cell",
+ "pin-project-lite",
+ "pyo3",
+ "tokio",
 ]
 
 [[package]]

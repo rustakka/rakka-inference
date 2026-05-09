@@ -142,13 +142,13 @@ ship as part of an atomr-infer release**. When `cargo publish` runs
 against crates.io, the `path = "..."` part is stripped and only the
 version constraint matters.
 
-As of 2026-05-06 every member crate's dep graph resolves from
+As of 2026-05-08 every member crate's dep graph resolves from
 crates.io alone:
 
-- The upstream `atomr` family is at **0.3.1** on crates.io.
+- The upstream `atomr` family is at **0.6.0** on crates.io.
 - The upstream `atomr-accel` family is at **0.3.3** on crates.io.
-- Our `Cargo.toml` pins `atomr-* = "0.3.1"` and `atomr-accel-* =
-  "0.3.0"` — both compatible with what's published.
+- Our `Cargo.toml` pins `atomr-* = "0.6.0"` and `atomr-accel-* =
+  "0.3.3"` to track the latest published lines exactly.
 
 The allowlist is therefore **empty by default**, which the publish
 loop interprets as "publish every member crate in dep order":

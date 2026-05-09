@@ -6,6 +6,43 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed — track upstream atomr 0.6.0 + atomr-accel 0.3.3
+- Workspace pins bumped: `atomr-* = "0.3.1"` → `"0.6.0"` and
+  `atomr-accel-* = "0.3.0"` → `"0.3.3"`. The path-dep clones at
+  `../atomr` and `../atomr-accel` are already at these versions
+  upstream; the pin gap was cosmetic (Cargo.lock had already
+  resolved `atomr-accel` to 0.3.3 transitively, and 0.3.3 itself
+  pulls in `atomr-* = "0.6.0"` for its own deps).
+- `RELEASING.md` allowlist paragraph refreshed to match.
+
+### Added — Python parity wave (`inference-py-bindings`)
+- Bindings restructured into hierarchical submodules
+  (`atomr_infer._native.{core,runtime,config,errors,cluster}`)
+  matching upstream `atomr/pycore`'s layout.
+- `core` exposes `Deployment` (full fields w/ setters),
+  `ExecuteBatch`, `Message`, `MessageContent`, `Role`,
+  `ContentPart`, `SamplingParams`, `TokenChunk`, `Tokens`,
+  `TokenUsage`, `FinishReason`, `CostEstimate`, `Replica`.
+- `runtime` exposes `RuntimeKind`, `RuntimeConfig`,
+  `ProviderKind`, `TransportKind`, `CircuitBreakerConfig`,
+  `JitterKind` (string-tagged-enum pattern from upstream).
+- `config` exposes `Serving`, `RateLimits`, `RetryPolicy`,
+  `Timeouts`, `Budget`, `BudgetAction`, `CapacityPolicy`.
+- `errors` exposes a Python exception hierarchy mirroring
+  `inference_core::error::InferenceError` variants
+  (`InferenceError` base ← `RateLimited`, `CircuitOpen`,
+  `BadRequest`, …).
+- `Cluster.deploy(deployment)` is now real for remote runtimes
+  (OpenAI / Anthropic / Gemini / LiteLLM) and the testkit
+  `MockRunner`; local-GPU runtimes return a `BadRequest`.
+- `Cluster.execute(name, batch)` is async (asyncio interop via
+  `pyo3-async-runtimes::tokio::future_into_py`); drains the
+  `RunHandle` stream into a single `Tokens`.
+- `Cluster.execute_stream(name, batch)` returns an async
+  iterator yielding `TokenChunk` per `__anext__`.
+- Pure-Python facade re-exports the new surface; `__version__`
+  is now sourced from `importlib.metadata`.
+
 ## [0.6.5] — 2026-05-06
 
 ### Fixed — release pipeline: publish dep order + crates.io rate-limit headroom
