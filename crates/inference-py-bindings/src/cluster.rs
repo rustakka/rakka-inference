@@ -180,10 +180,7 @@ impl PyCluster {
         let cell = self.lookup(&deployment_name)?;
         let batch = batch.inner.clone();
         Ok(PyTokenStream {
-            state: Arc::new(AsyncMutex::new(StreamState::Pending {
-                cell: Some(cell),
-                batch: Some(batch),
-            })),
+            state: Arc::new(AsyncMutex::new(StreamState::Pending { cell, batch })),
         })
     }
 
@@ -212,8 +209,8 @@ impl PyCluster {
 enum StreamState {
     /// Haven't called `runner.execute()` yet — first `__anext__` will.
     Pending {
-        cell: Option<RunnerCell>,
-        batch: Option<atomr_infer_core::batch::ExecuteBatch>,
+        cell: RunnerCell,
+        batch: atomr_infer_core::batch::ExecuteBatch,
     },
     Active(BoxStream<'static, InferenceResult<atomr_infer_core::tokens::TokenChunk>>),
     Done,
@@ -233,37 +230,41 @@ impl PyTokenStream {
     fn __anext__<'py>(slf: PyRef<'py, Self>, py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
         let state = slf.state.clone();
         future_into_py(py, async move {
-            // Lazily kick off `runner.execute()` on first call so any
-            // dispatch error surfaces as a normal Python exception
-            // instead of breaking the async-iterator protocol.
+            // Step 1: if Pending, bootstrap into Active. Use mem::replace
+            // to take owned values out of the state without Option dance.
             {
                 let mut guard = state.lock().await;
-                if let StreamState::Pending { cell, batch } = &mut *guard {
-                    let cell = cell.take().expect("pending state has cell");
-                    let batch = batch.take().expect("pending state has batch");
-                    let mut runner = cell.lock().await;
-                    let handle = runner.execute(batch).await.map_err(errors::map)?;
-                    drop(runner);
-                    *guard = StreamState::Active(handle.into_stream());
+                let prev = std::mem::replace(&mut *guard, StreamState::Done);
+                match prev {
+                    StreamState::Pending { cell, batch } => {
+                        let mut runner = cell.lock().await;
+                        let result = runner.execute(batch).await;
+                        drop(runner);
+                        match result {
+                            Ok(handle) => *guard = StreamState::Active(handle.into_stream()),
+                            // Leaves state Done — terminal failure.
+                            Err(e) => return Err(errors::map(e)),
+                        }
+                    }
+                    // Restore non-Pending states; mem::replace stole them.
+                    other => *guard = other,
                 }
             }
-            // Now pull the next chunk.
+            // Step 2: pull next chunk from the active stream.
             let mut guard = state.lock().await;
-            let stream = match &mut *guard {
-                StreamState::Active(s) => s,
-                StreamState::Done => return Err(PyStopAsyncIteration::new_err("")),
-                StreamState::Pending { .. } => unreachable!("just transitioned out"),
-            };
-            match stream.next().await {
-                Some(Ok(chunk)) => Ok(PyTokenChunk::from(chunk)),
-                Some(Err(e)) => {
-                    *guard = StreamState::Done;
-                    Err(errors::map(e))
-                }
-                None => {
-                    *guard = StreamState::Done;
-                    Err(PyStopAsyncIteration::new_err(""))
-                }
+            match &mut *guard {
+                StreamState::Active(s) => match s.next().await {
+                    Some(Ok(chunk)) => Ok(PyTokenChunk::from(chunk)),
+                    Some(Err(e)) => {
+                        *guard = StreamState::Done;
+                        Err(errors::map(e))
+                    }
+                    None => {
+                        *guard = StreamState::Done;
+                        Err(PyStopAsyncIteration::new_err(""))
+                    }
+                },
+                _ => Err(PyStopAsyncIteration::new_err("")),
             }
         })
     }

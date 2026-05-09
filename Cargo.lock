@@ -394,7 +394,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "atomr-accel",
  "atomr-accel-cuda",
@@ -417,7 +417,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-cli"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "anyhow",
  "atomr-config",
@@ -437,7 +437,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-core"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "async-trait",
  "bytes",
@@ -452,7 +452,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-pipeline"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "async-trait",
  "atomr-accel-patterns",
@@ -466,7 +466,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-py-bindings"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "atomr-infer-core",
  "atomr-infer-testkit",
@@ -482,7 +482,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-python-bridge"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "atomr-infer-core",
  "parking_lot",
@@ -492,7 +492,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-remote-core"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -520,7 +520,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -547,7 +547,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-anthropic"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -568,7 +568,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-candle"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "async-trait",
  "atomr-accel",
@@ -582,7 +582,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-cudarc"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "async-trait",
  "atomr-accel",
@@ -594,7 +594,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-gemini"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -615,7 +615,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-litellm"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -631,7 +631,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-mistralrs"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "async-trait",
  "atomr-infer-core",
@@ -647,7 +647,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-openai"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -671,7 +671,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-ort"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "async-trait",
  "atomr-infer-core",
@@ -682,7 +682,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-tensorrt"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "async-trait",
  "atomr-accel-tensorrt",
@@ -698,7 +698,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-runtime-vllm"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "async-trait",
  "atomr-core",
@@ -721,7 +721,7 @@ dependencies = [
 
 [[package]]
 name = "atomr-infer-testkit"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "async-trait",
  "atomr-infer-core",
@@ -2674,7 +2674,7 @@ dependencies = [
 
 [[package]]
 name = "gemma_bench"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "anyhow",
  "atomr-infer",
@@ -5204,7 +5204,7 @@ checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
 
 [[package]]
 name = "remote_only_demo"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "anyhow",
  "arc-swap",
@@ -8160,7 +8160,7 @@ checksum = "1ffae5123b2d3fc086436f8834ae3ab053a283cfac8fe0a0b8eaae044768a4c4"
 
 [[package]]
 name = "xtask"
-version = "0.6.5"
+version = "0.7.0"
 dependencies = [
  "anyhow",
  "clap",
