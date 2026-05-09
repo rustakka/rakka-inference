@@ -6,6 +6,31 @@ this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-05-09
+
+### Added — full ONNX Runtime adapter (`atomr-infer-runtime-ort`)
+- The `ort` runtime is no longer a stub. `ModelRunner::execute` now
+  runs a real autoregressive generation loop on ONNX-exported causal
+  LMs (HuggingFace Optimum-ONNX layout): tokenizer load, prefill +
+  decode with KV cache, temperature / top-k / top-p sampling, stop
+  strings, EOS detection, streaming `TokenChunk`s.
+- `OrtRunner::infer(HashMap<String, InferTensor>) -> InferOutputs` is
+  the low-level entry point for embeddings (BGE / E5), rerankers,
+  Whisper encoders, and vision classifiers.
+- New crate features: `ort-cuda` (CUDA EP), `ort-load-dynamic`
+  (`ORT_DYLIB_PATH`), `ort-hf-hub` (`tokenizer.json` from HuggingFace).
+  All forwarded from the `inference` rollup.
+- `OrtConfig` extended with `device_id`, `tokenizer_path`, `hf_repo`,
+  `intra_threads`, `default_max_new_tokens`.
+- Topology probe is tolerant of HF export name variants
+  (`past_key_values.0.key` vs `past.0.key`); fails with `BadRequest`
+  echoing probed shape when the model isn't a recognised causal LM.
+- Workspace deps added: `tokenizers 0.20`, `ndarray 0.16`,
+  `tokio-stream 0.1`, `rand 0.8`, `half 2`, `regex 1`.
+- Tests: config round-trip (no-feature), inline `runtime_kind` /
+  `transport_kind`, `cpu_smoke` and `textgen_smoke` integration
+  tests gated on env-var paths to local ONNX fixtures.
+
 ### Changed — track upstream atomr 0.6.0 + atomr-accel 0.3.3
 - Workspace pins bumped: `atomr-* = "0.3.1"` → `"0.6.0"` and
   `atomr-accel-* = "0.3.0"` → `"0.3.3"`. The path-dep clones at

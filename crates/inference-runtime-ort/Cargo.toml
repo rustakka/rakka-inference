@@ -10,15 +10,52 @@ authors.workspace      = true
 keywords.workspace     = true
 categories.workspace   = true
 readme                 = "README.md"
-description            = "ONNX Runtime backend for atomr-infer (Whisper, embeddings, rerankers) via the ort crate. Feature-gated."
+description            = "ONNX Runtime backend for atomr-infer (Whisper, embeddings, rerankers, ONNX-exported text-gen) via the ort crate. Feature-gated."
 
 [features]
 default = []
-ort     = ["dep:ort"]
+
+# Umbrella: pulls real ORT in. Enables the chat-style `execute()` path
+# (tokenizer + sampling loop) and the low-level `infer()` API.
+ort = [
+    "dep:ort",
+    "dep:tokenizers",
+    "dep:ndarray",
+    "dep:rand",
+    "dep:half",
+    "dep:tokio",
+    "dep:tokio-stream",
+    "dep:futures",
+    "dep:parking_lot",
+    "dep:tracing",
+    "dep:regex",
+]
+
+# Forward-only feature flags — additive on top of `ort`.
+ort-cuda         = ["ort", "ort/cuda"]
+ort-load-dynamic = ["ort", "ort/load-dynamic"]
+ort-hf-hub       = ["ort", "dep:hf-hub"]
 
 [dependencies]
 atomr-infer-core    = { workspace = true }
 atomr-infer-runtime = { workspace = true }
-async-trait       = { workspace = true }
-serde             = { workspace = true }
-ort               = { workspace = true, optional = true }
+async-trait         = { workspace = true }
+serde               = { workspace = true }
+
+ort                 = { workspace = true, optional = true, features = ["std", "download-binaries", "copy-dylibs", "tls-rustls", "api-21"] }
+tokenizers          = { workspace = true, optional = true }
+ndarray             = { workspace = true, optional = true }
+rand                = { workspace = true, optional = true }
+half                = { workspace = true, optional = true }
+tokio               = { workspace = true, optional = true }
+tokio-stream        = { workspace = true, optional = true }
+futures             = { workspace = true, optional = true }
+parking_lot         = { workspace = true, optional = true }
+tracing             = { workspace = true, optional = true }
+regex               = { workspace = true, optional = true }
+hf-hub              = { workspace = true, optional = true }
+
+[dev-dependencies]
+tokio      = { workspace = true, features = ["macros", "rt"] }
+serde_json = { workspace = true }
+tempfile   = { workspace = true }

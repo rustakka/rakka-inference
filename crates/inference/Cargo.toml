@@ -38,6 +38,16 @@ tensorrt-fp8    = ["tensorrt", "atomr-infer-runtime-tensorrt/tensorrt-fp8"]
 tensorrt-plugin = ["tensorrt", "atomr-infer-runtime-tensorrt/tensorrt-plugin"]
 tensorrt-link   = ["tensorrt", "atomr-infer-runtime-tensorrt/tensorrt-link"]
 
+# Forwarded ORT sub-features. `ort-cuda` enables the CUDA execution
+# provider; `ort-load-dynamic` lets `libonnxruntime` be located at
+# runtime via `ORT_DYLIB_PATH`; `ort-hf-hub` adds the optional
+# `tokenizer.json` download path. None are in `all-native` — link-
+# affecting features stay opt-in (matches the `tensorrt-link`
+# precedent).
+ort-cuda         = ["ort", "atomr-infer-runtime-ort/ort-cuda"]
+ort-load-dynamic = ["ort", "atomr-infer-runtime-ort/ort-load-dynamic"]
+ort-hf-hub       = ["ort", "atomr-infer-runtime-ort/ort-hf-hub"]
+
 # Remote runtimes (no system deps; safe to enable on any host)
 openai    = ["dep:atomr-infer-runtime-openai"]
 anthropic = ["dep:atomr-infer-runtime-anthropic"]

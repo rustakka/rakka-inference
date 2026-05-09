@@ -40,7 +40,8 @@ actual dependency graph for you.
 | `vllm`                 | `atomr-infer-runtime-vllm`                                          | **`pyo3`**, `python`        | Native `LLMEngine` bridge with token-streaming. |
 | `tensorrt`             | `atomr-infer-runtime-tensorrt` + `atomr-accel-tensorrt`             | `libnvinfer.so` (link-time) | Real engine builder + runtime wrapper since v0.5. |
 | `tensorrt-onnx` / `-int8` / `-fp8` / `-plugin` / `-link` | (sub-features on `tensorrt`)             | per-feature                 | ONNX import / INT8 / FP8 PTQ / `IPluginV3` / actual `libnvinfer` link. |
-| `ort`                  | `atomr-infer-runtime-ort`                                           | `ort`                       | ONNX Runtime via the `ort` crate. |
+| `ort`                  | `atomr-infer-runtime-ort`                                           | `ort`, `tokenizers`         | ONNX Runtime via the `ort` crate. CPU EP + tokenizer + autoregressive sampling for ONNX-exported causal LMs; low-level `OrtRunner::infer` for embeddings / encoders / Whisper / vision. |
+| `ort-cuda` / `-load-dynamic` / `-hf-hub` | (sub-features on `ort`)                           | per-feature                 | CUDA EP / runtime `libonnxruntime` lookup / HuggingFace `tokenizer.json` fallback. |
 | `candle`               | `atomr-infer-runtime-candle` + `accel`                              | `candle-*`, `cudarc`        | Pure-Rust transformer inference. |
 | `cudarc`               | `atomr-infer-runtime-cudarc` + `accel`                              | `cudarc`                    | Direct kernel dispatch via `atomr_accel_cuda::kernel::*`. |
 | `mistralrs`            | `atomr-infer-runtime-mistralrs`                                     | `mistralrs`                 | Rust-native LLM runtime with token-streaming. |

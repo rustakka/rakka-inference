@@ -26,7 +26,7 @@ members = [
 ]
 
 [workspace.package]
-version       = "0.7.0"
+version       = "0.7.1"
 edition       = "2021"
 rust-version  = "1.78"
 license       = "Apache-2.0"
@@ -95,18 +95,18 @@ pyo3-async-runtimes  = { version = "0.22", default-features = false, features = 
 # Sibling atomr workspace ---------------------------------------------------
 # atomr is the actor-runtime substrate. The umbrella crate is
 # published as `atomr` on crates.io.
-atomr                  = { path = "../atomr/crates/atomr",                  version = "0.6.0" }
-atomr-core             = { path = "../atomr/crates/atomr-core",             version = "0.6.0" }
-atomr-config           = { path = "../atomr/crates/atomr-config",           version = "0.6.0" }
-atomr-macros           = { path = "../atomr/crates/atomr-macros",           version = "0.6.0" }
-atomr-testkit          = { path = "../atomr/crates/atomr-testkit",          version = "0.6.0" }
-atomr-cluster          = { path = "../atomr/crates/atomr-cluster",          version = "0.6.0" }
-atomr-cluster-tools    = { path = "../atomr/crates/atomr-cluster-tools",    version = "0.6.0" }
-atomr-cluster-sharding = { path = "../atomr/crates/atomr-cluster-sharding", version = "0.6.0" }
-atomr-distributed-data = { path = "../atomr/crates/atomr-distributed-data", version = "0.6.0" }
-atomr-streams          = { path = "../atomr/crates/atomr-streams",          version = "0.6.0" }
-atomr-persistence      = { path = "../atomr/crates/atomr-persistence",      version = "0.6.0" }
-atomr-telemetry        = { path = "../atomr/crates/atomr-telemetry",        version = "0.6.0" }
+atomr                  = { path = "../atomr/crates/atomr",                  version = "0.7.0" }
+atomr-core             = { path = "../atomr/crates/atomr-core",             version = "0.7.0" }
+atomr-config           = { path = "../atomr/crates/atomr-config",           version = "0.7.0" }
+atomr-macros           = { path = "../atomr/crates/atomr-macros",           version = "0.7.0" }
+atomr-testkit          = { path = "../atomr/crates/atomr-testkit",          version = "0.7.0" }
+atomr-cluster          = { path = "../atomr/crates/atomr-cluster",          version = "0.7.0" }
+atomr-cluster-tools    = { path = "../atomr/crates/atomr-cluster-tools",    version = "0.7.0" }
+atomr-cluster-sharding = { path = "../atomr/crates/atomr-cluster-sharding", version = "0.7.0" }
+atomr-distributed-data = { path = "../atomr/crates/atomr-distributed-data", version = "0.7.0" }
+atomr-streams          = { path = "../atomr/crates/atomr-streams",          version = "0.7.0" }
+atomr-persistence      = { path = "../atomr/crates/atomr-persistence",      version = "0.7.0" }
+atomr-telemetry        = { path = "../atomr/crates/atomr-telemetry",        version = "0.7.0" }
 
 # Sibling atomr-accel workspace --------------------------------------------
 # Backend-agnostic compute acceleration substrate. The umbrella
@@ -114,10 +114,10 @@ atomr-telemetry        = { path = "../atomr/crates/atomr-telemetry",        vers
 # implementation now lives in `atomr-accel-cuda` (split out in
 # atomr-accel v0.3). TensorRT (Phase 8) is in `atomr-accel-tensorrt`,
 # and portable blueprints live in `atomr-accel-patterns`.
-atomr-accel          = { path = "../atomr-accel/crates/atomr-accel",          version = "0.3.3" }
-atomr-accel-cuda     = { path = "../atomr-accel/crates/atomr-accel-cuda",     version = "0.3.3" }
-atomr-accel-patterns = { path = "../atomr-accel/crates/atomr-accel-patterns", version = "0.3.3" }
-atomr-accel-tensorrt = { path = "../atomr-accel/crates/atomr-accel-tensorrt", version = "0.3.3" }
+atomr-accel          = { path = "../atomr-accel/crates/atomr-accel",          version = "0.4.2" }
+atomr-accel-cuda     = { path = "../atomr-accel/crates/atomr-accel-cuda",     version = "0.4.2" }
+atomr-accel-patterns = { path = "../atomr-accel/crates/atomr-accel-patterns", version = "0.4.2" }
+atomr-accel-tensorrt = { path = "../atomr-accel/crates/atomr-accel-tensorrt", version = "0.4.2" }
 
 # Optional GPU/runtime libs
 cudarc              = { version = "0.19.4", features = ["cuda-version-from-build-system", "fallback-latest"] }
@@ -128,27 +128,36 @@ ort                 = { version = "2.0.0-rc.10", default-features = false }
 mistralrs           = "0.8"
 hf-hub              = { version = "0.3", default-features = false, features = ["tokio"] }
 
+# ONNX Runtime adapter deps
+tokenizers   = { version = "0.20", default-features = false, features = ["onig"] }
+ndarray      = "0.16"
+tokio-stream = "0.1"
+rand         = { version = "0.8", default-features = false, features = ["std", "std_rng"] }
+half         = "2"
+regex        = "1"
+tempfile     = "3"
+
 # Internal crates -----------------------------------------------------------
 # All publishable crates live under the `atomr-infer-*` namespace.
 # Lib names follow `atomr_infer_X` (snake_case of the package name),
 # so source code imports them as `use atomr_infer_X::*`.
-atomr-infer-core              = { path = "crates/inference-core",              version = "0.7.0" }
-atomr-infer-runtime           = { path = "crates/inference-runtime",           version = "0.7.0" }
-atomr-infer-python-bridge     = { path = "crates/inference-python-bridge",     version = "0.7.0" }
-atomr-infer-remote-core       = { path = "crates/inference-remote-core",       version = "0.7.0" }
-atomr-infer-runtime-vllm      = { path = "crates/inference-runtime-vllm",      version = "0.7.0" }
-atomr-infer-runtime-tensorrt  = { path = "crates/inference-runtime-tensorrt",  version = "0.7.0" }
-atomr-infer-runtime-ort       = { path = "crates/inference-runtime-ort",       version = "0.7.0" }
-atomr-infer-runtime-candle    = { path = "crates/inference-runtime-candle",    version = "0.7.0" }
-atomr-infer-runtime-cudarc    = { path = "crates/inference-runtime-cudarc",    version = "0.7.0" }
-atomr-infer-runtime-mistralrs = { path = "crates/inference-runtime-mistralrs", version = "0.7.0" }
-atomr-infer-runtime-openai    = { path = "crates/inference-runtime-openai",    version = "0.7.0" }
-atomr-infer-runtime-anthropic = { path = "crates/inference-runtime-anthropic", version = "0.7.0" }
-atomr-infer-runtime-gemini    = { path = "crates/inference-runtime-gemini",    version = "0.7.0" }
-atomr-infer-runtime-litellm   = { path = "crates/inference-runtime-litellm",   version = "0.7.0" }
-atomr-infer-pipeline          = { path = "crates/inference-pipeline",          version = "0.7.0" }
-atomr-infer-testkit           = { path = "crates/inference-testkit",           version = "0.7.0" }
-atomr-infer                   = { path = "crates/inference",                   version = "0.7.0" }
+atomr-infer-core              = { path = "crates/inference-core",              version = "0.7.1" }
+atomr-infer-runtime           = { path = "crates/inference-runtime",           version = "0.7.1" }
+atomr-infer-python-bridge     = { path = "crates/inference-python-bridge",     version = "0.7.1" }
+atomr-infer-remote-core       = { path = "crates/inference-remote-core",       version = "0.7.1" }
+atomr-infer-runtime-vllm      = { path = "crates/inference-runtime-vllm",      version = "0.7.1" }
+atomr-infer-runtime-tensorrt  = { path = "crates/inference-runtime-tensorrt",  version = "0.7.1" }
+atomr-infer-runtime-ort       = { path = "crates/inference-runtime-ort",       version = "0.7.1" }
+atomr-infer-runtime-candle    = { path = "crates/inference-runtime-candle",    version = "0.7.1" }
+atomr-infer-runtime-cudarc    = { path = "crates/inference-runtime-cudarc",    version = "0.7.1" }
+atomr-infer-runtime-mistralrs = { path = "crates/inference-runtime-mistralrs", version = "0.7.1" }
+atomr-infer-runtime-openai    = { path = "crates/inference-runtime-openai",    version = "0.7.1" }
+atomr-infer-runtime-anthropic = { path = "crates/inference-runtime-anthropic", version = "0.7.1" }
+atomr-infer-runtime-gemini    = { path = "crates/inference-runtime-gemini",    version = "0.7.1" }
+atomr-infer-runtime-litellm   = { path = "crates/inference-runtime-litellm",   version = "0.7.1" }
+atomr-infer-pipeline          = { path = "crates/inference-pipeline",          version = "0.7.1" }
+atomr-infer-testkit           = { path = "crates/inference-testkit",           version = "0.7.1" }
+atomr-infer                   = { path = "crates/inference",                   version = "0.7.1" }
 
 [profile.release]
 opt-level     = 3
