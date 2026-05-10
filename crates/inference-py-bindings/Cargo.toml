@@ -11,6 +11,10 @@ keywords.workspace     = true
 categories.workspace   = true
 readme                 = "README.md"
 description            = "PyO3 bindings for atomr-infer's Cluster + Deployment surface; built into a maturin wheel for the atomr-infer Python package."
+# Ships as the single `atomr-infer` PyPI wheel via maturin, not as
+# a separate crates.io artifact. Matches atomr's convention for
+# py-binding shims and prevents an accidental `cargo publish`.
+publish                = false
 
 [features]
 default          = []

@@ -14,15 +14,26 @@ Conventional-Commit on main
         │  commits `chore(release): vX.Y.Z`
         │  tags `vX.Y.Z`
         │  pushes
+        │  gh workflow run release.yml --ref vX.Y.Z  ← trampoline
         ▼
-.github/workflows/release.yml   (fires on tag push)
+.github/workflows/release.yml   (fires via dispatch ↑ or direct `v*` tag push)
         │  cargo xtask verify           ← 1.0-rc gate
-        │  build-binaries (5 targets)
+        │  build-binaries (4 targets)
+        │  build-wheels + build-sdist   ← Python
         │  github-release               ← release notes + tarballs
         │  publish-crates               ← dep order, allowlist-gated
+        │  publish-pypi                 ← OIDC trusted publishing
         ▼
-   crates.io + GitHub Release
+   crates.io + PyPI + GitHub Release
 ```
+
+The `gh workflow run` step at the end of `version-bump.yml` is the
+**trampoline**, and it is load-bearing. Tag pushes authored by the
+default `GITHUB_TOKEN` do **not** fire `on: push: tags` workflows
+(a long-standing GitHub safety feature to prevent CI loops), so
+without an explicit dispatch the bump bot's tag would land in git and
+never trigger `release.yml`. See [Why the trampoline exists](#why-the-trampoline-exists)
+for the failure mode this prevents.
 
 ---
 
@@ -62,11 +73,64 @@ Release-As: 0.1.4
      has `path = "crates/..."` (so each crate's resolved version
      stays in sync with the workspace)
    - runs `cargo update --workspace` to refresh `Cargo.lock`.
-4. Commits + tags + pushes with `--follow-tags`. The tag push fires
-   `release.yml`.
+4. Commits + tags + pushes with `--follow-tags`.
+5. **Dispatches `release.yml` explicitly** via `gh workflow run
+   release.yml --ref vX.Y.Z -f dry_run=false`. This is the
+   trampoline — see below for why a plain tag push isn't enough.
 
 You can dry-run the decision via the GitHub UI:
 **Actions → Version bump + tag → Run workflow → dry_run: true**.
+
+### Why the trampoline exists
+
+GitHub Actions has a long-standing safety feature: **events caused by
+a workflow that authenticated with the default `GITHUB_TOKEN` do not
+trigger other workflows**. This prevents accidental infinite loops
+(e.g. a CI workflow that pushes a commit triggering itself again).
+
+In practice it means that when `version-bump.yml` does
+`git push origin --follow-tags`, the resulting tag push is invisible
+to `release.yml`'s `on: push: tags: ['v*']` trigger. Without the
+trampoline, releases would silently never run — the symptom is "tags
+exist in git but crates.io and PyPI never see them."
+
+The upstream `atomr` repo hit this exact bug between v0.6.1 and v0.9.1
+(five tags, zero publishes); the trampoline pattern below is the
+documented remediation, and `atomr-infer` ships it from day one to
+avoid repeating the regression.
+
+After `version-bump.yml` pushes the tag, it runs:
+
+```yaml
+- name: Trigger release.yml against the new tag
+  if: steps.decide.outputs.kind != 'skip' && github.event.inputs.dry_run != 'true'
+  env:
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    NEW_VERSION: ${{ steps.bump.outputs.version }}
+  run: |
+    gh workflow run release.yml \
+      --ref "v${NEW_VERSION}" \
+      -f dry_run=false \
+      -f skip_python=false \
+      -f skip_crates=false
+```
+
+A `workflow_dispatch` event from `gh workflow run` does **not** carry
+the GITHUB_TOKEN-event-suppression bit, so `release.yml` runs normally
+— just with `event_name: workflow_dispatch` instead of `push`. The
+publish jobs (`github-release`, `publish-crates`, `publish-pypi`)
+accept either:
+
+```yaml
+if: |
+  startsWith(github.ref, 'refs/tags/v') &&
+  (github.event_name == 'push' ||
+   (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true'))
+```
+
+This requires `actions: write` permission on `version-bump.yml`
+(`contents: write` alone is insufficient — the dispatch call needs
+its own scope).
 
 ---
 
@@ -285,8 +349,18 @@ inference                        ← rollup; everything above
 
 When you add a new crate to the workspace: **slot it into this list at
 the earliest layer where all its dependencies are already listed**.
-The publish loop sleeps 30 s between successful publishes, so a full
-cold publish of all 18 crates takes ~10 minutes.
+The publish loop sleeps 60 s between successful publishes (raised
+from 30 s after v0.6.4 hit crates.io's "new crates per period" 429s),
+so a full cold publish of all 18 crates takes ~20 minutes.
+
+Workspace members deliberately excluded from the publish loop:
+
+- `xtask` — build tooling, `publish = false`.
+- `examples/remote_only_demo`, `examples/gemma_bench` — `publish = false`.
+- `crates/inference-py-bindings` (package name `atomr-infer-py-bindings`)
+  — ships as the single `atomr-infer` PyPI wheel via maturin, not as
+  a separate crates.io artifact. Carries `publish = false` so a stray
+  `cargo publish -p atomr-infer-py-bindings` can't push it by accident.
 
 ---
 
