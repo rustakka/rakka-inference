@@ -2,7 +2,7 @@
   "crates": {
     "inference": {
       "files": 1,
-      "loc": 93,
+      "loc": 105,
       "unwrap_used": 0,
       "expect_used": 0,
       "panic_macro": 0,
@@ -18,7 +18,7 @@
     },
     "inference-cli": {
       "files": 4,
-      "loc": 183,
+      "loc": 210,
       "unwrap_used": 0,
       "expect_used": 1,
       "panic_macro": 0,
@@ -34,7 +34,7 @@
     },
     "inference-core": {
       "files": 9,
-      "loc": 939,
+      "loc": 992,
       "unwrap_used": 0,
       "expect_used": 0,
       "panic_macro": 0,
@@ -65,8 +65,8 @@
       "dbg_macro": 0
     },
     "inference-py-bindings": {
-      "files": 1,
-      "loc": 90,
+      "files": 6,
+      "loc": 2126,
       "unwrap_used": 0,
       "expect_used": 0,
       "panic_macro": 0,
@@ -82,7 +82,7 @@
     },
     "inference-python-bridge": {
       "files": 2,
-      "loc": 105,
+      "loc": 109,
       "unwrap_used": 0,
       "expect_used": 0,
       "panic_macro": 0,
@@ -98,7 +98,7 @@
     },
     "inference-remote-core": {
       "files": 12,
-      "loc": 1460,
+      "loc": 1542,
       "unwrap_used": 0,
       "expect_used": 2,
       "panic_macro": 0,
@@ -114,7 +114,7 @@
     },
     "inference-runtime": {
       "files": 9,
-      "loc": 1265,
+      "loc": 1323,
       "unwrap_used": 0,
       "expect_used": 1,
       "panic_macro": 2,
@@ -130,7 +130,7 @@
     },
     "inference-runtime-anthropic": {
       "files": 6,
-      "loc": 549,
+      "loc": 622,
       "unwrap_used": 0,
       "expect_used": 1,
       "panic_macro": 0,
@@ -178,7 +178,7 @@
     },
     "inference-runtime-gemini": {
       "files": 6,
-      "loc": 529,
+      "loc": 596,
       "unwrap_used": 0,
       "expect_used": 1,
       "panic_macro": 0,
@@ -194,7 +194,7 @@
     },
     "inference-runtime-litellm": {
       "files": 1,
-      "loc": 115,
+      "loc": 125,
       "unwrap_used": 0,
       "expect_used": 0,
       "panic_macro": 0,
@@ -210,7 +210,7 @@
     },
     "inference-runtime-mistralrs": {
       "files": 1,
-      "loc": 61,
+      "loc": 342,
       "unwrap_used": 0,
       "expect_used": 0,
       "panic_macro": 0,
@@ -226,7 +226,7 @@
     },
     "inference-runtime-openai": {
       "files": 6,
-      "loc": 575,
+      "loc": 633,
       "unwrap_used": 0,
       "expect_used": 1,
       "panic_macro": 0,
@@ -241,10 +241,10 @@
       "dbg_macro": 0
     },
     "inference-runtime-ort": {
-      "files": 1,
-      "loc": 72,
-      "unwrap_used": 0,
-      "expect_used": 0,
+      "files": 10,
+      "loc": 1403,
+      "unwrap_used": 2,
+      "expect_used": 2,
       "panic_macro": 0,
       "todo_macro": 0,
       "unimplemented_macro": 0,
@@ -258,7 +258,7 @@
     },
     "inference-runtime-tensorrt": {
       "files": 1,
-      "loc": 71,
+      "loc": 373,
       "unwrap_used": 0,
       "expect_used": 0,
       "panic_macro": 0,
@@ -273,8 +273,8 @@
       "dbg_macro": 0
     },
     "inference-runtime-vllm": {
-      "files": 1,
-      "loc": 80,
+      "files": 5,
+      "loc": 1585,
       "unwrap_used": 0,
       "expect_used": 0,
       "panic_macro": 0,
@@ -290,7 +290,7 @@
     },
     "inference-testkit": {
       "files": 3,
-      "loc": 208,
+      "loc": 211,
       "unwrap_used": 0,
       "expect_used": 0,
       "panic_macro": 0,
@@ -306,10 +306,10 @@
     }
   },
   "total": {
-    "files": 67,
-    "loc": 6674,
-    "unwrap_used": 0,
-    "expect_used": 7,
+    "files": 85,
+    "loc": 12576,
+    "unwrap_used": 2,
+    "expect_used": 9,
     "panic_macro": 2,
     "todo_macro": 0,
     "unimplemented_macro": 0,

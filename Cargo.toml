@@ -95,18 +95,18 @@ pyo3-async-runtimes  = { version = "0.22", default-features = false, features = 
 # Sibling atomr workspace ---------------------------------------------------
 # atomr is the actor-runtime substrate. The umbrella crate is
 # published as `atomr` on crates.io.
-atomr                  = { path = "../atomr/crates/atomr",                  version = "0.7.0" }
-atomr-core             = { path = "../atomr/crates/atomr-core",             version = "0.7.0" }
-atomr-config           = { path = "../atomr/crates/atomr-config",           version = "0.7.0" }
-atomr-macros           = { path = "../atomr/crates/atomr-macros",           version = "0.7.0" }
-atomr-testkit          = { path = "../atomr/crates/atomr-testkit",          version = "0.7.0" }
-atomr-cluster          = { path = "../atomr/crates/atomr-cluster",          version = "0.7.0" }
-atomr-cluster-tools    = { path = "../atomr/crates/atomr-cluster-tools",    version = "0.7.0" }
-atomr-cluster-sharding = { path = "../atomr/crates/atomr-cluster-sharding", version = "0.7.0" }
-atomr-distributed-data = { path = "../atomr/crates/atomr-distributed-data", version = "0.7.0" }
-atomr-streams          = { path = "../atomr/crates/atomr-streams",          version = "0.7.0" }
-atomr-persistence      = { path = "../atomr/crates/atomr-persistence",      version = "0.7.0" }
-atomr-telemetry        = { path = "../atomr/crates/atomr-telemetry",        version = "0.7.0" }
+atomr                  = { path = "../atomr/crates/atomr",                  version = "0.9.2" }
+atomr-core             = { path = "../atomr/crates/atomr-core",             version = "0.9.2" }
+atomr-config           = { path = "../atomr/crates/atomr-config",           version = "0.9.2" }
+atomr-macros           = { path = "../atomr/crates/atomr-macros",           version = "0.9.2" }
+atomr-testkit          = { path = "../atomr/crates/atomr-testkit",          version = "0.9.2" }
+atomr-cluster          = { path = "../atomr/crates/atomr-cluster",          version = "0.9.2" }
+atomr-cluster-tools    = { path = "../atomr/crates/atomr-cluster-tools",    version = "0.9.2" }
+atomr-cluster-sharding = { path = "../atomr/crates/atomr-cluster-sharding", version = "0.9.2" }
+atomr-distributed-data = { path = "../atomr/crates/atomr-distributed-data", version = "0.9.2" }
+atomr-streams          = { path = "../atomr/crates/atomr-streams",          version = "0.9.2" }
+atomr-persistence      = { path = "../atomr/crates/atomr-persistence",      version = "0.9.2" }
+atomr-telemetry        = { path = "../atomr/crates/atomr-telemetry",        version = "0.9.2" }
 
 # Sibling atomr-accel workspace --------------------------------------------
 # Backend-agnostic compute acceleration substrate. The umbrella
@@ -114,10 +114,10 @@ atomr-telemetry        = { path = "../atomr/crates/atomr-telemetry",        vers
 # implementation now lives in `atomr-accel-cuda` (split out in
 # atomr-accel v0.3). TensorRT (Phase 8) is in `atomr-accel-tensorrt`,
 # and portable blueprints live in `atomr-accel-patterns`.
-atomr-accel          = { path = "../atomr-accel/crates/atomr-accel",          version = "0.4.2" }
-atomr-accel-cuda     = { path = "../atomr-accel/crates/atomr-accel-cuda",     version = "0.4.2" }
-atomr-accel-patterns = { path = "../atomr-accel/crates/atomr-accel-patterns", version = "0.4.2" }
-atomr-accel-tensorrt = { path = "../atomr-accel/crates/atomr-accel-tensorrt", version = "0.4.2" }
+atomr-accel          = { path = "../atomr-accel/crates/atomr-accel",          version = "0.10.0" }
+atomr-accel-cuda     = { path = "../atomr-accel/crates/atomr-accel-cuda",     version = "0.10.0" }
+atomr-accel-patterns = { path = "../atomr-accel/crates/atomr-accel-patterns", version = "0.10.0" }
+atomr-accel-tensorrt = { path = "../atomr-accel/crates/atomr-accel-tensorrt", version = "0.10.0" }
 
 # Optional GPU/runtime libs
 cudarc              = { version = "0.19.4", features = ["cuda-version-from-build-system", "fallback-latest"] }
