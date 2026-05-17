@@ -30,7 +30,7 @@ Async execute::
 
 from importlib import metadata as _metadata
 
-from . import _native, config, core, errors, runtime
+from . import _native, audio, config, core, errors, runtime
 
 # pyo3 0.22 attaches submodules as attributes on the parent extension
 # module rather than as importable packages, so re-export via attribute
@@ -90,6 +90,7 @@ __all__ = [
     "RuntimeKind",
     "TransportKind",
     # submodule facades
+    "audio",
     "config",
     "core",
     "errors",

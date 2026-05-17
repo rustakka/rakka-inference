@@ -68,8 +68,7 @@ impl Topology {
                 _ => None,
             });
 
-        let past_re =
-            regex::Regex::new(r"^(?:past_key_values|past)[._]?(\d+)[._]?(key|value)$").unwrap();
+        let past_re = regex::Regex::new(r"^(?:past_key_values|past)[._]?(\d+)[._]?(key|value)$").unwrap();
         let present_re =
             regex::Regex::new(r"^(?:present|new_key_values|present_key_values)[._]?(\d+)[._]?(key|value)$")
                 .unwrap();

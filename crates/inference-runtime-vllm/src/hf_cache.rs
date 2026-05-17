@@ -199,10 +199,7 @@ mod tests {
         let token_path = tmp.path().join("token");
         std::fs::write(&token_path, "hf_from_file\n").expect("write");
         let c = HfCache::resolve().expect("resolve");
-        assert_eq!(
-            c.discover_token().expect("ok"),
-            Some("hf_from_file".into())
-        );
+        assert_eq!(c.discover_token().expect("ok"), Some("hf_from_file".into()));
     }
 
     #[test]

@@ -66,8 +66,7 @@ fn run_infer_blocking(
     let mut session = state.session.lock();
     // Snapshot output names before run() so we can extract by name
     // without re-borrowing the session through the live SessionOutputs.
-    let output_names: Vec<String> =
-        session.outputs().iter().map(|o| o.name().to_owned()).collect();
+    let output_names: Vec<String> = session.outputs().iter().map(|o| o.name().to_owned()).collect();
     let outputs = session.run(entries).map_err(map_ort_err)?;
 
     let mut out = InferOutputs::default();

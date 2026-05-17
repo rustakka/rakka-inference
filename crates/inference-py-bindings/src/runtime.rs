@@ -28,51 +28,75 @@ pub struct PyRuntimeKind {
 impl PyRuntimeKind {
     #[staticmethod]
     fn vllm() -> Self {
-        Self { inner: RuntimeKind::Vllm }
+        Self {
+            inner: RuntimeKind::Vllm,
+        }
     }
     #[staticmethod]
     fn tensorrt() -> Self {
-        Self { inner: RuntimeKind::TensorRt }
+        Self {
+            inner: RuntimeKind::TensorRt,
+        }
     }
     #[staticmethod]
     fn ort() -> Self {
-        Self { inner: RuntimeKind::Ort }
+        Self {
+            inner: RuntimeKind::Ort,
+        }
     }
     #[staticmethod]
     fn candle() -> Self {
-        Self { inner: RuntimeKind::Candle }
+        Self {
+            inner: RuntimeKind::Candle,
+        }
     }
     #[staticmethod]
     fn cudarc() -> Self {
-        Self { inner: RuntimeKind::Cudarc }
+        Self {
+            inner: RuntimeKind::Cudarc,
+        }
     }
     #[staticmethod]
     fn mistralrs() -> Self {
-        Self { inner: RuntimeKind::MistralRs }
+        Self {
+            inner: RuntimeKind::MistralRs,
+        }
     }
     #[staticmethod]
     fn openai() -> Self {
-        Self { inner: RuntimeKind::OpenAi }
+        Self {
+            inner: RuntimeKind::OpenAi,
+        }
     }
     #[staticmethod]
     fn anthropic() -> Self {
-        Self { inner: RuntimeKind::Anthropic }
+        Self {
+            inner: RuntimeKind::Anthropic,
+        }
     }
     #[staticmethod]
     fn gemini() -> Self {
-        Self { inner: RuntimeKind::Gemini }
+        Self {
+            inner: RuntimeKind::Gemini,
+        }
     }
     #[staticmethod]
     fn litellm() -> Self {
-        Self { inner: RuntimeKind::LiteLlm }
+        Self {
+            inner: RuntimeKind::LiteLlm,
+        }
     }
     #[staticmethod]
     fn python(name: String) -> Self {
-        Self { inner: RuntimeKind::Python(name) }
+        Self {
+            inner: RuntimeKind::Python(name),
+        }
     }
     #[staticmethod]
     fn custom(name: String) -> Self {
-        Self { inner: RuntimeKind::Custom(name) }
+        Self {
+            inner: RuntimeKind::Custom(name),
+        }
     }
 
     /// Snake-case discriminator string (`"vllm"`, `"openai"`, …). For
@@ -135,23 +159,33 @@ pub struct PyProviderKind {
 impl PyProviderKind {
     #[staticmethod]
     fn openai() -> Self {
-        Self { inner: ProviderKind::OpenAi }
+        Self {
+            inner: ProviderKind::OpenAi,
+        }
     }
     #[staticmethod]
     fn anthropic() -> Self {
-        Self { inner: ProviderKind::Anthropic }
+        Self {
+            inner: ProviderKind::Anthropic,
+        }
     }
     #[staticmethod]
     fn gemini() -> Self {
-        Self { inner: ProviderKind::Gemini }
+        Self {
+            inner: ProviderKind::Gemini,
+        }
     }
     #[staticmethod]
     fn litellm() -> Self {
-        Self { inner: ProviderKind::LiteLlm }
+        Self {
+            inner: ProviderKind::LiteLlm,
+        }
     }
     #[staticmethod]
     fn custom(name: String) -> Self {
-        Self { inner: ProviderKind::Custom(name) }
+        Self {
+            inner: ProviderKind::Custom(name),
+        }
     }
 
     #[getter]
@@ -196,7 +230,9 @@ pub struct PyTransportKind {
 impl PyTransportKind {
     #[staticmethod]
     fn local_gpu() -> Self {
-        Self { inner: TransportKind::LocalGpu }
+        Self {
+            inner: TransportKind::LocalGpu,
+        }
     }
     #[staticmethod]
     fn remote_network(provider: PyProviderKind) -> Self {

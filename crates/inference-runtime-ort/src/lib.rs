@@ -5,11 +5,11 @@
 //!
 //! ## Two entry points
 //!
-//! - [`ModelRunner::execute`] — chat-style, takes an [`ExecuteBatch`]
+//! - `ModelRunner::execute` — chat-style, takes an `ExecuteBatch`
 //!   of messages, runs a tokenizer + autoregressive sampling loop on
 //!   ONNX-exported causal LMs (HuggingFace Optimum-ONNX layout).
-//!   Streams [`TokenChunk`]s like every other runtime.
-//! - [`OrtRunner::infer`] — low-level, takes raw tensors, returns f32
+//!   Streams `TokenChunk`s like every other runtime.
+//! - `OrtRunner::infer` — low-level, takes raw tensors, returns f32
 //!   outputs. For embeddings (BGE / E5), rerankers, Whisper encoders,
 //!   vision classifiers, and anything else that's "ONNX graph + maybe
 //!   a tokenizer + tensors in/out".

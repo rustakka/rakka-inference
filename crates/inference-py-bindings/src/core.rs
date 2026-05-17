@@ -149,7 +149,9 @@ fn coerce_content(any: &Bound<'_, PyAny>) -> PyResult<MessageContent> {
         return Ok(mc.inner);
     }
     if let Ok(parts) = any.extract::<Vec<PyContentPart>>() {
-        return Ok(MessageContent::Parts(parts.into_iter().map(|p| p.inner).collect()));
+        return Ok(MessageContent::Parts(
+            parts.into_iter().map(|p| p.inner).collect(),
+        ));
     }
     Err(PyValueError::new_err(
         "content must be str, MessageContent, or list[ContentPart]",
@@ -180,7 +182,9 @@ impl PyMessage {
 
     #[getter]
     fn role(&self) -> PyRole {
-        PyRole { inner: self.inner.role }
+        PyRole {
+            inner: self.inner.role,
+        }
     }
 
     #[getter]
@@ -191,7 +195,13 @@ impl PyMessage {
     }
 
     fn __repr__(&self) -> String {
-        format!("Message(role={:?})", PyRole { inner: self.inner.role }.name())
+        format!(
+            "Message(role={:?})",
+            PyRole {
+                inner: self.inner.role
+            }
+            .name()
+        )
     }
 }
 
@@ -607,7 +617,12 @@ pub struct PyReplica {
 impl PyReplica {
     #[new]
     #[pyo3(signature = (deployment, replica_index=0, node=None, gpu_indices=None))]
-    fn new(deployment: String, replica_index: u32, node: Option<String>, gpu_indices: Option<Vec<u32>>) -> Self {
+    fn new(
+        deployment: String,
+        replica_index: u32,
+        node: Option<String>,
+        gpu_indices: Option<Vec<u32>>,
+    ) -> Self {
         Self {
             inner: Replica {
                 deployment,
@@ -732,7 +747,10 @@ impl PyDeployment {
 
     #[getter]
     fn runtime(&self) -> Option<crate::runtime::PyRuntimeKind> {
-        self.inner.runtime.clone().map(|r| crate::runtime::PyRuntimeKind { inner: r })
+        self.inner
+            .runtime
+            .clone()
+            .map(|r| crate::runtime::PyRuntimeKind { inner: r })
     }
     #[setter]
     fn set_runtime(&mut self, runtime: Option<crate::runtime::PyRuntimeKind>) {
@@ -764,7 +782,10 @@ impl PyDeployment {
 
     #[getter]
     fn budget(&self) -> Option<crate::config::PyBudget> {
-        self.inner.budget.clone().map(|b| crate::config::PyBudget { inner: b })
+        self.inner
+            .budget
+            .clone()
+            .map(|b| crate::config::PyBudget { inner: b })
     }
     #[setter]
     fn set_budget(&mut self, budget: Option<crate::config::PyBudget>) {

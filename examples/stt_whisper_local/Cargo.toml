@@ -1,0 +1,17 @@
+[package]
+name = "stt_whisper_local"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+description = "One-shot whisper.cpp transcription to stdout. Reads WHISPER_MODEL_PATH for the ggml model; arg 1 is the path to a 16 kHz mono PCM-16 WAV file."
+
+[dependencies]
+atomr-infer-core                  = { workspace = true }
+atomr-infer-runtime-whisper-local = { workspace = true, features = ["stt-whisper"] }
+
+anyhow  = { workspace = true }
+bytes   = { workspace = true }
+futures = { workspace = true }
+tokio   = { workspace = true, features = ["macros", "rt-multi-thread"] }

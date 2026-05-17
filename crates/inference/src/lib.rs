@@ -50,6 +50,34 @@ pub use atomr_infer_runtime_litellm as runtime_litellm;
 #[cfg(feature = "openai")]
 pub use atomr_infer_runtime_openai as runtime_openai;
 
+// Audio modality runtimes — gated on per-provider features.
+#[cfg(feature = "stt-assemblyai")]
+pub use atomr_infer_runtime_assemblyai as runtime_stt_assemblyai;
+#[cfg(feature = "audio2face")]
+pub use atomr_infer_runtime_audio2face as runtime_audio2face;
+#[cfg(feature = "stt-deepgram")]
+pub use atomr_infer_runtime_deepgram as runtime_stt_deepgram;
+#[cfg(feature = "tts-elevenlabs")]
+pub use atomr_infer_runtime_elevenlabs as runtime_tts_elevenlabs;
+#[cfg(feature = "tts-gemini-live")]
+pub use atomr_infer_runtime_gemini_live as runtime_tts_gemini_live;
+#[cfg(feature = "tts-kokoro")]
+pub use atomr_infer_runtime_kokoro as runtime_tts_kokoro;
+#[cfg(feature = "tts-moss")]
+pub use atomr_infer_runtime_moss as runtime_tts_moss;
+#[cfg(feature = "tts-openai-realtime")]
+pub use atomr_infer_runtime_openai_realtime as runtime_tts_openai_realtime;
+#[cfg(feature = "stt-openai")]
+pub use atomr_infer_runtime_openai_stt as runtime_stt_openai;
+#[cfg(feature = "tts-openai")]
+pub use atomr_infer_runtime_openai_tts as runtime_tts_openai;
+#[cfg(feature = "tts-piper")]
+pub use atomr_infer_runtime_piper as runtime_tts_piper;
+#[cfg(feature = "stt-whisper")]
+pub use atomr_infer_runtime_whisper_local as runtime_stt_whisper;
+#[cfg(feature = "tts-xtts")]
+pub use atomr_infer_runtime_xtts as runtime_tts_xtts;
+
 #[cfg(feature = "pipeline")]
 pub use atomr_infer_pipeline as pipeline;
 
@@ -101,5 +129,19 @@ pub mod prelude {
         Deployment, ExecuteBatch, InferenceError, InferenceResult, ModelRunner, ProviderKind, RateLimits,
         RetryPolicy, RuntimeConfig, RuntimeKind, SecretString, Serving, Timeouts, TokenChunk, Tokens,
         TransportKind,
+    };
+
+    // Audio modality types — always available since they live in
+    // `inference-core` (not gated on a feature). Provider runners are
+    // still gated; these types let callers describe audio work without
+    // depending on a specific provider crate.
+    pub use atomr_infer_core::audio::{
+        A2FOptions, AlignmentDelta, AudioBatch, AudioFormat, AudioInput, AudioOptions, AudioParams,
+        AudioPayload, BlendshapeChunk, RealtimeBatch, RealtimeIn, RealtimeOut, SpeechBatch, SpeechChunk,
+        SynthOptions, TranscribeOptions, TranscriptChunk, TranscriptRole, Viseme, VoiceRef, WordTiming,
+    };
+    pub use atomr_infer_core::runner::{
+        A2FRunHandle, A2FRunner, AudioRunHandle, AudioRunner, RealtimeRunner, RealtimeSession,
+        SpeechRunHandle, SpeechRunner,
     };
 }

@@ -72,10 +72,7 @@ pub(crate) async fn run_generation(
         });
     }
 
-    let max_new = batch
-        .sampling
-        .max_tokens
-        .unwrap_or(cfg.default_max_new_tokens);
+    let max_new = batch.sampling.max_tokens.unwrap_or(cfg.default_max_new_tokens);
     let eos_id = tokenizer.token_to_id("</s>").or_else(|| {
         tokenizer
             .token_to_id("<|endoftext|>")
@@ -169,11 +166,8 @@ fn run_loop(
         let input_ids = Tensor::from_array(([1i64, cur_len as i64], cur_input)).map_err(map_ort_err)?;
         let attention_mask = if topo.attention_mask_name.is_some() {
             Some(
-                Tensor::from_array((
-                    [1i64, total_attn_len as i64],
-                    vec![1i64; total_attn_len],
-                ))
-                .map_err(map_ort_err)?,
+                Tensor::from_array(([1i64, total_attn_len as i64], vec![1i64; total_attn_len]))
+                    .map_err(map_ort_err)?,
             )
         } else {
             None
@@ -198,14 +192,8 @@ fn run_loop(
             ));
         }
 
-        let outputs: SessionOutputs<'_> = run_with_inputs(
-            session,
-            topo,
-            input_ids,
-            attention_mask,
-            position_ids,
-            kv_tensors,
-        )?;
+        let outputs: SessionOutputs<'_> =
+            run_with_inputs(session, topo, input_ids, attention_mask, position_ids, kv_tensors)?;
 
         // Pull logits → take last position → sample.
         let logits_name = topo
@@ -215,9 +203,7 @@ fn run_loop(
         let logits_value = outputs
             .get(logits_name)
             .ok_or_else(|| InferenceError::Internal(format!("ort: missing output '{logits_name}'")))?;
-        let (logits_shape, logits_data) = logits_value
-            .try_extract_tensor::<f32>()
-            .map_err(map_ort_err)?;
+        let (logits_shape, logits_data) = logits_value.try_extract_tensor::<f32>().map_err(map_ort_err)?;
         if logits_shape.len() < 3 {
             return Err(InferenceError::Internal(format!(
                 "ort: logits has rank {}, expected 3 ([batch, seq, vocab])",
@@ -236,20 +222,14 @@ fn run_loop(
             let (_, k_data) = outputs
                 .get(layer.present_key_output.as_str())
                 .ok_or_else(|| {
-                    InferenceError::Internal(format!(
-                        "ort: missing output '{}'",
-                        layer.present_key_output
-                    ))
+                    InferenceError::Internal(format!("ort: missing output '{}'", layer.present_key_output))
                 })?
                 .try_extract_tensor::<f32>()
                 .map_err(map_ort_err)?;
             let (_, v_data) = outputs
                 .get(layer.present_value_output.as_str())
                 .ok_or_else(|| {
-                    InferenceError::Internal(format!(
-                        "ort: missing output '{}'",
-                        layer.present_value_output
-                    ))
+                    InferenceError::Internal(format!("ort: missing output '{}'", layer.present_value_output))
                 })?
                 .try_extract_tensor::<f32>()
                 .map_err(map_ort_err)?;
@@ -269,15 +249,16 @@ fn run_loop(
             .decode(generated, true)
             .map_err(|e| internal("tokenizer.decode", e))?;
         let (delta, advance) = decode_delta(&prev_full_decoded, &full_decoded);
-        if !delta.is_empty() && tx
-            .blocking_send(Ok(TokenChunk {
-                request_id: request_id.to_owned(),
-                text_delta: delta,
-                tool_call_delta: None,
-                usage: None,
-                finish_reason: None,
-            }))
-            .is_err()
+        if !delta.is_empty()
+            && tx
+                .blocking_send(Ok(TokenChunk {
+                    request_id: request_id.to_owned(),
+                    text_delta: delta,
+                    tool_call_delta: None,
+                    usage: None,
+                    finish_reason: None,
+                }))
+                .is_err()
         {
             return Ok(()); // downstream dropped
         }

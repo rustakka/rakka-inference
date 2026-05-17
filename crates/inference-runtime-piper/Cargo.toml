@@ -1,0 +1,59 @@
+[package]
+name = "atomr-infer-runtime-piper"
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+authors.workspace      = true
+keywords.workspace     = true
+categories.workspace   = true
+readme                 = "README.md"
+documentation          = "https://docs.rs/atomr-infer-runtime-piper"
+description            = "Piper (rhasspy/piper) local TTS runtime for atomr-infer. Reads a Piper ONNX voice pack (.onnx + .onnx.json) and emits PCM16 SpeechChunks via the SpeechRunner trait."
+
+[lib]
+name = "atomr_infer_runtime_piper"
+
+[features]
+default = []
+
+# Umbrella: pulls real ORT in. Without this feature the crate compiles
+# but `PiperRunner::speak` returns `InferenceError::Internal("piper
+# feature disabled at build time")`, so the workspace stays
+# remote-only-buildable.
+piper = [
+    "dep:ort",
+    "dep:ndarray",
+    "dep:tokio",
+    "dep:tokio-stream",
+    "dep:futures",
+    "dep:parking_lot",
+    "dep:tracing",
+]
+
+piper-cuda         = ["piper", "ort/cuda"]
+piper-load-dynamic = ["piper", "ort/load-dynamic"]
+
+[dependencies]
+atomr-infer-core = { workspace = true }
+async-trait      = { workspace = true }
+bytes            = { workspace = true }
+serde            = { workspace = true }
+serde_json       = { workspace = true }
+thiserror        = { workspace = true }
+
+ort           = { workspace = true, optional = true, features = ["std", "download-binaries", "copy-dylibs", "tls-rustls", "api-21"] }
+ndarray       = { workspace = true, optional = true }
+tokio         = { workspace = true, optional = true }
+tokio-stream  = { workspace = true, optional = true }
+futures       = { workspace = true, optional = true }
+parking_lot   = { workspace = true, optional = true }
+tracing       = { workspace = true, optional = true }
+
+[dev-dependencies]
+atomr-infer-core = { workspace = true }
+futures          = { workspace = true }
+tokio            = { workspace = true, features = ["macros", "rt"] }
+tempfile         = { workspace = true }

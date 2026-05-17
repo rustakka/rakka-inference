@@ -54,6 +54,49 @@ anthropic = ["dep:atomr-infer-runtime-anthropic"]
 gemini    = ["dep:atomr-infer-runtime-gemini"]
 litellm   = ["dep:atomr-infer-runtime-litellm", "openai"]
 
+# Audio modality — TTS providers (M4, M6, M7, M9-A, M9-B, M10).
+# Each enables the matching `inference-runtime-*` crate. The `*-openai`
+# variants additionally pull in the shared `openai` rollup (config /
+# bearer / retry classification reuse).
+tts-piper           = ["dep:atomr-infer-runtime-piper", "atomr-infer-runtime-piper/piper"]
+tts-piper-cuda      = ["tts-piper", "atomr-infer-runtime-piper/piper-cuda"]
+tts-piper-load-dynamic = ["tts-piper", "atomr-infer-runtime-piper/piper-load-dynamic"]
+tts-openai          = ["dep:atomr-infer-runtime-openai-tts", "atomr-infer-runtime-openai-tts/tts-openai", "openai"]
+tts-openai-realtime = ["dep:atomr-infer-runtime-openai-realtime", "atomr-infer-runtime-openai-realtime/tts-openai-realtime", "openai"]
+tts-elevenlabs      = ["dep:atomr-infer-runtime-elevenlabs", "atomr-infer-runtime-elevenlabs/tts-elevenlabs"]
+tts-gemini-live     = ["dep:atomr-infer-runtime-gemini-live", "atomr-infer-runtime-gemini-live/tts-gemini-live", "gemini"]
+tts-kokoro          = ["dep:atomr-infer-runtime-kokoro", "atomr-infer-runtime-kokoro/tts-kokoro"]
+tts-kokoro-cuda     = ["tts-kokoro", "atomr-infer-runtime-kokoro/tts-kokoro-cuda"]
+tts-kokoro-load-dynamic = ["tts-kokoro", "atomr-infer-runtime-kokoro/tts-kokoro-load-dynamic"]
+tts-xtts            = ["dep:atomr-infer-runtime-xtts", "atomr-infer-runtime-xtts/tts-xtts"]
+tts-xtts-cuda       = ["tts-xtts", "atomr-infer-runtime-xtts/tts-xtts-cuda"]
+tts-xtts-load-dynamic = ["tts-xtts", "atomr-infer-runtime-xtts/tts-xtts-load-dynamic"]
+tts-moss            = ["dep:atomr-infer-runtime-moss", "atomr-infer-runtime-moss/tts-moss"]
+
+# Audio modality — STT providers (M5, M6, M8).
+stt-whisper         = ["dep:atomr-infer-runtime-whisper-local", "atomr-infer-runtime-whisper-local/stt-whisper"]
+stt-whisper-cuda    = ["stt-whisper", "atomr-infer-runtime-whisper-local/stt-whisper-cuda"]
+stt-whisper-metal   = ["stt-whisper", "atomr-infer-runtime-whisper-local/stt-whisper-metal"]
+stt-whisper-coreml  = ["stt-whisper", "atomr-infer-runtime-whisper-local/stt-whisper-coreml"]
+stt-whisper-vulkan  = ["stt-whisper", "atomr-infer-runtime-whisper-local/stt-whisper-vulkan"]
+stt-whisper-openblas = ["stt-whisper", "atomr-infer-runtime-whisper-local/stt-whisper-openblas"]
+stt-openai          = ["dep:atomr-infer-runtime-openai-stt", "atomr-infer-runtime-openai-stt/stt-openai", "openai"]
+stt-deepgram        = ["dep:atomr-infer-runtime-deepgram", "atomr-infer-runtime-deepgram/stt-deepgram"]
+stt-assemblyai      = ["dep:atomr-infer-runtime-assemblyai", "atomr-infer-runtime-assemblyai/stt-assemblyai"]
+
+# Audio modality — Audio2Face (M11). Hard arch gate (Linux x86_64);
+# kept out of `all-native` / `all-remote` aggregates for that reason.
+audio2face          = ["dep:atomr-infer-runtime-audio2face", "atomr-infer-runtime-audio2face/audio2face"]
+
+# Audio meta-aggregates.
+tts-remote-all = ["tts-openai", "tts-openai-realtime", "tts-elevenlabs", "tts-gemini-live"]
+tts-local-all  = ["tts-piper", "tts-kokoro", "tts-xtts", "tts-moss"]
+tts-all        = ["tts-remote-all", "tts-local-all"]
+stt-remote-all = ["stt-openai", "stt-deepgram", "stt-assemblyai"]
+stt-local-all  = ["stt-whisper"]
+stt-all        = ["stt-remote-all", "stt-local-all"]
+audio-all      = ["tts-all", "stt-all", "audio2face"]
+
 # Cross-cutting
 pipeline      = ["dep:atomr-infer-pipeline"]
 testkit       = ["dep:atomr-infer-testkit"]
@@ -67,10 +110,13 @@ accel          = ["dep:atomr-accel", "dep:atomr-accel-cuda", "atomr-infer-runtim
 accel-patterns = ["dep:atomr-accel-patterns", "pipeline", "atomr-infer-pipeline/cuda-patterns"]
 
 # Aggregates per doc §10.5
-all-native      = ["tensorrt", "ort", "candle", "cudarc", "mistralrs"]
+all-native      = ["tensorrt", "ort", "candle", "cudarc", "mistralrs", "tts-local-all", "stt-local-all"]
 all-python      = ["vllm"]
 all-local       = ["all-native", "all-python"]
-all-remote      = ["openai", "anthropic", "gemini", "litellm"]
+all-remote      = ["openai", "anthropic", "gemini", "litellm", "tts-remote-all", "stt-remote-all"]
+# `audio2face` is the only feature with a hard CPU-arch gate (Linux
+# x86_64). Keep it out of `all-runtimes` so the workspace-wide aggregate
+# still builds on aarch64 / macOS dev hosts.
 all-runtimes    = ["all-local", "all-remote", "accel-patterns"]
 default-prod    = ["vllm", "tensorrt", "ort", "openai", "anthropic", "pipeline"]
 # remote-only deliberately excludes `accel` / `accel-patterns` so the
@@ -92,6 +138,21 @@ atomr-infer-runtime-openai    = { workspace = true, optional = true }
 atomr-infer-runtime-anthropic = { workspace = true, optional = true }
 atomr-infer-runtime-gemini    = { workspace = true, optional = true }
 atomr-infer-runtime-litellm   = { workspace = true, optional = true }
+
+# Audio modality crates — all optional, gated on the matching feature flag.
+atomr-infer-runtime-piper             = { workspace = true, optional = true }
+atomr-infer-runtime-whisper-local     = { workspace = true, optional = true }
+atomr-infer-runtime-openai-tts        = { workspace = true, optional = true }
+atomr-infer-runtime-openai-stt        = { workspace = true, optional = true }
+atomr-infer-runtime-openai-realtime   = { workspace = true, optional = true }
+atomr-infer-runtime-elevenlabs        = { workspace = true, optional = true }
+atomr-infer-runtime-deepgram          = { workspace = true, optional = true }
+atomr-infer-runtime-assemblyai        = { workspace = true, optional = true }
+atomr-infer-runtime-gemini-live       = { workspace = true, optional = true }
+atomr-infer-runtime-kokoro            = { workspace = true, optional = true }
+atomr-infer-runtime-xtts              = { workspace = true, optional = true }
+atomr-infer-runtime-moss              = { workspace = true, optional = true }
+atomr-infer-runtime-audio2face        = { workspace = true, optional = true }
 
 atomr-infer-pipeline          = { workspace = true, optional = true }
 atomr-infer-testkit           = { workspace = true, optional = true }

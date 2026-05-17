@@ -42,8 +42,7 @@ use atomr_infer_runtime_vllm::{
 };
 
 fn smoke_model() -> String {
-    std::env::var("ATOMR_INFER_GEMMA_SMOKE_MODEL")
-        .unwrap_or_else(|_| "google/gemma-4-E4B-it".into())
+    std::env::var("ATOMR_INFER_GEMMA_SMOKE_MODEL").unwrap_or_else(|_| "google/gemma-4-E4B-it".into())
 }
 
 /// Build a `VllmConfig` for smoke testing. Conservative defaults so

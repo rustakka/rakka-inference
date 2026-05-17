@@ -28,6 +28,10 @@ use atomr_infer_core::runtime::{ProviderKind, TransportKind};
 pub struct PlacementConstraints {
     /// Available GPU-bearing nodes.
     pub gpu_nodes: Vec<String>,
+    /// Available CPU-only nodes (no GPU but can run local-CPU runtimes
+    /// like `whisper.cpp`, Piper CPU voices, etc.). May overlap with
+    /// `egress_nodes`.
+    pub cpu_nodes: Vec<String>,
     /// Available egress-capable nodes (CPU-only OK).
     pub egress_nodes: Vec<String>,
     /// Per-node hosting count for shared `(provider, api_key)`
@@ -53,6 +57,8 @@ pub struct NodeAssignment {
 pub enum PlacementError {
     #[error("no GPU nodes available")]
     NoGpuNodes,
+    #[error("no CPU nodes available for local-CPU deployment")]
+    NoCpuNodes,
     #[error("no egress nodes available for provider {0:?}")]
     NoEgressNodes(ProviderKind),
     #[error("deployment requires {requested} GPUs but no node has that many free")]
@@ -125,6 +131,29 @@ impl DeploymentPlacementActor {
                         gpus: vec![],
                     });
                 }
+            }
+            TransportKind::LocalCpu => {
+                // Local-CPU deployments (whisper.cpp, CPU Piper voices)
+                // need a host but no GPU ordinals.
+                if constraints.cpu_nodes.is_empty() {
+                    return Err(PlacementError::NoCpuNodes);
+                }
+                for i in 0..deployment.replicas {
+                    let node = constraints.cpu_nodes[(i as usize) % constraints.cpu_nodes.len()].clone();
+                    assignments.push(NodeAssignment {
+                        replica_index: i,
+                        node,
+                        gpus: vec![],
+                    });
+                }
+            }
+            TransportKind::UnknownTransport => {
+                // Default fallthrough for audio modalities whose
+                // concrete transport depends on the deployment's
+                // `RuntimeConfig` body. Placement defers to the
+                // runner's `transport_kind()` at admission time; the
+                // deployment_manager will resolve and re-place.
+                return Err(PlacementError::UnknownTransport);
             }
             // `TransportKind` is `#[non_exhaustive]`; reject unknown
             // variants with a typed error rather than silently mis-

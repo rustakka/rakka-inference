@@ -1,0 +1,69 @@
+[package]
+name = "atomr-infer-runtime-whisper-local"
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+authors.workspace      = true
+keywords.workspace     = true
+categories.workspace   = true
+readme                 = "README.md"
+documentation          = "https://docs.rs/atomr-infer-runtime-whisper-local"
+description            = "Local whisper.cpp speech-to-text runtime for atomr-infer. Wraps the ggerganov/whisper.cpp ggml model bindings behind the AudioRunner trait; emits TranscriptChunks with optional per-word timings. Linux x86_64 / aarch64 only."
+
+[lib]
+name = "atomr_infer_runtime_whisper_local"
+
+[features]
+default = []
+
+# Umbrella: pulls real whisper-rs in. Without this feature the crate
+# compiles but `WhisperRunner::execute_audio` returns
+# `InferenceError::Internal("stt-whisper feature disabled at build
+# time")`, so the workspace stays remote-only-buildable.
+stt-whisper = [
+    "dep:whisper-rs",
+    "dep:tokio",
+    "dep:tokio-stream",
+    "dep:futures",
+    "dep:parking_lot",
+    "dep:tracing",
+]
+
+# Optional GPU/accelerator backends forwarded from whisper-rs. Each
+# implies `stt-whisper` so a feature-flag misclick can't drop the
+# upstream dep.
+stt-whisper-cuda     = ["stt-whisper", "whisper-rs/cuda"]
+stt-whisper-metal    = ["stt-whisper", "whisper-rs/metal"]
+stt-whisper-coreml   = ["stt-whisper", "whisper-rs/coreml"]
+stt-whisper-vulkan   = ["stt-whisper", "whisper-rs/vulkan"]
+stt-whisper-openblas = ["stt-whisper", "whisper-rs/openblas"]
+
+[dependencies]
+atomr-infer-core = { workspace = true }
+async-trait      = { workspace = true }
+bytes            = { workspace = true }
+serde            = { workspace = true }
+serde_json       = { workspace = true }
+thiserror        = { workspace = true }
+
+# whisper-rs ships C bindings that the upstream project gates on
+# specific host architectures. We mirror that arch gate at the
+# `[target]` level so the workspace can build cleanly on macOS x86_64
+# (not the supported set for our deployments) and the dep is simply
+# absent — the runner falls back to the architecture stub described in
+# `lib.rs`.
+whisper-rs   = { version = "0.16", optional = true, default-features = false }
+tokio        = { workspace = true, optional = true }
+tokio-stream = { workspace = true, optional = true }
+futures      = { workspace = true, optional = true }
+parking_lot  = { workspace = true, optional = true }
+tracing      = { workspace = true, optional = true }
+
+[dev-dependencies]
+atomr-infer-core = { workspace = true }
+futures          = { workspace = true }
+tokio            = { workspace = true, features = ["macros", "rt"] }
+tempfile         = { workspace = true }

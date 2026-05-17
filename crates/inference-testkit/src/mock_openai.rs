@@ -70,3 +70,56 @@ pub async fn inject_5xx_once(server: &MockServer, n: u64) {
         .mount(server)
         .await;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Audio helpers — `FR-TTS-001`, `FR-STT-001`
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Mount a happy-path TTS handler returning a fixed WAV byte body for
+/// `POST /v1/audio/speech`. The response uses
+/// `Content-Type: audio/wav`.
+pub async fn mount_audio_speech_happy_path(server: &MockServer, audio_bytes: Vec<u8>) {
+    Mock::given(method("POST"))
+        .and(path("/v1/audio/speech"))
+        .respond_with(
+            ResponseTemplate::new(200)
+                .insert_header("content-type", "audio/wav")
+                .set_body_bytes(audio_bytes),
+        )
+        .mount(server)
+        .await;
+}
+
+/// Mount a happy-path STT handler returning a fixed transcript JSON
+/// envelope for `POST /v1/audio/transcriptions` (multipart upload).
+pub async fn mount_audio_transcriptions_happy_path(server: &MockServer, transcript: &str) {
+    let body = serde_json::json!({ "text": transcript });
+    Mock::given(method("POST"))
+        .and(path("/v1/audio/transcriptions"))
+        .respond_with(
+            ResponseTemplate::new(200)
+                .insert_header("content-type", "application/json")
+                .set_body_json(body),
+        )
+        .mount(server)
+        .await;
+}
+
+/// Mount a one-shot 429 — first audio-modality request returns 429
+/// with a 1-second `Retry-After`, subsequent requests fall through to
+/// the previously mounted handlers. Matches both speech and
+/// transcription paths.
+pub async fn inject_audio_429(server: &MockServer) {
+    Mock::given(method("POST"))
+        .and(wiremock::matchers::path_regex(
+            "^/v1/audio/(speech|transcriptions)$",
+        ))
+        .respond_with(
+            ResponseTemplate::new(429)
+                .insert_header("retry-after", "1")
+                .set_body_string("audio rate limited"),
+        )
+        .up_to_n_times(1)
+        .mount(server)
+        .await;
+}

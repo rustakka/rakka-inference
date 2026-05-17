@@ -1,0 +1,19 @@
+[package]
+name = "tts_elevenlabs_alignment"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+description = "Stream ElevenLabs WS TTS and print per-character alignment frames. Reads ELEVEN_API_KEY for credentials; arg 1 is text, arg 2 (optional) is the voice id."
+
+[dependencies]
+atomr-infer-core              = { workspace = true }
+atomr-infer-remote-core       = { workspace = true }
+atomr-infer-runtime-elevenlabs = { workspace = true, features = ["tts-elevenlabs"] }
+
+anyhow   = { workspace = true }
+arc-swap = { workspace = true }
+futures  = { workspace = true }
+secrecy  = { workspace = true }
+tokio    = { workspace = true, features = ["macros", "rt-multi-thread"] }

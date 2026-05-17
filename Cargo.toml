@@ -5,6 +5,9 @@ members = [
     "crates/inference-runtime",
     "crates/inference-python-bridge",
     "crates/inference-remote-core",
+    "crates/inference-runtime-ws-core",
+    "crates/inference-runtime-piper",
+    "crates/inference-runtime-whisper-local",
     "crates/inference-runtime-vllm",
     "crates/inference-runtime-tensorrt",
     "crates/inference-runtime-ort",
@@ -12,6 +15,17 @@ members = [
     "crates/inference-runtime-cudarc",
     "crates/inference-runtime-mistralrs",
     "crates/inference-runtime-openai",
+    "crates/inference-runtime-openai-tts",
+    "crates/inference-runtime-openai-stt",
+    "crates/inference-runtime-elevenlabs",
+    "crates/inference-runtime-deepgram",
+    "crates/inference-runtime-assemblyai",
+    "crates/inference-runtime-openai-realtime",
+    "crates/inference-runtime-gemini-live",
+    "crates/inference-runtime-kokoro",
+    "crates/inference-runtime-xtts",
+    "crates/inference-runtime-moss",
+    "crates/inference-runtime-audio2face",
     "crates/inference-runtime-anthropic",
     "crates/inference-runtime-gemini",
     "crates/inference-runtime-litellm",
@@ -23,6 +37,9 @@ members = [
     "xtask",
     "examples/remote_only_demo",
     "examples/gemma_bench",
+    "examples/tts_piper_local",
+    "examples/stt_whisper_local",
+    "examples/tts_elevenlabs_alignment",
 ]
 
 [workspace.package]
@@ -62,13 +79,14 @@ serde      = { version = "1", features = ["derive"] }
 serde_json = "1"
 bytes      = "1"
 toml       = "0.8"
+base64     = "0.22"
 
 # HTTP / web — for remote runtimes and ApiGatewayActor
-reqwest            = { version = "0.12", default-features = false, features = ["rustls-tls", "http2", "json", "stream"] }
+reqwest            = { version = "0.12", default-features = false, features = ["rustls-tls", "http2", "json", "stream", "multipart"] }
 hyper              = "1"
 eventsource-stream = "0.2"
 tower              = { version = "0.5", default-features = false, features = ["util", "limit", "retry", "timeout"] }
-axum               = { version = "0.7", default-features = false, features = ["json", "http1", "http2", "tokio", "matched-path"] }
+axum               = { version = "0.7", default-features = false, features = ["json", "http1", "http2", "tokio", "matched-path", "ws", "multipart"] }
 
 # Secrets — typed credentials from inference-core down
 secrecy = "0.10"
@@ -87,6 +105,11 @@ once_cell = "1"
 # Testing
 proptest = "1"
 wiremock = "0.6"
+tokio-tungstenite = { version = "0.24", default-features = false, features = ["connect", "rustls-tls-webpki-roots"] }
+
+# gRPC (Audio2Face)
+tonic = { version = "0.12", default-features = false, features = ["transport", "tls", "codegen", "prost"] }
+prost = "0.13"
 
 # Python bindings (optional)
 pyo3                 = { version = "0.22", default-features = false, features = ["macros"] }
@@ -145,6 +168,9 @@ atomr-infer-core              = { path = "crates/inference-core",              v
 atomr-infer-runtime           = { path = "crates/inference-runtime",           version = "0.8.0" }
 atomr-infer-python-bridge     = { path = "crates/inference-python-bridge",     version = "0.8.0" }
 atomr-infer-remote-core       = { path = "crates/inference-remote-core",       version = "0.8.0" }
+atomr-infer-runtime-ws-core   = { path = "crates/inference-runtime-ws-core",   version = "0.8.0" }
+atomr-infer-runtime-piper     = { path = "crates/inference-runtime-piper",     version = "0.8.0" }
+atomr-infer-runtime-whisper-local = { path = "crates/inference-runtime-whisper-local", version = "0.8.0" }
 atomr-infer-runtime-vllm      = { path = "crates/inference-runtime-vllm",      version = "0.8.0" }
 atomr-infer-runtime-tensorrt  = { path = "crates/inference-runtime-tensorrt",  version = "0.8.0" }
 atomr-infer-runtime-ort       = { path = "crates/inference-runtime-ort",       version = "0.8.0" }
@@ -152,6 +178,17 @@ atomr-infer-runtime-candle    = { path = "crates/inference-runtime-candle",    v
 atomr-infer-runtime-cudarc    = { path = "crates/inference-runtime-cudarc",    version = "0.8.0" }
 atomr-infer-runtime-mistralrs = { path = "crates/inference-runtime-mistralrs", version = "0.8.0" }
 atomr-infer-runtime-openai    = { path = "crates/inference-runtime-openai",    version = "0.8.0" }
+atomr-infer-runtime-openai-tts = { path = "crates/inference-runtime-openai-tts", version = "0.8.0" }
+atomr-infer-runtime-openai-stt = { path = "crates/inference-runtime-openai-stt", version = "0.8.0" }
+atomr-infer-runtime-elevenlabs = { path = "crates/inference-runtime-elevenlabs", version = "0.8.0" }
+atomr-infer-runtime-deepgram  = { path = "crates/inference-runtime-deepgram",  version = "0.8.0" }
+atomr-infer-runtime-assemblyai = { path = "crates/inference-runtime-assemblyai", version = "0.8.0" }
+atomr-infer-runtime-openai-realtime = { path = "crates/inference-runtime-openai-realtime", version = "0.8.0" }
+atomr-infer-runtime-gemini-live = { path = "crates/inference-runtime-gemini-live", version = "0.8.0" }
+atomr-infer-runtime-kokoro = { path = "crates/inference-runtime-kokoro", version = "0.8.0" }
+atomr-infer-runtime-xtts = { path = "crates/inference-runtime-xtts", version = "0.8.0" }
+atomr-infer-runtime-moss = { path = "crates/inference-runtime-moss", version = "0.8.0" }
+atomr-infer-runtime-audio2face = { path = "crates/inference-runtime-audio2face", version = "0.8.0" }
 atomr-infer-runtime-anthropic = { path = "crates/inference-runtime-anthropic", version = "0.8.0" }
 atomr-infer-runtime-gemini    = { path = "crates/inference-runtime-gemini",    version = "0.8.0" }
 atomr-infer-runtime-litellm   = { path = "crates/inference-runtime-litellm",   version = "0.8.0" }

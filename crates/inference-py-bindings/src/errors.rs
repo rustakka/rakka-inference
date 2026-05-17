@@ -87,12 +87,7 @@ create_exception!(
     InferenceError,
     "5xx from provider; counts toward circuit breaker."
 );
-create_exception!(
-    atomr_infer,
-    Timeout,
-    InferenceError,
-    "Request or read timeout."
-);
+create_exception!(atomr_infer, Timeout, InferenceError, "Request or read timeout.");
 create_exception!(
     atomr_infer,
     CudaContextPoisoned,
@@ -113,9 +108,7 @@ pub fn map(e: RsInferenceError) -> PyErr {
         RsInferenceError::RateLimited { .. } => PyErr::new::<RateLimited, _>(msg),
         RsInferenceError::CircuitOpen { .. } => PyErr::new::<CircuitOpen, _>(msg),
         RsInferenceError::ContentFiltered { .. } => PyErr::new::<ContentFiltered, _>(msg),
-        RsInferenceError::ContextLengthExceeded { .. } => {
-            PyErr::new::<ContextLengthExceeded, _>(msg)
-        }
+        RsInferenceError::ContextLengthExceeded { .. } => PyErr::new::<ContextLengthExceeded, _>(msg),
         RsInferenceError::BadRequest { .. } => PyErr::new::<BadRequest, _>(msg),
         RsInferenceError::Unauthorized { .. } => PyErr::new::<Unauthorized, _>(msg),
         RsInferenceError::Forbidden { .. } => PyErr::new::<Forbidden, _>(msg),
@@ -157,10 +150,7 @@ pub fn register(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     sub.add("NetworkError", py.get_type_bound::<NetworkError>())?;
     sub.add("ServerError", py.get_type_bound::<ServerError>())?;
     sub.add("Timeout", py.get_type_bound::<Timeout>())?;
-    sub.add(
-        "CudaContextPoisoned",
-        py.get_type_bound::<CudaContextPoisoned>(),
-    )?;
+    sub.add("CudaContextPoisoned", py.get_type_bound::<CudaContextPoisoned>())?;
     sub.add("Internal", py.get_type_bound::<Internal>())?;
     m.add_submodule(&sub)?;
     Ok(())

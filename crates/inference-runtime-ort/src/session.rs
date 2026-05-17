@@ -48,7 +48,9 @@ pub(crate) fn build_state(cfg: &OrtConfig) -> InferenceResult<Arc<OrtState>> {
 }
 
 #[allow(unused_variables)] // device_id consumed only when ort-cuda is on
-fn providers_for(cfg: &OrtConfig) -> InferenceResult<Vec<ort::execution_providers::ExecutionProviderDispatch>> {
+fn providers_for(
+    cfg: &OrtConfig,
+) -> InferenceResult<Vec<ort::execution_providers::ExecutionProviderDispatch>> {
     use ort::execution_providers::CPUExecutionProvider;
 
     let mut out: Vec<ort::execution_providers::ExecutionProviderDispatch> = Vec::new();
@@ -78,10 +80,9 @@ fn providers_for(cfg: &OrtConfig) -> InferenceResult<Vec<ort::execution_provider
             #[cfg(not(feature = "ort-cuda"))]
             {
                 return Err(InferenceError::BadRequest {
-                    message:
-                        "ort: execution_provider=cuda requires the `ort-cuda` cargo feature \
+                    message: "ort: execution_provider=cuda requires the `ort-cuda` cargo feature \
                          (rebuild with --features ort,ort-cuda)"
-                            .into(),
+                        .into(),
                 });
             }
         }
@@ -95,8 +96,7 @@ fn providers_for(cfg: &OrtConfig) -> InferenceResult<Vec<ort::execution_provider
         }
         ExecutionProvider::DirectMl => {
             return Err(InferenceError::BadRequest {
-                message: "ort: execution_provider=direct_ml is not wired in this build"
-                    .into(),
+                message: "ort: execution_provider=direct_ml is not wired in this build".into(),
             });
         }
     }

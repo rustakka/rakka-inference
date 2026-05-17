@@ -17,8 +17,14 @@ atomr-infer-core        = { workspace = true }
 atomr-infer-runtime     = { workspace = true }
 atomr-infer-remote-core = { workspace = true }
 
-async-trait = { workspace = true }
-futures     = { workspace = true }
-serde_json  = { workspace = true }
-tokio       = { workspace = true }
-wiremock    = { workspace = true }
+async-trait       = { workspace = true }
+atomr-config      = { workspace = true }
+atomr-core        = { workspace = true }
+bytes             = { workspace = true }
+futures           = { workspace = true }
+serde             = { workspace = true }
+serde_json        = { workspace = true }
+tokio             = { workspace = true }
+tokio-tungstenite = { workspace = true }
+tracing           = { workspace = true }
+wiremock          = { workspace = true }

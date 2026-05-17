@@ -225,8 +225,7 @@ impl VllmEngine {
                     let kwargs = PyDict::new_bound(py);
                     kwargs.set_item("tokenize", false)?;
                     kwargs.set_item("add_generation_prompt", true)?;
-                    let result = tokenizer
-                        .call_method("apply_chat_template", (py_messages,), Some(&kwargs));
+                    let result = tokenizer.call_method("apply_chat_template", (py_messages,), Some(&kwargs));
                     if let Ok(rendered) = result {
                         if let Ok(s) = rendered.extract::<String>() {
                             return Ok(s);
@@ -286,13 +285,7 @@ impl VllmEngine {
         let engine = Arc::clone(self);
         let request_id_owned = request_id.clone();
         tokio::spawn(async move {
-            let outcome = drive_generation(
-                &engine,
-                &request_id_owned,
-                tx.clone(),
-                &req_id_for_chunks,
-            )
-            .await;
+            let outcome = drive_generation(&engine, &request_id_owned, tx.clone(), &req_id_for_chunks).await;
             if let Err(e) = outcome {
                 let _ = tx.send(Err(e)).await;
             }
@@ -325,42 +318,47 @@ async fn drive_generation(
         }
 
         // Drive one engine step; collect any chunk for our request.
-        let chunk_result = engine.bridge.with_python(|py| -> PyResult<Option<(String, bool, Option<String>, u32, u32)>> {
-            let engine_handle = engine.engine.lock();
-            let bound = engine_handle.bind(py);
-            let outputs = bound.call_method0("step")?;
-            let outputs_list = outputs.downcast::<PyList>()?;
-            for i in 0..outputs_list.len() {
-                let req_output = outputs_list.get_item(i)?;
-                let this_id: String = req_output.getattr("request_id")?.extract()?;
-                if this_id != request_id {
-                    continue;
+        let chunk_result = engine.bridge.with_python(
+            |py| -> PyResult<Option<(String, bool, Option<String>, u32, u32)>> {
+                let engine_handle = engine.engine.lock();
+                let bound = engine_handle.bind(py);
+                let outputs = bound.call_method0("step")?;
+                let outputs_list = outputs.downcast::<PyList>()?;
+                for i in 0..outputs_list.len() {
+                    let req_output = outputs_list.get_item(i)?;
+                    let this_id: String = req_output.getattr("request_id")?.extract()?;
+                    if this_id != request_id {
+                        continue;
+                    }
+                    let outs = req_output.getattr("outputs")?;
+                    let outs_list = outs.downcast::<PyList>()?;
+                    if outs_list.len() == 0 {
+                        return Ok(None);
+                    }
+                    let first = outs_list.get_item(0)?;
+                    let text: String = first.getattr("text")?.extract()?;
+                    let finish_reason: Option<String> =
+                        first.getattr("finish_reason")?.extract().ok().flatten();
+                    let finished: bool = req_output.getattr("finished")?.extract()?;
+                    let prompt_tokens: u32 = req_output
+                        .getattr("prompt_token_ids")
+                        .and_then(|v| v.len().map(|l| l as u32))
+                        .unwrap_or(0);
+                    let output_tokens: u32 = first
+                        .getattr("token_ids")
+                        .and_then(|v| v.len().map(|l| l as u32))
+                        .unwrap_or(0);
+                    return Ok(Some((
+                        text,
+                        finished,
+                        finish_reason,
+                        prompt_tokens,
+                        output_tokens,
+                    )));
                 }
-                let outs = req_output.getattr("outputs")?;
-                let outs_list = outs.downcast::<PyList>()?;
-                if outs_list.len() == 0 {
-                    return Ok(None);
-                }
-                let first = outs_list.get_item(0)?;
-                let text: String = first.getattr("text")?.extract()?;
-                let finish_reason: Option<String> = first
-                    .getattr("finish_reason")?
-                    .extract()
-                    .ok()
-                    .flatten();
-                let finished: bool = req_output.getattr("finished")?.extract()?;
-                let prompt_tokens: u32 = req_output
-                    .getattr("prompt_token_ids")
-                    .and_then(|v| v.len().map(|l| l as u32))
-                    .unwrap_or(0);
-                let output_tokens: u32 = first
-                    .getattr("token_ids")
-                    .and_then(|v| v.len().map(|l| l as u32))
-                    .unwrap_or(0);
-                return Ok(Some((text, finished, finish_reason, prompt_tokens, output_tokens)));
-            }
-            Ok(None)
-        });
+                Ok(None)
+            },
+        );
 
         let chunk = match chunk_result {
             Ok(Some(c)) => c,
@@ -381,11 +379,7 @@ async fn drive_generation(
                 tokio::time::sleep(poll_interval).await;
                 continue;
             }
-            Err(e) => {
-                return Err(InferenceError::Internal(format!(
-                    "vllm step: {e}"
-                )))
-            }
+            Err(e) => return Err(InferenceError::Internal(format!("vllm step: {e}"))),
         };
 
         let (text_total, finished, finish_reason, prompt_tokens, output_tokens) = chunk;

@@ -1,0 +1,45 @@
+[package]
+name = "atomr-infer-runtime-audio2face"
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+authors.workspace      = true
+keywords.workspace     = true
+categories.workspace   = true
+readme                 = "README.md"
+documentation          = "https://docs.rs/atomr-infer-runtime-audio2face"
+description            = "NVIDIA Audio2Face-3D runtime for atomr-infer — implements A2FRunner over gRPC with ARKit canonical blendshape ordering."
+
+[lib]
+name = "atomr_infer_runtime_audio2face"
+
+[features]
+# Enables the real gRPC + in-memory generator path. Without this feature
+# all public APIs compile but return Audio2FaceError::FeatureDisabled.
+audio2face = []
+
+[dependencies]
+atomr-infer-core = { workspace = true }
+
+async-trait  = { workspace = true }
+bytes        = { workspace = true }
+futures      = { workspace = true }
+serde        = { workspace = true }
+thiserror    = { workspace = true }
+tokio        = { workspace = true }
+tokio-stream = { workspace = true }
+tracing      = { workspace = true }
+
+# gRPC / protobuf — tonic + hand-written prost types (no build.rs/protoc needed)
+tonic = { workspace = true }
+prost = { workspace = true }
+
+[dev-dependencies]
+tokio        = { workspace = true }
+tokio-stream = { workspace = true }
+futures      = { workspace = true }
+serde_json   = { workspace = true }
+bytes        = { workspace = true }

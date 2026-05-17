@@ -25,6 +25,7 @@ fn main() -> Result<()> {
         "test" => test_matrix(),
         "remote-only" => remote_only_build(),
         "verify" => verify(),
+        "verify-audio" => verify_audio(),
         "audit" => audit(args.collect()),
         "bump" => bump(args.collect()),
         "release-checklist" => release_checklist(),
@@ -47,6 +48,7 @@ fn print_help() {
     println!("  test                cargo test across the documented feature matrix");
     println!("  remote-only         build inference-cli with no GPU/Python deps");
     println!("  verify              1.0-rc gate (build + test + clippy + audit + remote-only)");
+    println!("  verify-audio        cargo test --workspace --features audio-all (fakes only)");
     println!("  audit [--check] [--json <out>]");
     println!("                      count anti-pattern sentinels per crate");
     println!("  bump <patch|minor|major|--pre <id>|--set <ver>>");
@@ -175,6 +177,42 @@ fn verify() -> Result<()> {
     }
 
     println!("\nverify: OK");
+    Ok(())
+}
+
+// --- verify-audio --------------------------------------------------------
+
+fn verify_audio() -> Result<()> {
+    let cargo_bin = env!("CARGO");
+    let steps: Vec<(&str, &[&str])> = vec![
+        (
+            "cargo build -p atomr-infer --features audio-all",
+            &["build", "-p", "atomr-infer", "--features", "audio-all"],
+        ),
+        (
+            "cargo test -p atomr-infer-core",
+            &["test", "-p", "atomr-infer-core"],
+        ),
+        (
+            "cargo test -p atomr-infer-testkit --test audio_dispatch",
+            &["test", "-p", "atomr-infer-testkit", "--test", "audio_dispatch"],
+        ),
+        (
+            "cargo build -p atomr-infer --features audio2face",
+            &["build", "-p", "atomr-infer", "--features", "audio2face"],
+        ),
+    ];
+    for (label, args) in &steps {
+        println!("==> {label}");
+        let status = Command::new(cargo_bin)
+            .args(args.iter())
+            .status()
+            .with_context(|| format!("spawning `{label}`"))?;
+        if !status.success() {
+            return Err(anyhow!("{label} failed: {status}"));
+        }
+    }
+    println!("\nverify-audio: OK");
     Ok(())
 }
 

@@ -27,6 +27,8 @@ python           = [
     "dep:serde",
     "dep:serde_json",
     "dep:tracing",
+    "dep:bytes",
+    "dep:url",
     "dep:atomr-infer-testkit",
 ]
 # Maturin enables this when building wheels — adds the
@@ -53,3 +55,5 @@ futures-util        = { workspace = true, optional = true }
 serde               = { workspace = true, optional = true }
 serde_json          = { workspace = true, optional = true }
 tracing             = { workspace = true, optional = true }
+bytes               = { workspace = true, optional = true }
+url                 = { workspace = true, optional = true }

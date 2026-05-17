@@ -35,6 +35,12 @@ async-trait = { workspace = true }
 futures     = { workspace = true }
 url         = { workspace = true }
 chrono      = { version = "0.4", default-features = false, features = ["clock", "serde"] }
+# `tokio` is admitted here only for `sync::mpsc` — required by the
+# realtime / streaming audio types in `audio.rs` whose channels need
+# to interop with the actor system in `inference-runtime`. Documented
+# exception alongside `async-trait` (see lib.rs header).
+tokio       = { workspace = true, features = ["sync"] }
 
 [dev-dependencies]
 serde_json = { workspace = true }
+proptest   = { workspace = true }

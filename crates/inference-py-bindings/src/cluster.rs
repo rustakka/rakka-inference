@@ -54,10 +54,11 @@ fn build_runner(deployment: &PyDeployment) -> InferenceResult<Box<dyn ModelRunne
     match &kind {
         RuntimeKind::Custom(s) if s == "mock" => {
             let cfg: MockKindConfig = match deployment.inner.runtime_config.clone() {
-                Some(RuntimeConfig::Custom { config, .. }) => serde_json::from_value(config)
-                    .map_err(|e| InferenceError::BadRequest {
+                Some(RuntimeConfig::Custom { config, .. }) => {
+                    serde_json::from_value(config).map_err(|e| InferenceError::BadRequest {
                         message: format!("invalid mock config: {e}"),
-                    })?,
+                    })?
+                }
                 Some(_) => MockKindConfig::default(),
                 None => MockKindConfig::default(),
             };

@@ -6,7 +6,7 @@ use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
 
-use crate::runtime::ProviderKind;
+use crate::runtime::{ProviderKind, RuntimeKind};
 
 pub type InferenceResult<T> = Result<T, InferenceError>;
 
@@ -76,6 +76,35 @@ pub enum InferenceError {
     #[error("CUDA context poisoned: {0}")]
     CudaContextPoisoned(String),
 
+    /// A runner does not support the called method. Surfaces from
+    /// adapter stubs that exist only to satisfy the trait surface (e.g.
+    /// a remote-only adapter rejecting a local-only call). Not
+    /// retryable.
+    ///
+    /// `method` is the trait-method name (e.g. `"execute_audio"`); kept
+    /// as an owned `String` because [`InferenceError`] is serialized
+    /// across the wire and a borrowed `'static str` cannot round-trip.
+    #[error("{method} is unsupported by runtime {runtime:?}")]
+    Unsupported {
+        /// Name of the trait method that was called.
+        method: String,
+        /// The runtime that rejected the call.
+        runtime: RuntimeKind,
+    },
+
+    /// Audio input format / sample rate / channel count is incompatible
+    /// with this runtime. Source: `FR-STT-001`, `FR-A2F-001`. Not
+    /// retryable.
+    #[error("unsupported audio format: {message}")]
+    UnsupportedAudioFormat { message: String },
+
+    /// A realtime bidirectional session closed before completion.
+    /// Surfaces from [`crate::runner::RealtimeRunner`] adapters when the
+    /// underlying WebSocket / transport tears down. Source: `FR-TTS-001`.
+    /// Not retryable at the adapter layer; the session must be reopened.
+    #[error("realtime session closed: {reason}")]
+    RealtimeClosed { reason: String },
+
     /// Catch-all for runtime-internal bugs. Not retryable.
     #[error("internal: {0}")]
     Internal(String),
@@ -121,5 +150,82 @@ mod duration_opt_ms {
         D: Deserializer<'de>,
     {
         Option::<u64>::deserialize(d).map(|o| o.map(Duration::from_millis))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn unsupported_formatting_contains_method_and_runtime() {
+        let err = InferenceError::Unsupported {
+            method: "execute_audio".into(),
+            runtime: RuntimeKind::Audio2Face,
+        };
+        let s = format!("{err}");
+        assert!(s.contains("execute_audio"));
+        assert!(s.contains("Audio2Face"));
+    }
+
+    #[test]
+    fn unsupported_is_not_retryable() {
+        let err = InferenceError::Unsupported {
+            method: "speak".into(),
+            runtime: RuntimeKind::TextToSpeech,
+        };
+        assert!(!err.is_retryable());
+        assert!(!err.counts_as_circuit_failure());
+    }
+
+    #[test]
+    fn unsupported_audio_format_is_not_retryable() {
+        let err = InferenceError::UnsupportedAudioFormat {
+            message: "expected 16 kHz mono Pcm16Le".into(),
+        };
+        assert!(!err.is_retryable());
+        assert!(!err.counts_as_circuit_failure());
+        assert!(format!("{err}").contains("16 kHz"));
+    }
+
+    #[test]
+    fn realtime_closed_is_not_retryable() {
+        let err = InferenceError::RealtimeClosed {
+            reason: "peer reset".into(),
+        };
+        assert!(!err.is_retryable());
+        assert!(!err.counts_as_circuit_failure());
+        assert!(format!("{err}").contains("peer reset"));
+    }
+
+    #[test]
+    fn new_error_variants_serde_round_trip() {
+        let unsupported = InferenceError::Unsupported {
+            method: "speak".into(),
+            runtime: RuntimeKind::TextToSpeech,
+        };
+        let json = serde_json::to_string(&unsupported).unwrap();
+        let back: InferenceError = serde_json::from_str(&json).unwrap();
+        match back {
+            InferenceError::Unsupported { method, runtime } => {
+                assert_eq!(method, "speak");
+                assert_eq!(runtime, RuntimeKind::TextToSpeech);
+            }
+            other => panic!("variant changed across round-trip: {other:?}"),
+        }
+
+        let format_err = InferenceError::UnsupportedAudioFormat {
+            message: "bad rate".into(),
+        };
+        let json = serde_json::to_string(&format_err).unwrap();
+        let back: InferenceError = serde_json::from_str(&json).unwrap();
+        assert!(matches!(back, InferenceError::UnsupportedAudioFormat { .. }));
+
+        let rt = InferenceError::RealtimeClosed {
+            reason: "ws drop".into(),
+        };
+        let json = serde_json::to_string(&rt).unwrap();
+        let back: InferenceError = serde_json::from_str(&json).unwrap();
+        assert!(matches!(back, InferenceError::RealtimeClosed { .. }));
     }
 }

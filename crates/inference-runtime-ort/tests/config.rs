@@ -27,8 +27,7 @@ fn config_round_trip_minimal() {
 #[test]
 fn config_accepts_partial_json() {
     // Only `onnx_path` is required; the rest should default.
-    let cfg: OrtConfig =
-        serde_json::from_str(r#"{"onnx_path":"/etc/models/m.onnx"}"#).expect("deserialize");
+    let cfg: OrtConfig = serde_json::from_str(r#"{"onnx_path":"/etc/models/m.onnx"}"#).expect("deserialize");
     assert_eq!(cfg.onnx_path.to_str(), Some("/etc/models/m.onnx"));
     assert_eq!(cfg.execution_provider, ExecutionProvider::Cpu);
     assert_eq!(cfg.device_id, 0);

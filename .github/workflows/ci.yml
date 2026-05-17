@@ -110,6 +110,27 @@ jobs:
           - mistralrs
           - pipeline
           - testkit
+          # Audio modality — TTS providers
+          - tts-openai
+          - tts-openai-realtime
+          - tts-elevenlabs
+          - tts-gemini-live
+          - tts-piper
+          - tts-kokoro
+          - tts-xtts
+          - tts-moss
+          # Audio modality — STT providers
+          - stt-openai
+          - stt-whisper
+          - stt-deepgram
+          - stt-assemblyai
+          # Audio modality — A2F (Linux x86_64 only — the matrix
+          # runner image satisfies that gate, so include it here).
+          - audio2face
+          # Audio meta-aggregates
+          - tts-all
+          - stt-all
+          - audio-all
     steps:
       - name: Checkout sibling atomr
         uses: actions/checkout@v4
@@ -203,6 +224,28 @@ jobs:
           fi
           echo "remote-only invariant holds: zero GPU deps in tree."
 
+  test-audio-fakes:
+    name: test-audio-fakes (audio dispatch integration)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sibling atomr
+        uses: actions/checkout@v4
+        with: { repository: rustakka/atomr, path: atomr }
+      - name: Checkout sibling atomr-accel
+        uses: actions/checkout@v4
+        with: { repository: rustakka/atomr-accel, path: atomr-accel }
+      - name: Checkout atomr-infer
+        uses: actions/checkout@v4
+        with: { path: atomr-infer }
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: atomr-infer }
+      - name: Install protoc (Audio2Face gRPC build dep)
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+      - name: cargo xtask verify-audio
+        run: cargo xtask verify-audio
+        working-directory: atomr-infer
+
   demo:
     name: end-to-end demo (wiremock)
     runs-on: ubuntu-latest
@@ -226,7 +269,7 @@ jobs:
   verify:
     name: verify (1.0-rc gate)
     runs-on: ubuntu-latest
-    needs: [fmt, clippy, test, audit, deny, remote-only-invariant, feature-matrix]
+    needs: [fmt, clippy, test, audit, deny, remote-only-invariant, feature-matrix, test-audio-fakes]
     steps:
       - name: Checkout sibling atomr
         uses: actions/checkout@v4

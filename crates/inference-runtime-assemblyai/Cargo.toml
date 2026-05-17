@@ -1,0 +1,71 @@
+[package]
+name = "atomr-infer-runtime-assemblyai"
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+repository.workspace   = true
+homepage.workspace     = true
+authors.workspace      = true
+keywords.workspace     = true
+categories.workspace   = true
+readme                 = "README.md"
+documentation          = "https://docs.rs/atomr-infer-runtime-assemblyai"
+description            = "AssemblyAI speech-to-text runtime for atomr-infer. Implements AudioRunner against wss://streaming.assemblyai.com/v3/ws (Universal-Streaming v3) with shared atomr-infer-runtime-ws-core transport, partial → final-per-turn cadence, and Authorization header auth."
+
+[lib]
+name = "atomr_infer_runtime_assemblyai"
+
+[features]
+default = []
+
+# Umbrella feature — pulls in the real WS client deps. Without it the
+# crate compiles to a stub whose `execute_audio` returns
+# `InferenceError::Internal("stt-assemblyai feature disabled at build time")`,
+# so the workspace stays remote-only-buildable.
+stt-assemblyai = [
+    "dep:tokio",
+    "dep:tokio-stream",
+    "dep:futures",
+    "dep:serde",
+    "dep:serde_json",
+    "dep:secrecy",
+    "dep:url",
+    "dep:bytes",
+    "dep:tracing",
+    "dep:arc-swap",
+    "dep:atomr-infer-runtime-ws-core",
+    "dep:atomr-infer-remote-core",
+]
+
+[dependencies]
+atomr-infer-core             = { workspace = true }
+async-trait                  = { workspace = true }
+thiserror                    = { workspace = true }
+
+atomr-infer-runtime-ws-core  = { workspace = true, optional = true }
+atomr-infer-remote-core      = { workspace = true, optional = true }
+tokio                        = { workspace = true, optional = true }
+tokio-stream                 = { workspace = true, optional = true }
+futures                      = { workspace = true, optional = true }
+serde                        = { workspace = true, optional = true }
+serde_json                   = { workspace = true, optional = true }
+secrecy                      = { workspace = true, optional = true }
+url                          = { workspace = true, optional = true, features = ["serde"] }
+bytes                        = { workspace = true, optional = true }
+tracing                      = { workspace = true, optional = true }
+arc-swap                     = { workspace = true, optional = true }
+
+[dev-dependencies]
+atomr-infer-core    = { workspace = true }
+atomr-infer-testkit = { workspace = true }
+atomr-infer-remote-core = { workspace = true }
+atomr-infer-runtime-ws-core = { workspace = true }
+futures             = { workspace = true }
+tokio               = { workspace = true, features = ["macros", "rt", "rt-multi-thread"] }
+bytes               = { workspace = true }
+secrecy             = { workspace = true }
+url                 = { workspace = true }
+arc-swap            = { workspace = true }
+serde_json          = { workspace = true }
+tokio-tungstenite   = { workspace = true }

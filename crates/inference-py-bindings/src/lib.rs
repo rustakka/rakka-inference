@@ -24,6 +24,8 @@
 #![deny(rust_2018_idioms)]
 
 #[cfg(feature = "python")]
+mod audio;
+#[cfg(feature = "python")]
 mod cluster;
 #[cfg(feature = "python")]
 mod config;
@@ -46,5 +48,6 @@ fn _native(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     runtime::register(py, m)?;
     config::register(py, m)?;
     cluster::register(py, m)?;
+    audio::register(py, m)?;
     Ok(())
 }

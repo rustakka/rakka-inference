@@ -146,8 +146,7 @@ async fn main() -> Result<()> {
     let cli = Cli::parse();
 
     if !cli.allow_any_model {
-        validate_variant(&cli.model)
-            .map_err(|e| anyhow!("{e}; pass --allow-any-model to bypass"))?;
+        validate_variant(&cli.model).map_err(|e| anyhow!("{e}; pass --allow-any-model to bypass"))?;
     } else if !SUPPORTED_VARIANTS.contains(&cli.model.as_str()) {
         eprintln!(
             "warning: --allow-any-model in effect — model {:?} not in supported list",
@@ -159,9 +158,7 @@ async fn main() -> Result<()> {
     match cli.cmd {
         Cmd::Smoke => cmd_smoke(&cli, &writer).await?,
         Cmd::Latency => cmd_latency(&cli, &writer).await?,
-        Cmd::Throughput { concurrency, total } => {
-            cmd_throughput(&cli, &writer, concurrency, total).await?
-        }
+        Cmd::Throughput { concurrency, total } => cmd_throughput(&cli, &writer, concurrency, total).await?,
         Cmd::Sweep { ref knob } => cmd_sweep(&cli, &writer, knob).await?,
         Cmd::Experiments => cmd_experiments(&cli, &writer).await?,
         Cmd::Compare => cmd_compare(&cli, &writer).await?,
@@ -212,7 +209,10 @@ async fn cmd_latency(cli: &Cli, writer: &ResultWriter) -> Result<()> {
         ]
     };
 
-    println!("{:<10} {:>10} {:>12} {:>12} {:>10}", "size", "ttft_ms", "decode_ms", "tok/s_dec", "tokens");
+    println!(
+        "{:<10} {:>10} {:>12} {:>12} {:>10}",
+        "size", "ttft_ms", "decode_ms", "tok/s_dec", "tokens"
+    );
     for (label, prompt) in prompts {
         let stats = run_one(&mut runner, &cli.model, &prompt, cli.max_tokens).await?;
         writer.emit_with("latency", label, &stats);
@@ -228,12 +228,7 @@ async fn cmd_latency(cli: &Cli, writer: &ResultWriter) -> Result<()> {
     Ok(())
 }
 
-async fn cmd_throughput(
-    cli: &Cli,
-    writer: &ResultWriter,
-    concurrency: u32,
-    total: u32,
-) -> Result<()> {
+async fn cmd_throughput(cli: &Cli, writer: &ResultWriter, concurrency: u32, total: u32) -> Result<()> {
     let cfg = base_config(&cli.model);
     if !pass_probe(&cfg, "throughput") {
         return Ok(());
@@ -276,7 +271,11 @@ async fn cmd_sweep(cli: &Cli, writer: &ResultWriter, knob: &SweepKnob) -> Result
 
     match knob {
         SweepKnob::GpuUtil => {
-            let values: &[f32] = if cli.quick { &[0.45, 0.7] } else { &[0.3, 0.5, 0.7, 0.9] };
+            let values: &[f32] = if cli.quick {
+                &[0.45, 0.7]
+            } else {
+                &[0.3, 0.5, 0.7, 0.9]
+            };
             sweep_runs(
                 "gpu_util",
                 values,
@@ -374,15 +373,7 @@ async fn cmd_sweep(cli: &Cli, writer: &ResultWriter, knob: &SweepKnob) -> Result
                 "concurrency", "wall_ms", "agg_tok/s", "ttft_p50"
             );
             for c in cs {
-                let agg = run_concurrent(
-                    &mut runner,
-                    &cli.model,
-                    c,
-                    c * 2,
-                    cli.max_tokens,
-                    &prompt,
-                )
-                .await?;
+                let agg = run_concurrent(&mut runner, &cli.model, c, c * 2, cli.max_tokens, &prompt).await?;
                 writer.emit_with("sweep_concurrency", &c.to_string(), &agg);
                 println!(
                     "{:<12} {:>10.1} {:>14.2} {:>10.1}",
@@ -439,8 +430,20 @@ async fn cmd_experiments(cli: &Cli, writer: &ResultWriter) -> Result<()> {
     println!("== experiments ({n} requests each, prompt=medium) ==");
     let configs: Vec<(&str, VllmConfig)> = vec![
         ("vllm_defaults", base.clone()),
-        ("eager", VllmConfig { enforce_eager: Some(true), ..base.clone() }),
-        ("graphs", VllmConfig { enforce_eager: Some(false), ..base.clone() }),
+        (
+            "eager",
+            VllmConfig {
+                enforce_eager: Some(true),
+                ..base.clone()
+            },
+        ),
+        (
+            "graphs",
+            VllmConfig {
+                enforce_eager: Some(false),
+                ..base.clone()
+            },
+        ),
         (
             "prefix_cache",
             VllmConfig {
@@ -482,20 +485,12 @@ async fn cmd_experiments(cli: &Cli, writer: &ResultWriter) -> Result<()> {
                 writer.emit_with("experiments", label, &agg);
                 println!(
                     "{:<20} {:>10.1} {:>12.1} {:>14.2} {:>10.1}",
-                    label,
-                    agg.ttft_p50,
-                    agg.decode_p50,
-                    agg.tokens_per_sec_aggregate,
-                    agg.wall_ms
+                    label, agg.ttft_p50, agg.decode_p50, agg.tokens_per_sec_aggregate, agg.wall_ms
                 );
             }
             Err(e) => {
                 let err = e.to_string();
-                writer.emit_with(
-                    "experiments",
-                    label,
-                    &serde_json::json!({ "error": err }),
-                );
+                writer.emit_with("experiments", label, &serde_json::json!({ "error": err }));
                 eprintln!("{:<20} ERROR: {}", label, err.lines().next().unwrap_or(""));
             }
         }
@@ -553,8 +548,7 @@ async fn sweep_runs<T: std::fmt::Display + Clone>(
         let cfg = mk_config(v);
         let mut runner = VllmRunner::new(cfg);
         let label = format!("{knob_name}={v}");
-        match run_concurrent(&mut runner, &cli.model, 1, n_requests, cli.max_tokens, prompt).await
-        {
+        match run_concurrent(&mut runner, &cli.model, 1, n_requests, cli.max_tokens, prompt).await {
             Ok(agg) => {
                 writer.emit_with(&format!("sweep_{knob_name}"), &v.to_string(), &agg);
                 println!(
@@ -621,12 +615,7 @@ struct ConcurrentStats {
     per_request_tokens: Vec<u32>,
 }
 
-async fn run_one(
-    runner: &mut VllmRunner,
-    model: &str,
-    prompt: &str,
-    max_tokens: u32,
-) -> Result<RunStats> {
+async fn run_one(runner: &mut VllmRunner, model: &str, prompt: &str, max_tokens: u32) -> Result<RunStats> {
     let request_id = format!("bench-{}", random_id());
     let started = Instant::now();
     let handle = runner

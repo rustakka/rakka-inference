@@ -31,10 +31,7 @@ use crate::hf_cache::HfCache;
 pub enum ProbeResult {
     /// All gates passed. The caller may launch a vLLM engine for
     /// `model_id` against the resolved [`HfCache`].
-    Ready {
-        vram_free_gb: f32,
-        hf_cache: HfCache,
-    },
+    Ready { vram_free_gb: f32, hf_cache: HfCache },
     /// A user-fixable prereq is missing. The auto-provisioner logs
     /// the message and continues without the deployment.
     Skipped { reason: String, hint: String },
@@ -173,10 +170,7 @@ fn probe_gpu() -> Result<f32, String> {
         .map_err(|e| format!("nvidia-smi not on PATH (no NVIDIA driver?): {e}"))?;
     if !out.status.success() {
         let stderr = String::from_utf8_lossy(&out.stderr);
-        return Err(format!(
-            "nvidia-smi exited non-zero: {}",
-            stderr.trim()
-        ));
+        return Err(format!("nvidia-smi exited non-zero: {}", stderr.trim()));
     }
     let stdout = String::from_utf8_lossy(&out.stdout);
     let free_mib: f32 = stdout
@@ -223,9 +217,7 @@ fn probe_python() -> Result<(), String> {
         .parse()
         .map_err(|e| format!("bad minor: {e}"))?;
     if (major, minor) < (3, 10) {
-        return Err(format!(
-            "Python {major}.{minor} on PATH; vLLM requires 3.10+"
-        ));
+        return Err(format!("Python {major}.{minor} on PATH; vLLM requires 3.10+"));
     }
     Ok(())
 }
@@ -245,10 +237,7 @@ fn probe_vllm() -> Result<String, String> {
         if stderr.contains("ModuleNotFoundError") || stderr.contains("No module named 'vllm'") {
             return Err("vLLM not importable in active python3".into());
         }
-        return Err(format!(
-            "vllm import probe failed: {}",
-            stderr.trim()
-        ));
+        return Err(format!("vllm import probe failed: {}", stderr.trim()));
     }
     let version = String::from_utf8_lossy(&out.stdout).trim().to_string();
     Ok(version)

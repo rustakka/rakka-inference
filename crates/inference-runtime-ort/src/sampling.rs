@@ -72,22 +72,19 @@ fn argmax(logits: &[f32]) -> u32 {
     logits
         .iter()
         .enumerate()
-        .fold(
-            (0usize, f32::NEG_INFINITY),
-            |(best_i, best), (i, &v)| if v > best { (i, v) } else { (best_i, best) },
-        )
+        .fold((0usize, f32::NEG_INFINITY), |(best_i, best), (i, &v)| {
+            if v > best {
+                (i, v)
+            } else {
+                (best_i, best)
+            }
+        })
         .0 as u32
 }
 
 fn softmax(scored: Vec<(u32, f32)>) -> Vec<(u32, f32)> {
-    let max = scored
-        .iter()
-        .map(|(_, l)| *l)
-        .fold(f32::NEG_INFINITY, f32::max);
-    let mut exps: Vec<(u32, f32)> = scored
-        .into_iter()
-        .map(|(t, l)| (t, (l - max).exp()))
-        .collect();
+    let max = scored.iter().map(|(_, l)| *l).fold(f32::NEG_INFINITY, f32::max);
+    let mut exps: Vec<(u32, f32)> = scored.into_iter().map(|(t, l)| (t, (l - max).exp())).collect();
     let sum: f32 = exps.iter().map(|(_, e)| *e).sum();
     if sum > 0.0 {
         for (_, e) in &mut exps {

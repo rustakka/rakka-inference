@@ -1,0 +1,16 @@
+[package]
+name = "tts_piper_local"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+description = "One-shot Piper TTS synthesis to a WAV file. Reads PIPER_VOICE_PATH for the voice; arg 1 is the text to speak."
+
+[dependencies]
+atomr-infer-core          = { workspace = true }
+atomr-infer-runtime-piper = { workspace = true, features = ["piper"] }
+
+anyhow  = { workspace = true }
+futures = { workspace = true }
+tokio   = { workspace = true, features = ["macros", "rt-multi-thread"] }

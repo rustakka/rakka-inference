@@ -495,6 +495,48 @@ The classification of errors (`classify_error`) is provider-specific and produce
 
 ---
 
+### 5.9 Audio modality dispatch (new — M2 of the audio program)
+
+The same actor topology accommodates the four audio modalities
+introduced by `FR-TTS-001` / `FR-STT-001` / `FR-A2F-001`. Instead of
+extending `ModelRunner` with audio methods (which would force the
+text-shaped engine actor's runner mutex to be held across audio
+calls), we add sibling traits next to `ModelRunner` and one engine
+actor per modality. See `docs/audio-modalities.md` for the full ADR.
+
+| Engine actor | Crate path | Runner trait | Admission unit |
+|---|---|---|---|
+| `EngineCoreActor` (unchanged) | `inference-runtime/src/engine_core.rs` | `ModelRunner` | tokens |
+| `SpeechEngineCoreActor` | `inference-runtime/src/speech_engine.rs` | `SpeechRunner` (TTS) | characters |
+| `AudioEngineCoreActor` | `inference-runtime/src/audio_engine.rs` | `AudioRunner` (STT) **or** `A2FRunner` | audio-seconds / frames |
+| `RealtimeEngineCoreActor` | `inference-runtime/src/realtime_engine.rs` | `RealtimeRunner` | concurrent sessions |
+
+The shared `AudioEngineCoreActor` carries an internal `RunnerCell`
+discriminator because STT and A2F share `AudioBatch` (both ingest
+[`AudioInput`](../crates/inference-core/src/audio.rs)) but emit
+different chunk types. The actor's constructors (`new_stt` /
+`new_audio2face`) pin the kind at construction; if a message arrives
+for the wrong modality, the actor responds with
+`InferenceError::Unsupported { method, runtime }` rather than
+mis-dispatching.
+
+`RealtimeEngineCoreActor` is structurally different from the others.
+Each `OpenSession` admits and immediately calls
+`RealtimeRunner::open_session`, then runs a long-lived bridge task
+that relays from an internal outbound mpsc into the caller's outbound
+channel. The admission slot is released when **either** side closes —
+the runner adapter terminating, or the caller dropping its outbound
+receiver — so the per-replica concurrent-session count stays accurate
+without an explicit lifecycle message.
+
+Gateway routes for the four modalities (`/v1/audio/transcriptions`,
+`/v1/audio/transcriptions/stream`, `/v1/audio/speech`,
+`/v1/audio/speech/stream`, `/v1/realtime`, `/v1/audio2face`) are
+scaffolded at M2 and wired into the dp-coordinator's route-resolution
+path; per-runtime bridging is filled in by M4–M11.
+
+---
+
 ## 6. Request Lifecycle
 
 ### 6.1 Local deployment

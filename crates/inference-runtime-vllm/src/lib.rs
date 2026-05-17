@@ -28,9 +28,9 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
 use atomr_infer_core::batch::ExecuteBatch;
-use atomr_infer_core::error::InferenceResult;
 #[cfg(any(not(feature = "vllm"), all(test, not(feature = "vllm"))))]
 use atomr_infer_core::error::InferenceError;
+use atomr_infer_core::error::InferenceResult;
 use atomr_infer_core::runner::{ModelRunner, RunHandle, SessionRebuildCause};
 use atomr_infer_core::runtime::{RuntimeKind, TransportKind};
 

@@ -3,7 +3,9 @@
 
 use std::time::Duration;
 
-use atomr_infer_core::deployment::{Budget, BudgetAction, CapacityPolicy, RateLimits, RetryPolicy, Serving, Timeouts};
+use atomr_infer_core::deployment::{
+    Budget, BudgetAction, CapacityPolicy, RateLimits, RetryPolicy, Serving, Timeouts,
+};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
@@ -27,7 +29,11 @@ impl PyCapacityPolicy {
             "reject" => CapacityPolicy::Reject,
             "queue" => CapacityPolicy::Queue,
             "fallback" => CapacityPolicy::Fallback,
-            other => return Err(PyValueError::new_err(format!("unknown capacity policy: {other:?}"))),
+            other => {
+                return Err(PyValueError::new_err(format!(
+                    "unknown capacity policy: {other:?}"
+                )))
+            }
         };
         Ok(Self { inner })
     }
@@ -205,7 +211,9 @@ impl PyRetryPolicy {
     }
     #[getter]
     fn jitter(&self) -> PyJitterKind {
-        PyJitterKind { inner: self.inner.jitter }
+        PyJitterKind {
+            inner: self.inner.jitter,
+        }
     }
     #[getter]
     fn respect_retry_after(&self) -> bool {
@@ -343,7 +351,13 @@ impl PyBudget {
     }
 
     fn __repr__(&self) -> String {
-        format!("Budget(on_exceeded={:?})", PyBudgetAction { inner: self.inner.on_exceeded }.name())
+        format!(
+            "Budget(on_exceeded={:?})",
+            PyBudgetAction {
+                inner: self.inner.on_exceeded
+            }
+            .name()
+        )
     }
 }
 

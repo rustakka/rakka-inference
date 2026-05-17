@@ -16,15 +16,21 @@
 #![forbid(unsafe_code)]
 #![deny(rust_2018_idioms)]
 
+pub mod audio_engine;
 pub mod deployment_manager;
 pub mod dp_coordinator;
 pub mod engine_core;
 pub mod gateway;
 pub mod metrics;
 pub mod placement;
+pub mod realtime_engine;
 pub mod request;
+pub mod speech_engine;
 pub mod worker;
 
+pub use audio_engine::{
+    AddAudio2FaceRequest, AddTranscribeRequest, AudioEngineConfig, AudioEngineCoreActor, AudioEngineMsg,
+};
 pub use deployment_manager::{
     DeploymentManagerActor, DeploymentManagerMsg, DeploymentRecord, DeploymentState,
 };
@@ -36,5 +42,9 @@ pub use placement::{
     DeploymentPlacementActor, NodeAssignment, PlacementConstraints, PlacementError, PlacementMsg,
     PlacementResult,
 };
+pub use realtime_engine::{
+    OpenSessionRequest, RealtimeEngineConfig, RealtimeEngineCoreActor, RealtimeEngineMsg,
+};
 pub use request::{RequestActor, RequestMsg, Route, StreamingResponse};
+pub use speech_engine::{AddSpeechRequest, SpeechEngineConfig, SpeechEngineCoreActor, SpeechEngineMsg};
 pub use worker::{ContextActor, ContextMsg, WorkerActor, WorkerMsg, WorkerSlot};

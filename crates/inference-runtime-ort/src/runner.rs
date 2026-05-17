@@ -10,11 +10,11 @@ use atomr_infer_core::runtime::{RuntimeKind, TransportKind};
 use crate::config::OrtConfig;
 
 #[cfg(feature = "ort")]
-use std::sync::Arc;
+use crate::infer::{run_infer, InferOutputs, InferTensor};
 #[cfg(feature = "ort")]
 use crate::session::{build_state, OrtState};
 #[cfg(feature = "ort")]
-use crate::infer::{run_infer, InferOutputs, InferTensor};
+use std::sync::Arc;
 
 pub struct OrtRunner {
     cfg: OrtConfig,
@@ -57,9 +57,7 @@ impl OrtRunner {
                 let cfg = self.cfg.clone();
                 tokio::task::spawn_blocking(move || build_state(&cfg))
                     .await
-                    .map_err(|e| {
-                        InferenceError::Internal(format!("ort: spawn_blocking join: {e}"))
-                    })?
+                    .map_err(|e| InferenceError::Internal(format!("ort: spawn_blocking join: {e}")))?
             })
             .await
             .cloned()

@@ -13,6 +13,7 @@
 #![forbid(unsafe_code)]
 #![deny(rust_2018_idioms)]
 
+pub mod audio;
 pub mod batch;
 pub mod cost;
 pub mod deployment;
@@ -22,6 +23,12 @@ pub mod runner;
 pub mod runtime;
 pub mod tokens;
 
+pub use audio::{
+    emotion_presets, A2FOptions, AlignmentDelta, AudioBatch, AudioFormat, AudioInput, AudioOptions,
+    AudioParams, AudioPayload, BlendshapeChunk, RealtimeBatch, RealtimeIn, RealtimeOut, SpeechBatch,
+    SpeechChunk, SynthOptions, TranscribeOptions, TranscriptChunk, TranscriptRole, Viseme, VoiceRef,
+    WordTiming,
+};
 pub use batch::{ExecuteBatch, Message, MessageContent, Role, SamplingParams};
 pub use cost::{CostEstimate, EstimateCost};
 pub use deployment::{
@@ -29,7 +36,10 @@ pub use deployment::{
 };
 pub use error::{InferenceError, InferenceResult};
 pub use registry::infer_runtime;
-pub use runner::{ModelRunner, RunHandle, SessionRebuildCause, WeightSource};
+pub use runner::{
+    A2FRunHandle, A2FRunner, AudioRunHandle, AudioRunner, ModelRunner, RealtimeRunner, RealtimeSession,
+    RunHandle, SessionRebuildCause, SpeechRunHandle, SpeechRunner, WeightSource,
+};
 pub use runtime::{
     CircuitBreakerConfig, JitterKind, ProviderKind, RuntimeConfig, RuntimeKind, TransportKind,
 };

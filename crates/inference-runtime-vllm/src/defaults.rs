@@ -190,11 +190,12 @@ pub async fn provision_if_ready(
     let fallback = fallback_variant(&cfg.model_id);
 
     match probe(&cfg.model_id, min_vram, min_disk, fallback) {
-        ProbeResult::Skipped { reason, hint } => {
-            return Ok(ProvisionOutcome::Skipped { reason, hint })
-        }
+        ProbeResult::Skipped { reason, hint } => return Ok(ProvisionOutcome::Skipped { reason, hint }),
         ProbeResult::Error(e) => return Err(e),
-        ProbeResult::Ready { vram_free_gb, hf_cache } => {
+        ProbeResult::Ready {
+            vram_free_gb,
+            hf_cache,
+        } => {
             tracing::info!(
                 model = %cfg.model_id,
                 deployment = %cfg.deployment_name,
@@ -238,9 +239,7 @@ pub async fn provision_if_ready(
 
     let runtime_config = serde_json::to_value(&vllm_cfg)
         .map(RuntimeConfig::Vllm)
-        .map_err(|e| {
-            InferenceError::Internal(format!("gemma defaults: serialise VllmConfig: {e}"))
-        })?;
+        .map_err(|e| InferenceError::Internal(format!("gemma defaults: serialise VllmConfig: {e}")))?;
 
     let deployment = Deployment {
         name: cfg.deployment_name.clone(),
@@ -317,10 +316,7 @@ mod tests {
             fallback_variant("google/gemma-4-E4B-it"),
             Some("google/gemma-4-E2B-it")
         );
-        assert_eq!(
-            fallback_variant("google/gemma-4-E4B"),
-            Some("google/gemma-4-E2B")
-        );
+        assert_eq!(fallback_variant("google/gemma-4-E4B"), Some("google/gemma-4-E2B"));
         // E2B has no smaller supported variant.
         assert_eq!(fallback_variant("google/gemma-4-E2B-it"), None);
     }

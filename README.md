@@ -78,6 +78,11 @@ invariant load-bearing, not aspirational.
 | `atomr-infer-runtime-tensorrt` | NVIDIA TensorRT runner over `atomr-accel-tensorrt`'s `TrtRuntime` / `ExecutionContext` (Phase 8); ONNX / INT8 / FP8 / IPluginV3 sub-features forwarded |
 | `atomr-infer-runtime-mistralrs` | Mistral.rs LLM runtime via `TextModelBuilder` + token-streaming through `mpsc` |
 | `atomr-infer-runtime-{vllm,ort,candle,cudarc}` | Per-backend `ModelRunner` for the remaining local Rust-native and FFI runtimes; feature-gated so absent system libs don't break the workspace |
+| `atomr-infer-runtime-{openai-tts,openai-realtime,elevenlabs,gemini-live}` | Remote TTS `SpeechRunner` / `RealtimeRunner` against OpenAI batch + Realtime, ElevenLabs, and Gemini Live |
+| `atomr-infer-runtime-{piper,kokoro,xtts,moss}` | Local TTS `SpeechRunner` over ONNX (Piper / Kokoro / XTTS) and native MOSS-TTS |
+| `atomr-infer-runtime-{openai-stt,whisper-local,deepgram,assemblyai}` | STT `AudioRunner` for OpenAI Whisper / gpt-4o-transcribe, whisper.cpp local, Deepgram, AssemblyAI |
+| `atomr-infer-runtime-audio2face` | NVIDIA Audio2Face-3D `A2FRunner` over gRPC — streams ARKit 52-blendshape frames (Linux x86_64) |
+| `atomr-infer-runtime-ws-core` | Shared WSS transport with TLS, reconnect honoring `BackoffPolicy`, ping/pong keepalive, backpressure-aware split tx/rx |
 | `atomr-infer-pipeline` | `atomr-streams` integration plus `DynamicBatchingServer` / `InferenceCascade` / `ModelReplicaPool` / `FairShareScheduler` / `ModelHotSwapServer` / `SpeculativeDecoder` blueprints |
 | `atomr-infer-testkit` | `MockRunner` + `wiremock`-backed provider mocks (`inject_429`, `inject_5xx`, …) |
 | `atomr-infer-cli` | `atomr-infer serve --config <toml>` |
